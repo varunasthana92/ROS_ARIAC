@@ -118,9 +118,9 @@ public:
    * @param msg Message containing information on objects detected by the camera.
    */
   void logical_camera_callback(
-    const nist_gear::LogicalCameraImage::ConstPtr & msg, int cam_name){
+    const nist_gear::LogicalCameraImage::ConstPtr & msg, std::string cam_name){
     ROS_INFO_STREAM(
-      "Logical camera: " << cam_name << " --- " <<  msg->models.size() << "' objects.");
+      cam_name << " --- " <<  msg->models.size() << "' objects.");
   }
 
   /**
@@ -220,7 +220,7 @@ int main(int argc, char ** argv) {
   for(int i=0; i<17; i++) {
     logical_cam_subscribers[i] = node.subscribe<nist_gear::LogicalCameraImage>( logical_camera_names[i], 10, 
                                                                           boost::bind(&MyCompetitionClass::logical_camera_callback,
-                                                                                      comp_class, _1, i));
+                                                                                      comp_class, _1, logical_camera_names[i]));
     
   }
 
