@@ -15,7 +15,7 @@
 
 #include <algorithm>
 #include <vector>
-
+#include <string>
 #include <ros/ros.h>
 
 #include <nist_gear/LogicalCameraImage.h>
@@ -29,8 +29,7 @@
 #include <tf2_ros/transform_listener.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h> //--needed for tf2::Matrix3x3
-
-
+#include <boost/bind.hpp>
 
 /**
  * @brief Start the competition
@@ -119,9 +118,9 @@ public:
    * @param msg Message containing information on objects detected by the camera.
    */
   void logical_camera_callback(
-    const nist_gear::LogicalCameraImage::ConstPtr & msg){
-    ROS_INFO_STREAM_THROTTLE(10,
-      "Logical camera: '" << msg->models.size() << "' objects.");
+    const nist_gear::LogicalCameraImage::ConstPtr & msg, int cam_name){
+    ROS_INFO_STREAM(
+      "Logical camera: " << cam_name << " --- " <<  msg->models.size() << "' objects.");
   }
 
   /**
@@ -194,29 +193,49 @@ int main(int argc, char ** argv) {
     &MyCompetitionClass::break_beam_callback, 
     &comp_class);
 
+  std::vector<std::string> logical_camera_names {
+      "/ariac/logical_camera_1",
+      "/ariac/logical_camera_2",
+      "/ariac/logical_camera_3",
+      "/ariac/logical_camera_4",
+      "/ariac/logical_camera_5",
+      "/ariac/logical_camera_6",
+      "/ariac/logical_camera_7",
+      "/ariac/logical_camera_8",
+      "/ariac/logical_camera_9",
+      "/ariac/logical_camera_10",
+      "/ariac/logical_camera_11",
+      "/ariac/logical_camera_12",
+      "/ariac/logical_camera_13",
+      "/ariac/logical_camera_14",
+      "/ariac/logical_camera_15",
+      "/ariac/logical_camera_16",
+      "/ariac/logical_camera_17"
+      };
+
+  std::vector<ros::Subscriber> logical_cam_subscribers;
+  int i=0;
+  logical_cam_subscribers.resize(17);
+  
+  for(int i=0; i<17; i++) {
+    logical_cam_subscribers[i] = node.subscribe<nist_gear::LogicalCameraImage>( logical_camera_names[i], 10, 
+                                                                          boost::bind(&MyCompetitionClass::logical_camera_callback,
+                                                                                      comp_class, _1, i));
+    
+  }
+
+  // for(std::string cam_name: logical_camera_names) {
+  //   logical_cam_subscribers.push_back(
+  //       node.subscribe<nist_gear::LogicalCameraImage::ConstPtr>(
+  //           cam_name, 10,
+  //           boost::bind( &MyCompetitionClass::logical_camera_callback, &comp_class, _1, &i)));
+  //   ROS_INFO_STREAM("Logical camera subscriber added : " << cam_name);
+  // }
+
+
   // Subscribe to the '/ariac/laser_profiler_0' Topic.
   ros::Subscriber laser_profiler_subscriber = node.subscribe(
     "/ariac/laser_profiler_0", 10, laser_profiler_callback);
-
-	//--Array of subscribers for 15 logical cameras
-	int MAX_NUMBER_OF_CAMERAS = 15;
-	ros::Subscriber logical_camera_subscriber_[MAX_NUMBER_OF_CAMERAS];
-
-	//-- Create MAX_NUMBER_OF_CAMERAS subscribers in a loop
-	std::ostringstream otopic;
-	std::string topic;
-	for (int idx = 0; idx < MAX_NUMBER_OF_CAMERAS; idx++) {
-		  otopic.str(""); otopic.clear();
-		  otopic << "/ariac/logical_camera_" << (idx + 1);
-		  topic = otopic.str();
-
-		  //--node_ is an attribute of a class
-		  //--If you want to use Boost library as below make sure you add Boost to your CMakeLists.txt.
-		  //--If you do not want to use Boost then use the regular subscribe method as shown in rwa2_node.cpp
-		  logical_camera_subscriber_[idx] = node.subscribe<nist_gear::LogicalCameraImage>(
-    topic, 10,
-    &MyCompetitionClass::logical_camera_callback, &comp_class);
-	}
 
   ROS_INFO("Setup complete.");
   start_competition(node);
