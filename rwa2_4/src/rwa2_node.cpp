@@ -193,7 +193,7 @@ int main(int argc, char ** argv) {
     &MyCompetitionClass::break_beam_callback, 
     &comp_class);
 
-  std::vector<std::string> logical_camera_names {
+  std::vector<std::string> logical_camera_topics {
       "/ariac/logical_camera_1",
       "/ariac/logical_camera_2",
       "/ariac/logical_camera_3",
@@ -218,20 +218,11 @@ int main(int argc, char ** argv) {
   logical_cam_subscribers.resize(17);
   
   for(int i=0; i<17; i++) {
-    logical_cam_subscribers[i] = node.subscribe<nist_gear::LogicalCameraImage>( logical_camera_names[i], 10, 
+    logical_cam_subscribers[i] = node.subscribe<nist_gear::LogicalCameraImage>( logical_camera_topics[i], 10, 
                                                                           boost::bind(&MyCompetitionClass::logical_camera_callback,
-                                                                                      comp_class, _1, logical_camera_names[i]));
+                                                                                      &comp_class, _1, logical_camera_topics[i]));
     
   }
-
-  // for(std::string cam_name: logical_camera_names) {
-  //   logical_cam_subscribers.push_back(
-  //       node.subscribe<nist_gear::LogicalCameraImage::ConstPtr>(
-  //           cam_name, 10,
-  //           boost::bind( &MyCompetitionClass::logical_camera_callback, &comp_class, _1, &i)));
-  //   ROS_INFO_STREAM("Logical camera subscriber added : " << cam_name);
-  // }
-
 
   // Subscribe to the '/ariac/laser_profiler_0' Topic.
   ros::Subscriber laser_profiler_subscriber = node.subscribe(
