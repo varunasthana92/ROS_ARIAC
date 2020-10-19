@@ -39,7 +39,7 @@
 int main(int argc, char ** argv) {
     ros::init(argc, argv, "rwa3_node");
     ros::NodeHandle node;
-    ros::AsyncSpinner spinner(8);
+    ros::AsyncSpinner spinner(50);
     spinner.start();
 
     Competition comp(node);
