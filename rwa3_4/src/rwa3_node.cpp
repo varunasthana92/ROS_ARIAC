@@ -36,6 +36,10 @@
 
 #include <tf2/LinearMath/Quaternion.h>
 
+void orderCallback(const nist_gear::Order& order) {
+    ROS_INFO("I heard: [%s]", order.order_id);
+}
+
 int main(int argc, char ** argv) {
     ros::init(argc, argv, "rwa3_node");
     ros::NodeHandle node;
@@ -47,6 +51,8 @@ int main(int argc, char ** argv) {
 
     std::string c_state = comp.getCompetitionState();
     comp.getClock();
+
+    ros::Subscriber order_sub = node.subscribe("/ariac/orders", 1000, orderCallback);
 
     GantryControl gantry(node);
     gantry.init();
