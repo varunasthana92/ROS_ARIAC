@@ -36,8 +36,25 @@
 
 #include <tf2/LinearMath/Quaternion.h>
 
-void orderCallback(const nist_gear::Order& order) {
-    ROS_INFO("I heard: [%s]", order.order_id);
+void orderCallback(const nist_gear::Order& ordermsg) {
+    Order order;
+    Product product;
+    Shipment shipment;
+    order.order_id = ordermsg.order_id;
+    for(const auto ship: ordermsg.shipments) {
+        shipment.shipment_type = ship.shipment_type;
+        shipment.agv_id = ship.agv_id;
+        for(const auto prod: ship.products) {
+            product.type = prod.type;
+            // product.pose = prod.pose;
+            shipment.products.emplace_back(product);
+        }
+        order.shipments.push_back(shipment);
+    }
+    ROS_INFO_STREAM("I heard: " << order.order_id);
+    for(auto s: order.shipments) {
+        ROS_INFO_STREAM("Order type: " << s.shipment_type);
+    }
 }
 
 int main(int argc, char ** argv) {
