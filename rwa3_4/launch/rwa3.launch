@@ -36,5 +36,5 @@
 <!--    </include>-->
 <!--  </group>-->
   
-  <!-- <node name="rwa3_node" pkg="rwa3_kootbally" type="rwa3_node" output="screen"/> -->
+  <node name="rwa3_node" pkg="rwa3_4" type="rwa3_node" output="screen"/>
 </launch>
