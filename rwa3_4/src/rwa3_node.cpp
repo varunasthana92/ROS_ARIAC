@@ -15,6 +15,8 @@
 
 #include <algorithm>
 #include <vector>
+#include <string>
+#include <unordered_map>
 
 #include <ros/ros.h>
 
@@ -28,6 +30,7 @@
 #include <std_srvs/Trigger.h>
 #include <tf2_ros/transform_listener.h>
 #include <geometry_msgs/TransformStamped.h>
+#include <geometry_msgs/Pose.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h> //--needed for tf2::Matrix3x3
 
 #include "competition.h"
@@ -57,45 +60,105 @@ void orderCallback(const nist_gear::Order& ordermsg) {
     }
 }
 
+
+struct similarParts{
+    Part* parts_data;
+    struct similarParts* next;
+};
+
+class allStaticParts{
+private:
+    std::unordered_map<std::string, similarParts* > map;
+public:
+    Part* getPart(std::string name){
+        if(map.find(name) != map.end()){
+            similarParts* temp = map[name];
+            if(temp != NULL){
+                map[name] = temp->next;
+            }
+            Part* data = temp->parts_data;
+            delete(temp);
+            temp = NULL;
+            return data;
+        }else{
+            return NULL;
+        }
+    }
+
+    void setPart(similarParts* data){
+        std::string name = data->parts_data->type;
+        if(map.find(name) != map.end()){
+            data->next = map[name];
+        }
+        map[name] = data;
+        return;
+    }
+};
+
+
 class Build{
 private:
-    part part2pick;
+    std::string pick;
+    allStaticParts non_moving_part_data;
+    bool callBackOnce[16];   // for 16 logical cameras, not including onveyor belt camera cam_id = 1
 
 public:
 
-    void logical_camera_callback(const nist_gear::LogicalCameraImage::ConstPtr & msg, int cam_id){
-        ros::Duration timeout(5.0);
-        tf2_ros::Buffer tfBuffer;
-        tf2_ros::TransformListener tfListener(tfBuffer);
-        int i=1, part_idx=1;
-        while (i < msg->models.size()){
-          if (i!=1 && msg->models[i].type != msg->models[i-1].type) {
-            part_idx=1;
-          }
-          std::string frame_name = "logical_camera_" + std::to_string(cam_id) + "_" + msg->models[i].type + "_" + std::to_string(part_idx) + "_frame";
-          i++;
-          part_idx++;
-          geometry_msgs::TransformStamped transformStamped;
-          transformStamped = tfBuffer.lookupTransform("world", frame_name, ros::Time(0), timeout);
-          tf2::Quaternion q(
-            transformStamped.transform.rotation.x,
-            transformStamped.transform.rotation.y,
-            transformStamped.transform.rotation.z,
-            transformStamped.transform.rotation.w);
-          tf2::Matrix3x3 m(q);
-          double roll, pitch, yaw;
-          m.getRPY(roll, pitch, yaw);
-        
-        ROS_INFO("%s in world frame : [%.2f,%.2f,%.2f] [%.2f,%.2f,%.2f]", frame_name.c_str(), transformStamped.transform.translation.x,
-          transformStamped.transform.translation.y,
-          transformStamped.transform.translation.z,
-          roll,
-          pitch,
-          yaw);
+    Build(){
+        for(int i = 0; i < 16; ++i){
+            callBackOnce[i] = true;
         }
-        ROS_INFO_STREAM("------------------------------------------");
-      }
-}
+    }
+
+    void logical_camera_callback(const nist_gear::LogicalCameraImage::ConstPtr & msg, int cam_id){
+        if( cam_id == 1 || callBackOnce[cam_id-2]){
+            ros::Duration timeout(5.0);
+            tf2_ros::Buffer tfBuffer;
+            tf2_ros::TransformListener tfListener(tfBuffer);
+            int i=1, part_idx=1;
+
+            while (i < msg->models.size()){
+                std::string partName = msg->models[i].type;
+                if (i!=1 && msg->models[i].type != msg->models[i-1].type) {
+                    part_idx=1;
+                }
+
+                Part* detected_part = new(Part);
+                detected_part->type = partName;
+                detected_part->pose = msg->models[i].pose;
+                detected_part->id = std::to_string(part_idx);
+                detected_part->state = FREE;        
+
+                std::string frame_name = "logical_camera_" + std::to_string(cam_id) + "_" + msg->models[i].type + "_" + std::to_string(part_idx) + "_frame";
+                
+                detected_part->frame = frame_name;
+                i++;
+                part_idx++;
+                geometry_msgs::TransformStamped transformStamped;
+                transformStamped = tfBuffer.lookupTransform("world", frame_name, ros::Time(0), timeout);
+                // tf2::Quaternion q(  transformStamped.transform.rotation.x,
+                //                     transformStamped.transform.rotation.y,
+                //                     transformStamped.transform.rotation.z,
+                //                     transformStamped.transform.rotation.w);
+                // tf2::Matrix3x3 m(q);
+                // double roll, pitch, yaw;
+                // m.getRPY(roll, pitch, yaw);
+                detected_part->time_stamp = ros::Time(0);
+                detected_part->save_pose.position.x = transformStamped.transform.translation.x;
+                detected_part->save_pose.position.y = transformStamped.transform.translation.y;
+                detected_part->save_pose.position.z = transformStamped.transform.translation.z;
+                detected_part->save_pose.orientation = transformStamped.transform.rotation;
+
+                similarParts* data = new(similarParts);
+                data->parts_data = detected_part;
+                data->next = NULL;
+                non_moving_part_data.setPart(data);
+            }
+            callBackOnce[cam_id - 2] = false;
+        }
+        return;
+    }
+};
 
 
 int main(int argc, char ** argv) {
