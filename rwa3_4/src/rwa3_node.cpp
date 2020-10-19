@@ -40,6 +40,47 @@ void orderCallback(const nist_gear::Order& order) {
     ROS_INFO("I heard: [%s]", order.order_id);
 }
 
+class Build{
+private:
+    part part2pick;
+
+public:
+
+    void logical_camera_callback(const nist_gear::LogicalCameraImage::ConstPtr & msg, int cam_id){
+        ros::Duration timeout(5.0);
+        tf2_ros::Buffer tfBuffer;
+        tf2_ros::TransformListener tfListener(tfBuffer);
+        int i=1, part_idx=1;
+        while (i < msg->models.size()){
+          if (i!=1 && msg->models[i].type != msg->models[i-1].type) {
+            part_idx=1;
+          }
+          std::string frame_name = "logical_camera_" + std::to_string(cam_id) + "_" + msg->models[i].type + "_" + std::to_string(part_idx) + "_frame";
+          i++;
+          part_idx++;
+          geometry_msgs::TransformStamped transformStamped;
+          transformStamped = tfBuffer.lookupTransform("world", frame_name, ros::Time(0), timeout);
+          tf2::Quaternion q(
+            transformStamped.transform.rotation.x,
+            transformStamped.transform.rotation.y,
+            transformStamped.transform.rotation.z,
+            transformStamped.transform.rotation.w);
+          tf2::Matrix3x3 m(q);
+          double roll, pitch, yaw;
+          m.getRPY(roll, pitch, yaw);
+        
+        ROS_INFO("%s in world frame : [%.2f,%.2f,%.2f] [%.2f,%.2f,%.2f]", frame_name.c_str(), transformStamped.transform.translation.x,
+          transformStamped.transform.translation.y,
+          transformStamped.transform.translation.z,
+          roll,
+          pitch,
+          yaw);
+        }
+        ROS_INFO_STREAM("------------------------------------------");
+      }
+}
+
+
 int main(int argc, char ** argv) {
     ros::init(argc, argv, "rwa3_node");
     ros::NodeHandle node;
