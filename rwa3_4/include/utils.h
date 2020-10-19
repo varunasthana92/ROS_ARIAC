@@ -97,7 +97,7 @@ typedef struct Product {
     int correction_attempts;
     int service_attempts;
 
-    Product(); // contructor
+    // Product(); // contructor
 } product;
 
 typedef struct Order {
