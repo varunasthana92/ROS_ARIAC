@@ -90,7 +90,7 @@ models_over_shelves:
         xyz_start: [1, 0.4, 0.0]
         xyz_end: [0., 0.4, 0.0]
         rpy: [0, 0, 0]
-        num_models_x: 2
+        num_models_x: 1
         num_models_y: 1
 
 #Faulty products
