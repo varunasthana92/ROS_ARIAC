@@ -62,6 +62,15 @@ class GantryControl {
     void deactivateGripper(std::string gripper_id);
     void gantryGo(PresetLocation location);
     void gantryCome(PresetLocation location);
+
+    bool move2start ( float x, float y );
+    float move2trg ( float x, float y);
+
+    geometry_msgs::Pose getRobotPose(){
+      return full_robot_group_.getCurrentPose().pose;
+
+    }
+
     nist_gear::VacuumGripperState getGripperState(std::string arm_name);
     geometry_msgs::Pose getTargetWorldPose(geometry_msgs::Pose target, std::string agv);
     //--preset locations;

@@ -100,8 +100,15 @@ int main(int argc, char ** argv) {
         for(auto &product: shipment.products) {
             buildObj.queryPart(product);
             ROS_INFO_STREAM("For product " << product.tray << " cam " << product.p.camFrame);
-            ROS_INFO_STREAM("Preloc size " << gantry.preLoc.size()) ;
-            gantry.gantryGo(gantry.preLoc[product.p.camFrame]);
+            // ROS_INFO_STREAM("Preloc size " << gantry.preLoc.size());
+            ROS_INFO_STREAM("Position of trg y:" << product.p.pose.position.y);
+            float Y_pose = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y );
+            // gantry.gantryGo(gantry.preLoc[product.p.camFrame]);
+            gantry.pickPart(product.p);
+            geometry_msgs::Pose robot_pose = gantry.getRobotPose();
+            gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose  );
+            // gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
+            gantry.placePart(product.p, product.tray);
             gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
         }
     }
