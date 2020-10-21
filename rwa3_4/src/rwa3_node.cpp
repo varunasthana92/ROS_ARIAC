@@ -70,7 +70,8 @@ class allStaticParts{
 private:
     std::unordered_map<std::string, similarParts* > map;
 public:
-    Part* getPart(std::string name){
+    int getPart(Product prod){
+        std::string name = prod.type;
         if(map.find(name) != map.end()){
             similarParts* temp = map[name];
             if(temp != NULL){
@@ -78,10 +79,10 @@ public:
             }
             Part* data = temp->parts_data;
             delete(temp);
-            temp = NULL;
-            return data;
+            prod.p = *data;
+            return 1;
         }else{
-            return NULL;
+            return 0;
         }
     }
 
@@ -96,7 +97,7 @@ public:
 };
 
 
-class Build{
+class BuildClass{
 private:
     std::string pick;
     allStaticParts non_moving_part_data;
@@ -104,14 +105,21 @@ private:
 
 public:
 
-    Build(){
+    BuildClass(){
         for(int i = 0; i < 16; ++i){
             callBackOnce[i] = true;
         }
     }
 
+    int queryPart(Product prod){
+        return non_moving_part_data.getPart(prod);
+    }
     void logical_camera_callback(const nist_gear::LogicalCameraImage::ConstPtr & msg, int cam_id){
-        if( cam_id == 1 || callBackOnce[cam_id-2]){
+        std::cout <<" logial cam id: " << cam_id << "\n";
+        if(cam_id == 1)
+            return;
+        
+        if( callBackOnce[cam_id-2]){
             ros::Duration timeout(5.0);
             tf2_ros::Buffer tfBuffer;
             tf2_ros::TransformListener tfListener(tfBuffer);
@@ -131,7 +139,7 @@ public:
 
                 std::string frame_name = "logical_camera_" + std::to_string(cam_id) + "_" + msg->models[i].type + "_" + std::to_string(part_idx) + "_frame";
                 
-                detected_part->frame = frame_name;
+                detected_part->frame = "logical_camera_" + std::to_string(cam_id);
                 i++;
                 part_idx++;
                 geometry_msgs::TransformStamped transformStamped;
@@ -167,6 +175,36 @@ int main(int argc, char ** argv) {
     ros::AsyncSpinner spinner(50);
     spinner.start();
 
+    std::vector<std::string> logical_camera_topics {
+      "/ariac/logical_camera_1",
+      "/ariac/logical_camera_2",
+      "/ariac/logical_camera_3",
+      "/ariac/logical_camera_4",
+      "/ariac/logical_camera_5",
+      "/ariac/logical_camera_6",
+      "/ariac/logical_camera_7",
+      "/ariac/logical_camera_8",
+      "/ariac/logical_camera_9",
+      "/ariac/logical_camera_10",
+      "/ariac/logical_camera_11",
+      "/ariac/logical_camera_12",
+      "/ariac/logical_camera_13",
+      "/ariac/logical_camera_14",
+      "/ariac/logical_camera_15",
+      "/ariac/logical_camera_16",
+      "/ariac/logical_camera_17"
+      };
+    std::vector<ros::Subscriber> logical_cam_subscribers;
+    int i=0;
+    BuildClass buildObj;
+    logical_cam_subscribers.resize(17);
+    for(int i=0; i<17; i++) {
+    logical_cam_subscribers[i] = node.subscribe<nist_gear::LogicalCameraImage>( logical_camera_topics[i], 10, 
+                                                                          boost::bind(&BuildClass::logical_camera_callback,
+                                                                                      &buildObj, _1, i+1));
+    }
+
+    
     Competition comp(node);
     comp.init();
 
@@ -175,9 +213,20 @@ int main(int argc, char ** argv) {
 
     ros::Subscriber order_sub = node.subscribe("/ariac/orders", 1000, orderCallback);
 
+
     GantryControl gantry(node);
     gantry.init();
     gantry.goToPresetLocation(gantry.start_);
+
+    // ros::spinOnce();
+    // int readPart = buildObj.non_moving_part_data.getPart("disk_part_blue");
+    // if(readPart){
+    //     std::cout << " PArt read \n";
+    //     std::cout << readPart->type;
+    //     return 0;
+    // }
+    // std::cout<<"not read parts\n";
+    // return 0;
 
     //--1-Read order
     //--2-Look for parts in this order
