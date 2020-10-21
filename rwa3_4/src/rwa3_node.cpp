@@ -91,19 +91,20 @@ int main(int argc, char ** argv) {
 
     
 
-    ros::spinOnce();
-    std::cout<<" Part queried: " << buildObj.order_recieved.shipments[0].products[0].type << "\n";
-    int readPart = buildObj.queryPart(buildObj.order_recieved.shipments[0].products[0]);
-    if(readPart){
-        std::cout << " first time Part read \n";
-        std::cout << buildObj.order_recieved.shipments[0].products[0].p.frame <<std::endl;
-        std::cout << buildObj.order_recieved.shipments[0].products[0].p.type <<std::endl;
-        std::cout << buildObj.order_recieved.shipments[0].products[0].p.pose <<std::endl;
-    }
-    else{
-        std::cout << " NOT read \n";
-        return 0;
-    }
+    // ros::spinOnce();
+    // std::cout<<" Part queried: " << buildObj.order_recieved.shipments[0].products[0].type << "\n";
+    // int readPart = buildObj.queryPart(buildObj.order_recieved.shipments[0].products[0]);
+    // if(readPart){
+    //     std::cout << " first time Part read \n";
+    //     std::cout << buildObj.order_recieved.shipments[0].products[0].p.frame <<std::endl;
+    //     std::cout << buildObj.order_recieved.shipments[0].products[0].p.type <<std::endl;
+    //     std::cout << buildObj.order_recieved.shipments[0].products[0].p.pose <<std::endl;
+    // }
+    // else{
+    //     std::cout << " NOT read \n";
+    //     return 0;
+    // }
+
     //--1-Read order
     //--2-Look for parts in this order
     //--We go to this bin because a camera above
@@ -124,6 +125,14 @@ int main(int argc, char ** argv) {
             // std::cout<< "\n x = "<< gantry.preLoc[my_part.camFrame].gantry[0]<<"\n";
 
             gantry.goToPresetLocation(gantry.cam4_);
+
+            PresetLocation tempPose = gantry.cam4_;
+            tempPose.gantry[0] = my_part.pose.position.x - 0.4;
+            tempPose.gantry[1] = -my_part.pose.position.y;
+
+            std::cout << "\n Now moving to part: x= " << my_part.pose.position.x;
+            std::cout << "\n Now moving to part: y= " << my_part.pose.position.y;
+            gantry.goToPresetLocation(tempPose);
             std::cout << " ###### check = " << my_part.camFrame << "\n";
             part part_in_tray;
             part_in_tray.pose = currProd.pose;

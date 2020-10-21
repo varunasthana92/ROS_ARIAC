@@ -78,7 +78,7 @@ void BuildClass::logical_camera_callback(const nist_gear::LogicalCameraImage::Co
             detected_part->camFrame = cam_id;        
 
             std::string frame_name = "logical_camera_" + std::to_string(cam_id) + "_" + msg->models[i].type + "_" + std::to_string(part_idx) + "_frame";
-            std::cout<< "\n" <<frame_name <<"\n";
+            // std::cout<< "\n" <<frame_name <<"\n";
             detected_part->frame = "logical_camera_" + std::to_string(cam_id);
             i++;
             part_idx++;
