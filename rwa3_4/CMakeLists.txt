@@ -160,6 +160,7 @@ add_executable(rwa3_node
         src/competition.cpp
         src/gantry_control.cpp
         src/utils.cpp
+        src/orderBuild.cpp
         )
 
 ## Rename C++ executable without prefix
