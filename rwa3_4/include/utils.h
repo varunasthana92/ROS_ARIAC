@@ -65,7 +65,7 @@ typedef struct Part {
   ros::Time time_stamp;
   std::string id;
   PartStates state; // model state (enum PartStates)
-  bool faulty;
+  bool faulty = false;
 } part;
 
 typedef struct Position {
