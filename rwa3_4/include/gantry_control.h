@@ -60,6 +60,8 @@ class GantryControl {
     void rotate_gantry(double angle);
     void activateGripper(std::string gripper_id);
     void deactivateGripper(std::string gripper_id);
+    void gantryGo(PresetLocation location);
+    void gantryCome(PresetLocation location);
     nist_gear::VacuumGripperState getGripperState(std::string arm_name);
     geometry_msgs::Pose getTargetWorldPose(geometry_msgs::Pose target, std::string agv);
     //--preset locations;

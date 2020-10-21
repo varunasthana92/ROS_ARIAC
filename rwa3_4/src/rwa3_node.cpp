@@ -101,34 +101,30 @@ int main(int argc, char ** argv) {
             buildObj.queryPart(product);
             ROS_INFO_STREAM("For product " << product.tray << " cam " << product.p.camFrame);
             ROS_INFO_STREAM("Preloc size " << gantry.preLoc.size()) ;
-            gantry.goToPresetLocation(gantry.preLoc[product.p.camFrame]);
+            gantry.gantryGo(gantry.preLoc[product.p.camFrame]);
+            gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
         }
     }
-    // exit(0);
-    for(int i =0; i < buildObj.order_recieved.shipments.size(); ++i){
-        for(int j =0; j < buildObj.order_recieved.shipments[i].products.size(); ++j){
-            Product currProd = buildObj.order_recieved.shipments[i].products[j];
-            buildObj.queryPart(currProd);
-            Part my_part = currProd.p;
-                        
-            gantry.goToPresetLocation(gantry.cam4_);
+    exit(0);
+    // for(int i =0; i < buildObj.order_recieved.shipments.size(); ++i){
+    //     for(int j =0; j < buildObj.order_recieved.shipments[i].products.size(); ++j){
+    //         ProdGantryControl
+    //         PresetLocation tempPose = gantry.cam4_;
+    //         tempPose.gantry[0] = my_part.pose.position.x - 0.4;
+    //         tempPose.gantry[1] = -my_part.pose.position.y;
 
-            PresetLocation tempPose = gantry.cam4_;
-            tempPose.gantry[0] = my_part.pose.position.x - 0.4;
-            tempPose.gantry[1] = -my_part.pose.position.y;
+    //         gantry.goToPresetLocation(tempPose);
+    //         part part_in_tray;
+    //         part_in_tray.pose = currProd.pose;
 
-            gantry.goToPresetLocation(tempPose);
-            part part_in_tray;
-            part_in_tray.pose = currProd.pose;
+    //         gantry.pickPart(my_part);
 
-            gantry.pickPart(my_part);
-
-            std::string agv_to_build =  buildObj.order_recieved.shipments[i].agv_id;
-            gantry.placePart(buildObj.order_recieved.shipments[i].products[j].p, "agv2");
-            int temp;
-            std::cin >> temp;
-        }
-    }
+    //         std::string agv_to_build =  buildObj.order_recieved.shipments[i].agv_id;
+    //         gantry.placePart(buildObj.order_recieved.shipments[i].products[j].p, "agv2");
+    //         int temp;
+    //         std::cin >> temp;
+    //     }
+    // }
     // gantry.goToPresetLocation(gantry.bin3_);
 
 

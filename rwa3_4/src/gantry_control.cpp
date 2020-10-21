@@ -39,6 +39,17 @@ void GantryControl::setPrelocations() {
     preLoc[2] = cam2_;
     preLoc[3] = cam3_;
     preLoc[4] = cam4_;
+    preLoc[5] = cam5_;
+    preLoc[6] = cam6_;
+    preLoc[7] = cam7_;
+    preLoc[8] = cam8_;
+    preLoc[9] = cam9_;
+    preLoc[10] = cam10_;
+    preLoc[11] = cam11_;
+    preLoc[12] = cam12_;
+    preLoc[13] = cam13_;
+    preLoc[14] = cam14_;
+    preLoc[15] = cam15_;
 }
 
 void GantryControl::init() {
@@ -77,7 +88,7 @@ void GantryControl::init() {
     // cam1_.gantry = {3.104, 1.80, 0.};
     // cam1_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     // cam1_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
-
+    
     cam2_.gantry = {3.0208, -1.7029, 0.};
     cam2_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     cam2_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
@@ -93,6 +104,46 @@ void GantryControl::init() {
     cam5_.gantry = {3.104, 1.80, 0.};
     cam5_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     cam5_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+
+    cam6_.gantry = {-15.77, 1.5, 0.};
+    cam6_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    cam6_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+
+    cam7_.gantry = {-13.77, 1.5, 0.};
+    cam7_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    cam7_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    
+    cam8_.gantry = {-15.77, -4.20, 0.};
+    cam8_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    cam8_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+
+    cam9_.gantry = {-13.77, -4.20, 0.};
+    cam9_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    cam9_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+
+    cam10_.gantry = {-15.77, 4.3, 0.};
+    cam10_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    cam10_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+
+    cam11_.gantry = {-13.77, 4.3, 0.};
+    cam11_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    cam11_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+
+    cam12_.gantry = {4.93, 4.75, 0.};
+    cam12_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    cam12_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+
+    cam13_.gantry = {2.9, 4.75, 0.};
+    cam13_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    cam13_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    
+    cam14_.gantry = {4.9, -4.7, 0.};
+    cam14_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    cam14_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+
+    cam15_.gantry = {2.85, -4.7, 0.};
+    cam15_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    cam15_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
     setPrelocations();
     //--Raw pointers are frequently used to refer to the planning group for improved performance.
     //--To start, we will create a pointer that references the current robot’s state.
@@ -351,6 +402,29 @@ void GantryControl::placePart(part part, std::string agv){
     auto state = getGripperState("left_arm");
     if (state.attached)
         goToPresetLocation(start_);
+}
+
+void GantryControl::gantryGo(PresetLocation location) {
+    double x,y,a;
+    x = location.gantry[0];
+    y = location.gantry[1];
+    a = location.gantry[2];
+    location.gantry[0] = 0;
+    location.gantry[2] = 0;
+    goToPresetLocation(location);
+    location.gantry[0] = x;
+    goToPresetLocation(location);
+    location.gantry[2] = a;
+    goToPresetLocation(location);
+}
+
+void GantryControl::gantryCome(PresetLocation location) {
+    location.gantry[0] = 0;
+    goToPresetLocation(location);
+    location.gantry[1] = 0;
+    goToPresetLocation(location);
+    location.gantry[2] = 0;
+    goToPresetLocation(location);
 }
 
 void GantryControl::goToPresetLocation(PresetLocation location) {
