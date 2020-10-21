@@ -89,59 +89,42 @@ int main(int argc, char ** argv) {
     gantry.init();
     gantry.goToPresetLocation(gantry.start_);
 
-    
-
     // ros::spinOnce();
-    // std::cout<<" Part queried: " << buildObj.order_recieved.shipments[0].products[0].type << "\n";
-    // int readPart = buildObj.queryPart(buildObj.order_recieved.shipments[0].products[0]);
-    // if(readPart){
-    //     std::cout << " first time Part read \n";
-    //     std::cout << buildObj.order_recieved.shipments[0].products[0].p.frame <<std::endl;
-    //     std::cout << buildObj.order_recieved.shipments[0].products[0].p.type <<std::endl;
-    //     std::cout << buildObj.order_recieved.shipments[0].products[0].p.pose <<std::endl;
-    // }
-    // else{
-    //     std::cout << " NOT read \n";
-    //     return 0;
-    // }
 
     //--1-Read order
     //--2-Look for parts in this order
     //--We go to this bin because a camera above
     //--this bin found one of the parts in the order
 
+    for(auto &shipment: buildObj.order_recieved.shipments) {
+        for(auto &product: shipment.products) {
+            buildObj.queryPart(product);
+            ROS_INFO_STREAM("For product " << product.tray << " cam " << product.p.camFrame);
+            ROS_INFO_STREAM("Preloc size " << gantry.preLoc.size()) ;
+            gantry.goToPresetLocation(gantry.preLoc[product.p.camFrame]);
+        }
+    }
+    // exit(0);
     for(int i =0; i < buildObj.order_recieved.shipments.size(); ++i){
-
         for(int j =0; j < buildObj.order_recieved.shipments[i].products.size(); ++j){
             Product currProd = buildObj.order_recieved.shipments[i].products[j];
             buildObj.queryPart(currProd);
             Part my_part = currProd.p;
-            // preset locations
-
-            // auto check  = gantry.preLoc[my_part.camFrame];
-            std::cout << " %%%%%%% check = " << my_part.camFrame << "\n";
-            // gantry.goToPresetLocation(gantry.bin3_);
-
-            // std::cout<< "\n x = "<< gantry.preLoc[my_part.camFrame].gantry[0]<<"\n";
-
+                        
             gantry.goToPresetLocation(gantry.cam4_);
 
             PresetLocation tempPose = gantry.cam4_;
             tempPose.gantry[0] = my_part.pose.position.x - 0.4;
             tempPose.gantry[1] = -my_part.pose.position.y;
 
-            std::cout << "\n Now moving to part: x= " << my_part.pose.position.x;
-            std::cout << "\n Now moving to part: y= " << my_part.pose.position.y;
             gantry.goToPresetLocation(tempPose);
-            std::cout << " ###### check = " << my_part.camFrame << "\n";
             part part_in_tray;
             part_in_tray.pose = currProd.pose;
 
             gantry.pickPart(my_part);
 
             std::string agv_to_build =  buildObj.order_recieved.shipments[i].agv_id;
-            gantry.placePart(part_in_tray, "agv2");
-            std::cout<< "####### ENTER ########### ";
+            gantry.placePart(buildObj.order_recieved.shipments[i].products[j].p, "agv2");
             int temp;
             std::cin >> temp;
         }
@@ -171,9 +154,9 @@ int main(int argc, char ** argv) {
     // part_in_tray.pose.orientation.z = 0.0;
     // part_in_tray.pose.orientation.w = 1.0;
 
-    // --Go pick the part
+    // // --Go pick the part
     // gantry.pickPart(my_part);
-    // --Go place the part
+    // // --Go place the part
     // gantry.placePart(part_in_tray, "agv2");
 
     comp.endCompetition();

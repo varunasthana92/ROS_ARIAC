@@ -57,7 +57,7 @@ class GantryControl {
     /// Send command message to robot controller
     bool send_command(trajectory_msgs::JointTrajectory command_msg);
     void goToPresetLocation(PresetLocation location);
-
+    void rotate_gantry(double angle);
     void activateGripper(std::string gripper_id);
     void deactivateGripper(std::string gripper_id);
     nist_gear::VacuumGripperState getGripperState(std::string arm_name);
@@ -72,7 +72,8 @@ class GantryControl {
     cam13 cam13_; cam14 cam14_; cam15 cam15_; cam16 cam16_;
     cam17 cam17_;
     static const int num_preLoc = 20;
-    PresetLocation preLoc[num_preLoc] = {start_, cam1_, cam2_, cam3_, cam4_, cam5_, 
+    void setPrelocations();
+    std::vector<PresetLocation> preLoc = {start_, cam1_, cam2_, cam3_, cam4_, cam5_, 
                                         cam6_, cam7_, cam8_, cam9_, cam10_, cam11_,
                                         cam12_, cam13_, cam14_, cam15_, cam16_,
                                         cam17_, agv1_, agv2_};

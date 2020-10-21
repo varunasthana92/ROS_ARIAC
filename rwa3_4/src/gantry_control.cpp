@@ -21,6 +21,25 @@ GantryControl::GantryControl(ros::NodeHandle & node):
     ROS_INFO_STREAM("[GantryControl::GantryControl] constructor called... ");
 }
 
+void GantryControl::rotate_gantry(double angle) {
+    trajectory_msgs::JointTrajectory command_msg;
+    trajectory_msgs::JointTrajectoryPoint points;
+    points.positions = current_gantry_controller_state_.actual.positions;
+    points.positions[1] = angle;
+    command_msg.joint_names.push_back("small_long_joint");
+    command_msg.joint_names.push_back("torso_base_main_joint");
+    command_msg.joint_names.push_back("torso_rail_joint");
+    command_msg.points.push_back(points);
+    send_command(command_msg);
+}
+
+void GantryControl::setPrelocations() {
+    preLoc[0] = start_;
+    preLoc[1] = cam1_;
+    preLoc[2] = cam2_;
+    preLoc[3] = cam3_;
+    preLoc[4] = cam4_;
+}
 
 void GantryControl::init() {
     ROS_INFO_STREAM("[GantryControl::init] init... ");
@@ -47,7 +66,11 @@ void GantryControl::init() {
     bin3_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     bin3_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    agv2_.gantry = {4.0, -1.1, 0.};
+    agv1_.gantry = {-0.6, 6.9, 0.};
+    agv1_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    agv1_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+
+    agv2_.gantry = {0.6, 6.9, PI};
     agv2_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     agv2_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
@@ -62,7 +85,7 @@ void GantryControl::init() {
     cam3_.gantry = {4.9927, -1.7029, 0.};
     cam3_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     cam3_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
-
+    // Cam 4
     cam4_.gantry = {5.1227, 1.7322, 0.};
     cam4_.left_arm = {0, -PI/4, PI/2, -PI/4, PI/2, 0};
     cam4_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
@@ -70,41 +93,7 @@ void GantryControl::init() {
     cam5_.gantry = {3.104, 1.80, 0.};
     cam5_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     cam5_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
-
-//    tf2_ros::Buffer tfBuffer;
-//    tf2_ros::TransformListener tfListener(tfBuffer);
-//    ros::Rate rate(10);
-//    ros::Duration timeout(5.0);
-//
-//
-//    geometry_msgs::TransformStamped transformStamped;
-//    for (int i=0; i< 10; i++) {
-//        try {
-//            transformStamped = tfBuffer.lookupTransform("world", "left_ee_link",
-//                                                        ros::Time(0), timeout);
-//        }
-//        catch (tf2::TransformException &ex) {
-//            ROS_WARN("%s", ex.what());
-//            ros::Duration(1.0).sleep();
-//            continue;
-//        }
-//    }
-
-
-    //--converting quaternions to rpy
-//        tf2::Quaternion q(
-//                transformStamped.transform.rotation.x,
-//                transformStamped.transform.rotation.y,
-//                transformStamped.transform.rotation.z,
-//                transformStamped.transform.rotation.w);
-
-//    left_ee_quaternion_.at(0) = transformStamped.transform.rotation.x;
-//    left_ee_quaternion_.at(1) = transformStamped.transform.rotation.y;
-//    left_ee_quaternion_.at(2) = transformStamped.transform.rotation.z;
-//    left_ee_quaternion_.at(3) = transformStamped.transform.rotation.w;
-
-
-
+    setPrelocations();
     //--Raw pointers are frequently used to refer to the planning group for improved performance.
     //--To start, we will create a pointer that references the current robot’s state.
     const moveit::core::JointModelGroup* joint_model_group =
@@ -270,12 +259,20 @@ bool GantryControl::pickPart(part part){
     if (state.enabled) {
         ROS_INFO_STREAM("[Gripper] = enabled");
         //--Move arm to part
+        part.pose.position.z += 0.2;
+        left_arm_group_.setPoseTarget(part.pose);
+        left_arm_group_.move();
+        part.pose.position.z -= 0.2;
         left_arm_group_.setPoseTarget(part.pose);
         left_arm_group_.move();
         auto state = getGripperState("left_arm");
         if (state.attached) {
             ROS_INFO_STREAM("[Gripper] = object attached");
             //--Move arm to previous position
+            part.pose.position.z += 0.2;
+            left_arm_group_.setPoseTarget(part.pose);
+            left_arm_group_.move();
+            part.pose.position.z -= 0.2;
             left_arm_group_.setPoseTarget(currentPose);
             left_arm_group_.move();
             goToPresetLocation(start_);
@@ -285,8 +282,12 @@ bool GantryControl::pickPart(part part){
             int max_attempts{5};
             int current_attempt{0};
             while(!state.attached) {
-                left_arm_group_.setPoseTarget(currentPose);
+                part.pose.position.z += 0.2;
+                left_arm_group_.setPoseTarget(part.pose);
                 left_arm_group_.move();
+                part.pose.position.z -= 0.2;
+                // left_arm_group_.setPoseTarget(par);
+                // left_arm_group_.move();
                 ros::Duration(0.5).sleep();
                 left_arm_group_.setPoseTarget(part.pose);
                 left_arm_group_.move();
@@ -334,9 +335,14 @@ bool GantryControl::pickPart(part part){
 }
 
 void GantryControl::placePart(part part, std::string agv){
-   auto target_pose_in_tray = getTargetWorldPose(part.pose, agv);
+    auto target_pose_in_tray = getTargetWorldPose(part.pose, agv);
+    ROS_INFO_STREAM("Settled tray pose:" << target_pose_in_tray.position.x << " " 
+                                         << target_pose_in_tray.position.y << " "
+                                         << target_pose_in_tray.position.z);
     ros::Duration(3.0).sleep();
     goToPresetLocation(agv2_);
+    ROS_INFO_STREAM("Trying to roate gantry");
+    rotate_gantry(4.8);
     target_pose_in_tray.position.z += (ABOVE_TARGET + 1.5*model_height[part.type]);
 
     left_arm_group_.setPoseTarget(target_pose_in_tray);

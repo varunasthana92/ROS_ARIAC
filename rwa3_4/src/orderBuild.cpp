@@ -40,6 +40,7 @@ void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {
         for(const auto &prod: ship.products) {
             product_recieved.type = prod.type;
             product_recieved.pose = prod.pose;
+            product_recieved.p.pose = prod.pose;
             shipment_recieved.products.emplace_back(product_recieved);
         }
         order_recieved.shipments.push_back(shipment_recieved);
@@ -48,7 +49,15 @@ void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {
     for(auto s: order_recieved.shipments) {
         ROS_INFO_STREAM("Order type: " << s.shipment_type);
     }
-}
+    ROS_INFO_STREAM("For first part agv : " << order_recieved.shipments[0].agv_id);
+    ROS_INFO_STREAM("For first part pose :" << order_recieved.shipments[0].products[0].p.pose.position.x << " "
+                                            << order_recieved.shipments[0].products[0].p.pose.position.y << " "
+                                            << order_recieved.shipments[0].products[0].p.pose.position.z << " "
+                                            << order_recieved.shipments[0].products[0].p.pose.orientation.x << " "
+                                            << order_recieved.shipments[0].products[0].p.pose.orientation.y << " "
+                                            << order_recieved.shipments[0].products[0].p.pose.orientation.z << " "
+                                            << order_recieved.shipments[0].products[0].p.pose.orientation.w);
+}   
 
 int BuildClass::queryPart(Product &prod){
     return non_moving_part_data.getPart(prod);
