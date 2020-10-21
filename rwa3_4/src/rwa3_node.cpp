@@ -91,15 +91,32 @@ int main(int argc, char ** argv) {
     gantry.init();
     gantry.goToPresetLocation(gantry.start_);
 
-    // ros::spinOnce();
-    // int readPart = buildObj.non_moving_part_data.getPart("disk_part_blue");
-    // if(readPart){
-    //     std::cout << " PArt read \n";
-    //     std::cout << readPart->type;
-    //     return 0;
-    // }
-    // std::cout<<"not read parts\n";
-    // return 0;
+    ros::spinOnce();
+    std::cout<<" Part queried: " << buildObj.order_recieved.shipments[0].products[0].type << "\n";
+    int readPart = buildObj.queryPart(buildObj.order_recieved.shipments[0].products[0]);
+    if(readPart){
+        std::cout << " first time Part read \n";
+        std::cout << buildObj.order_recieved.shipments[0].products[0].p.frame <<std::endl;
+        std::cout << buildObj.order_recieved.shipments[0].products[0].p.type <<std::endl;
+        std::cout << buildObj.order_recieved.shipments[0].products[0].p.save_pose <<std::endl;
+    }
+    readPart = buildObj.queryPart(buildObj.order_recieved.shipments[0].products[0]);
+    if(readPart){
+        std::cout << " second time Part read \n";
+        std::cout << buildObj.order_recieved.shipments[0].products[0].p.frame <<std::endl;
+        std::cout << buildObj.order_recieved.shipments[0].products[0].p.type <<std::endl;
+        std::cout << buildObj.order_recieved.shipments[0].products[0].p.save_pose <<std::endl;
+    }
+    
+    readPart = buildObj.queryPart(buildObj.order_recieved.shipments[0].products[0]);
+    if(readPart){
+        std::cout << " Part read \n";
+        std::cout << buildObj.order_recieved.shipments[0].products[0].p.frame <<std::endl;
+        std::cout << buildObj.order_recieved.shipments[0].products[0].p.type <<std::endl;
+        std::cout << buildObj.order_recieved.shipments[0].products[0].p.save_pose <<std::endl;
+    }
+    std::cout<<"not read parts\n";
+    return 0;
 
     //--1-Read order
     //--2-Look for parts in this order

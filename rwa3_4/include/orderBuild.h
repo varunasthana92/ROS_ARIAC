@@ -15,7 +15,7 @@ class allStaticParts{
 private:
     std::unordered_map<std::string, similarParts* > map;
 public:
-    int getPart(Product prod);
+    int getPart(Product &prod); //pass by reference
 
     void setPart(similarParts* data);
 };
@@ -27,16 +27,15 @@ private:
     allStaticParts non_moving_part_data;
     bool callBackOnce[16];   // for 16 logical cameras, not including onveyor belt camera cam_id = 1
 public:
-    void orderCallback(const nist_gear::Order& ordermsg);
+    Order order_recieved;
+public:
     BuildClass(){
         for(int i = 0; i < 16; ++i){
             callBackOnce[i] = true;
         }
     }
-
-    int queryPart(Product prod){
-        return non_moving_part_data.getPart(prod);
-    }
+    void orderCallback(const nist_gear::Order& ordermsg);
+    int queryPart(Product &prod);    // pass by reference
     void logical_camera_callback(const nist_gear::LogicalCameraImage::ConstPtr & msg, int cam_id);
 };
 
