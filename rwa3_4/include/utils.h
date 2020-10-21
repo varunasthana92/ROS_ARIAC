@@ -49,12 +49,18 @@ enum PartStates {FREE, BOOKED, UNREACHABLE, ON_TRAY, GRIPPED, GOING_HOME,
   REMOVE_FROM_TRAY, LOST};
 
 
+enum WayPoints {START, CAM1, CAM2, CAM3, CAM4, CAM5, CAM6, CAM7,
+                CAM8, CAM9, CAM10, CAM11, CAM12, CAM13, CAM14,
+                CAM15, CAM16, CAM17, AGV1, AGV2};
+
 
 typedef struct PresetLocation {
     std::vector<double> gantry;
     std::vector<double> left_arm;
     std::vector<double> right_arm;
-} start, bin3, agv2;
+} start, bin3, agv1, agv2, cam1, cam2, cam3, cam4,
+  cam5, cam6, cam7, cam8, cam9, cam10, cam11,
+  cam12, cam13, cam14, cam15, cam16, cam17;
 
 
 typedef struct Part {
@@ -62,6 +68,7 @@ typedef struct Part {
   geometry_msgs::Pose pose; // model pose (in frame)
   geometry_msgs::Pose save_pose;
   std::string frame; // model frame (e.g., "logical_camera_1_frame")
+  int camFrame;
   ros::Time time_stamp;
   std::string id;
   PartStates state; // model state (enum PartStates)

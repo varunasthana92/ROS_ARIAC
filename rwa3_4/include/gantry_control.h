@@ -65,7 +65,17 @@ class GantryControl {
     //--preset locations;
     start start_;
     bin3 bin3_;
-    agv2 agv2_;
+    agv1 agv1_; agv2 agv2_;
+    cam1 cam1_; cam4 cam2_; cam3 cam3_; cam4 cam4_;
+    cam5 cam5_; cam6 cam6_; cam7 cam7_; cam8 cam8_;
+    cam9 cam9_; cam10 cam10_; cam11 cam11_; cam12 cam12_;
+    cam13 cam13_; cam14 cam14_; cam15 cam15_; cam16 cam16_;
+    cam17 cam17_;
+    static const int num_preLoc = 20;
+    PresetLocation preLoc[num_preLoc] = {start_, cam1_, cam2_, cam3_, cam4_, cam5_, 
+                                        cam6_, cam7_, cam8_, cam9_, cam10_, cam11_,
+                                        cam12_, cam13_, cam14_, cam15_, cam16_,
+                                        cam17_, agv1_, agv2_};
 
   private:
     std::vector<double> joint_group_positions_;

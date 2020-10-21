@@ -43,16 +43,33 @@ void GantryControl::init() {
     start_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     start_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-
     bin3_.gantry = {4.0, -1.1, 0.};
     bin3_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     bin3_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    agv2_.gantry = {0.6, 6.9, PI};
+    agv2_.gantry = {4.0, -1.1, 0.};
     agv2_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     agv2_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
+    // cam1_.gantry = {3.104, 1.80, 0.};
+    // cam1_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam1_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
+    cam2_.gantry = {3.0208, -1.7029, 0.};
+    cam2_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    cam2_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+
+    cam3_.gantry = {4.9927, -1.7029, 0.};
+    cam3_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    cam3_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+
+    cam4_.gantry = {5.1227, 1.7322, 0.};
+    cam4_.left_arm = {0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    cam4_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+
+    cam5_.gantry = {3.104, 1.80, 0.};
+    cam5_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    cam5_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
 //    tf2_ros::Buffer tfBuffer;
 //    tf2_ros::TransformListener tfListener(tfBuffer);
@@ -262,7 +279,6 @@ bool GantryControl::pickPart(part part){
             left_arm_group_.setPoseTarget(currentPose);
             left_arm_group_.move();
             goToPresetLocation(start_);
-            return true;
         }
         else {
             ROS_INFO_STREAM("[Gripper] = object not attached");
@@ -277,6 +293,7 @@ bool GantryControl::pickPart(part part){
                 activateGripper("left_arm");
             }
         }
+        return true;
     }
     else {
         ROS_INFO_STREAM("[Gripper] = not enabled");
