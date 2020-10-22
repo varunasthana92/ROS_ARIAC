@@ -40,6 +40,7 @@ void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {
         for(const auto &prod: ship.products) {
             product_recieved.type = prod.type;
             product_recieved.pose = prod.pose;
+            product_recieved.p.pose = prod.pose;
             shipment_recieved.products.emplace_back(product_recieved);
         }
         order_recieved.shipments.push_back(shipment_recieved);
@@ -48,7 +49,15 @@ void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {
     for(auto s: order_recieved.shipments) {
         ROS_INFO_STREAM("Order type: " << s.shipment_type);
     }
-}
+    ROS_INFO_STREAM("For first part agv : " << order_recieved.shipments[0].agv_id);
+    ROS_INFO_STREAM("For first part pose :" << order_recieved.shipments[0].products[0].p.pose.position.x << " "
+                                            << order_recieved.shipments[0].products[0].p.pose.position.y << " "
+                                            << order_recieved.shipments[0].products[0].p.pose.position.z << " "
+                                            << order_recieved.shipments[0].products[0].p.pose.orientation.x << " "
+                                            << order_recieved.shipments[0].products[0].p.pose.orientation.y << " "
+                                            << order_recieved.shipments[0].products[0].p.pose.orientation.z << " "
+                                            << order_recieved.shipments[0].products[0].p.pose.orientation.w);
+}   
 
 int BuildClass::queryPart(Product &prod){
     return non_moving_part_data.getPart(prod);
@@ -72,38 +81,41 @@ void BuildClass::logical_camera_callback(const nist_gear::LogicalCameraImage::Co
 
             Part* detected_part = new(Part);
             detected_part->type = partName;
-            detected_part->pose = msg->models[i].pose;
+            detected_part->save_pose = msg->models[i].pose;
             detected_part->id = std::to_string(part_idx);
-            detected_part->state = FREE;        
+            detected_part->state = FREE;
+            detected_part->camFrame = cam_id;        
 
             std::string frame_name = "logical_camera_" + std::to_string(cam_id) + "_" + msg->models[i].type + "_" + std::to_string(part_idx) + "_frame";
-            std::cout<< "\n" <<frame_name <<"\n";
+            // std::cout<< "\n" <<frame_name <<"\n";
             detected_part->frame = "logical_camera_" + std::to_string(cam_id);
             i++;
             part_idx++;
             geometry_msgs::TransformStamped transformStamped;
-            transformStamped = tfBuffer.lookupTransform("world", frame_name, ros::Time(0), timeout);
-            // tf2::Quaternion q(  transformStamped.transform.rotation.x,
-            //                     transformStamped.transform.rotation.y,
-            //                     transformStamped.transform.rotation.z,
-            //                     transformStamped.transform.rotation.w);
-            // tf2::Matrix3x3 m(q);
-            // double roll, pitch, yaw;
-            // m.getRPY(roll, pitch, yaw);
-            detected_part->time_stamp = ros::Time(0);
-            detected_part->save_pose.position.x = transformStamped.transform.translation.x;
-            detected_part->save_pose.position.y = transformStamped.transform.translation.y;
-            detected_part->save_pose.position.z = transformStamped.transform.translation.z;
-            detected_part->save_pose.orientation = transformStamped.transform.rotation;
+            try{
 
-            similarParts* data = new(similarParts);
-            data->parts_data = detected_part;
-            data->next = NULL;
-            non_moving_part_data.setPart(data);
-            // if(cam_id == 9){
+                transformStamped = tfBuffer.lookupTransform("world", frame_name, ros::Time(0), timeout);
+                // tf2::Quaternion q(  transformStamped.transform.rotation.x,
+                //                     transformStamped.transform.rotation.y,
+                //                     transformStamped.transform.rotation.z,
+                //                     transformStamped.transform.rotation.w);
+                // tf2::Matrix3x3 m(q);
+                // double roll, pitch, yaw;
+                // m.getRPY(roll, pitch, yaw);
+                detected_part->time_stamp = ros::Time(0);
+                detected_part->pose.position.x = transformStamped.transform.translation.x;
+                detected_part->pose.position.y = transformStamped.transform.translation.y;
+                detected_part->pose.position.z = transformStamped.transform.translation.z;
+                detected_part->pose.orientation = transformStamped.transform.rotation;
 
-            //     std::cout<< " in callback: "<< data->parts_data->pose << std::endl;
-            // }
+                similarParts* data = new(similarParts);
+                data->parts_data = detected_part;
+                data->next = NULL;
+                non_moving_part_data.setPart(data);
+            }
+            catch (...) {
+                continue;
+            }
         }
         callBackOnce[cam_id - 2] = false;
     }

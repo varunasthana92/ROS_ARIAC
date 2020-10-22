@@ -51,21 +51,42 @@ class GantryControl {
 
 //    bool pickPart(part part, std::string arm_name);
     bool pickPart(part part);
-    void placePart(part part, std::string agv);
+    void placePart(part part, std::string agv, ros::NodeHandle node);
 
     
     /// Send command message to robot controller
     bool send_command(trajectory_msgs::JointTrajectory command_msg);
     void goToPresetLocation(PresetLocation location);
-
+    void rotate_gantry(double angle);
     void activateGripper(std::string gripper_id);
     void deactivateGripper(std::string gripper_id);
+    void gantryGo(PresetLocation location);
+    void gantryCome(PresetLocation location);
+    bool move2start ( float x, float y );
+    float move2trg ( float x, float y);
+
+    geometry_msgs::Pose getRobotPose(){
+      return full_robot_group_.getCurrentPose().pose;
+
+    }
+
     nist_gear::VacuumGripperState getGripperState(std::string arm_name);
     geometry_msgs::Pose getTargetWorldPose(geometry_msgs::Pose target, std::string agv);
     //--preset locations;
     start start_;
     bin3 bin3_;
-    agv2 agv2_;
+    agv1 agv1_; agv2 agv2_;
+    cam1 cam1_; cam4 cam2_; cam3 cam3_; cam4 cam4_;
+    cam5 cam5_; cam6 cam6_; cam7 cam7_; cam8 cam8_;
+    cam9 cam9_; cam10 cam10_; cam11 cam11_; cam12 cam12_;
+    cam13 cam13_; cam14 cam14_; cam15 cam15_; cam16 cam16_;
+    cam17 cam17_;
+    static const int num_preLoc = 20;
+    void setPrelocations();
+    std::vector<PresetLocation> preLoc = {start_, cam1_, cam2_, cam3_, cam4_, cam5_, 
+                                        cam6_, cam7_, cam8_, cam9_, cam10_, cam11_,
+                                        cam12_, cam13_, cam14_, cam15_, cam16_,
+                                        cam17_, agv1_, agv2_};
 
   private:
     std::vector<double> joint_group_positions_;

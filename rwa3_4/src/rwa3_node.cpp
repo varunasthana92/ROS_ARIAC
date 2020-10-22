@@ -42,6 +42,7 @@
 
 
 
+
 int main(int argc, char ** argv) {
     ros::init(argc, argv, "rwa3_node");
     ros::NodeHandle node;
@@ -68,7 +69,7 @@ int main(int argc, char ** argv) {
       "/ariac/logical_camera_17"
       };
     std::vector<ros::Subscriber> logical_cam_subscribers;
-    int i=0;
+
     BuildClass buildObj;
     logical_cam_subscribers.resize(17);
     for(int i=0; i<17; i++) {
@@ -76,8 +77,6 @@ int main(int argc, char ** argv) {
                                                                           boost::bind(&BuildClass::logical_camera_callback,
                                                                                       &buildObj, _1, i+1));
     }
-
-    
     Competition comp(node);
     comp.init();
 
@@ -85,72 +84,84 @@ int main(int argc, char ** argv) {
     comp.getClock();
 
     ros::Subscriber order_sub = node.subscribe("/ariac/orders", 1000, &BuildClass::orderCallback, &buildObj);
-
+    
 
     GantryControl gantry(node);
     gantry.init();
     gantry.goToPresetLocation(gantry.start_);
 
-    ros::spinOnce();
-    std::cout<<" Part queried: " << buildObj.order_recieved.shipments[0].products[0].type << "\n";
-    int readPart = buildObj.queryPart(buildObj.order_recieved.shipments[0].products[0]);
-    if(readPart){
-        std::cout << " first time Part read \n";
-        std::cout << buildObj.order_recieved.shipments[0].products[0].p.frame <<std::endl;
-        std::cout << buildObj.order_recieved.shipments[0].products[0].p.type <<std::endl;
-        std::cout << buildObj.order_recieved.shipments[0].products[0].p.save_pose <<std::endl;
-    }
-    readPart = buildObj.queryPart(buildObj.order_recieved.shipments[0].products[0]);
-    if(readPart){
-        std::cout << " second time Part read \n";
-        std::cout << buildObj.order_recieved.shipments[0].products[0].p.frame <<std::endl;
-        std::cout << buildObj.order_recieved.shipments[0].products[0].p.type <<std::endl;
-        std::cout << buildObj.order_recieved.shipments[0].products[0].p.save_pose <<std::endl;
-    }
-    
-    readPart = buildObj.queryPart(buildObj.order_recieved.shipments[0].products[0]);
-    if(readPart){
-        std::cout << " Part read \n";
-        std::cout << buildObj.order_recieved.shipments[0].products[0].p.frame <<std::endl;
-        std::cout << buildObj.order_recieved.shipments[0].products[0].p.type <<std::endl;
-        std::cout << buildObj.order_recieved.shipments[0].products[0].p.save_pose <<std::endl;
-    }
-    std::cout<<"not read parts\n";
-    return 0;
+    // ros::spinOnce();
 
     //--1-Read order
     //--2-Look for parts in this order
     //--We go to this bin because a camera above
     //--this bin found one of the parts in the order
-    gantry.goToPresetLocation(gantry.bin3_);
+
+    for(auto &shipment: buildObj.order_recieved.shipments) {
+        for(auto &product: shipment.products) {
+            buildObj.queryPart(product);
+            ROS_INFO_STREAM("For product " << product.tray << " cam " << product.p.camFrame);
+            // ROS_INFO_STREAM("Preloc size " << gantry.preLoc.size());
+            ROS_INFO_STREAM("Position of trg y:" << product.p.pose.position.y);
+            float Y_pose = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y );
+            // gantry.gantryGo(gantry.preLoc[product.p.camFrame]);
+            gantry.pickPart(product.p);
+            geometry_msgs::Pose robot_pose = gantry.getRobotPose();
+            gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose);
+            // gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
+            gantry.placePart(product.p, product.tray, node);
+            gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
+        }
+    }
+    exit(0);
+    // for(int i =0; i < buildObj.order_recieved.shipments.size(); ++i){
+    //     for(int j =0; j < buildObj.order_recieved.shipments[i].products.size(); ++j){
+    //         ProdGantryControl
+    //         PresetLocation tempPose = gantry.cam4_;
+    //         tempPose.gantry[0] = my_part.pose.position.x - 0.4;
+    //         tempPose.gantry[1] = -my_part.pose.position.y;
+
+    //         gantry.goToPresetLocation(tempPose);
+    //         part part_in_tray;
+    //         part_in_tray.pose = currProd.pose;
+
+    //         gantry.pickPart(my_part);
+
+    //         std::string agv_to_build =  buildObj.order_recieved.shipments[i].agv_id;
+    //         gantry.placePart(buildObj.order_recieved.shipments[i].products[j].p, "agv2");
+    //         int temp;
+    //         std::cin >> temp;
+    //     }
+    // }
+    // gantry.goToPresetLocation(gantry.bin3_);
 
 
-    //--You should receive the following information from a camera
-    part my_part;
-    my_part.type = "pulley_part_red";
-    my_part.pose.position.x = 4.365789;
-    my_part.pose.position.y = 1.173381;
-    my_part.pose.position.z = 0.728011;
-    my_part.pose.orientation.x = 0.012;
-    my_part.pose.orientation.y = -0.004;
-    my_part.pose.orientation.z = 0.002;
-    my_part.pose.orientation.w = 1.000;
+    // // --You should receive the following information from a camera
+    // part my_part;
+    // my_part.type = "pulley_part_red";
+    // my_part.pose.position.x = 4.365789;
+    // my_part.pose.position.y = 1.173381;
+    // my_part.pose.position.z = 0.728011;
+    // my_part.pose.orientation.x = 0.012;
+    // my_part.pose.orientation.y = -0.004;
+    // my_part.pose.orientation.z = 0.002;
+    // my_part.pose.orientation.w = 1.000;
 
-    //--get pose of part in tray from /ariac/orders
-    part part_in_tray;
-    part_in_tray.type = "pulley_part_red";
-    part_in_tray.pose.position.x = -0.12;
-    part_in_tray.pose.position.x = -0.2;
-    part_in_tray.pose.position.x = 0.0;
-    part_in_tray.pose.orientation.x = 0.0;
-    part_in_tray.pose.orientation.y = 0.0;
-    part_in_tray.pose.orientation.z = 0.0;
-    part_in_tray.pose.orientation.w = 1.0;
+    // // --get pose of part in tray from /ariac/orders
+    // part part_in_tray;
+    // part_in_tray.type = "pulley_part_red";
+    // part_in_tray.pose.position.x = -0.12;
+    // part_in_tray.pose.position.x = -0.2;
+    // part_in_tray.pose.position.x = 0.0;
+    // part_in_tray.pose.orientation.x = 0.0;
+    // part_in_tray.pose.orientation.y = 0.0;
+    // part_in_tray.pose.orientation.z = 0.0;
+    // part_in_tray.pose.orientation.w = 1.0;
 
-    //--Go pick the part
-    gantry.pickPart(my_part);
-    //--Go place the part
-    gantry.placePart(part_in_tray, "agv2");
+    // // --Go pick the part
+    // gantry.pickPart(my_part);
+    // // --Go place the part
+    // gantry.placePart(part_in_tray, "agv2");
 
     comp.endCompetition();
     spinner.stop();
