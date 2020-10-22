@@ -51,7 +51,7 @@ class GantryControl {
 
 //    bool pickPart(part part, std::string arm_name);
     bool pickPart(part part);
-    void placePart(part part, std::string agv);
+    void placePart(part part, std::string agv, ros::NodeHandle node);
 
     
     /// Send command message to robot controller
@@ -62,7 +62,6 @@ class GantryControl {
     void deactivateGripper(std::string gripper_id);
     void gantryGo(PresetLocation location);
     void gantryCome(PresetLocation location);
-
     bool move2start ( float x, float y );
     float move2trg ( float x, float y);
 

@@ -42,6 +42,7 @@
 
 
 
+
 int main(int argc, char ** argv) {
     ros::init(argc, argv, "rwa3_node");
     ros::NodeHandle node;
@@ -83,7 +84,7 @@ int main(int argc, char ** argv) {
     comp.getClock();
 
     ros::Subscriber order_sub = node.subscribe("/ariac/orders", 1000, &BuildClass::orderCallback, &buildObj);
-
+    
 
     GantryControl gantry(node);
     gantry.init();
@@ -106,9 +107,9 @@ int main(int argc, char ** argv) {
             // gantry.gantryGo(gantry.preLoc[product.p.camFrame]);
             gantry.pickPart(product.p);
             geometry_msgs::Pose robot_pose = gantry.getRobotPose();
-            gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose  );
+            gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose);
             // gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
-            gantry.placePart(product.p, product.tray);
+            gantry.placePart(product.p, product.tray, node);
             gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
         }
     }
