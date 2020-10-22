@@ -3,6 +3,7 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/static_transform_broadcaster.h>
 #include <geometry_msgs/TransformStamped.h>
+#include <nist_gear/LogicalCameraImage.h>
 
 GantryControl::GantryControl(ros::NodeHandle & node):
         node_("/ariac/gantry"),
@@ -387,7 +388,65 @@ bool GantryControl::pickPart(part part){
 //    ros::waitForShutdown();
 }
 
-void GantryControl::placePart(part part, std::string agv){
+// Variable to store if current part is faulty
+bool is_part_faulty = false;
+
+// Variable to hold faulty part pose
+geometry_msgs::Pose faulty_part_pose;
+
+// Quality control sensor 1 callback
+void qualityCallback(const nist_gear::LogicalCameraImage& msg) {
+    if (msg.models.size() != 0) {
+        ROS_INFO_STREAM("Detected faulty part!: " << (msg.models[0]).type);
+        is_part_faulty = true;
+        geometry_msgs::Pose model_pose = (msg.models[0]).pose;
+        /*
+        ROS_INFO_STREAM("Faulty part pose: " 
+                    << model_pose.position.x << std::endl
+                    << model_pose.position.y << std::endl 
+                    << model_pose.position.z << std::endl
+                    << model_pose.orientation.x << std::endl
+                    << model_pose.orientation.y << std::endl
+                    << model_pose.orientation.z << std::endl
+                    << model_pose.orientation.w);*/
+
+    // Transform pose detected from quality sensor 1 to world frame
+    /* [TODO] Need to refactor this part as seperate function to tranform pose in one
+     reference frame to another (For reusability) */
+    geometry_msgs::TransformStamped transformStamped;
+    tf2_ros::Buffer tfBuffer;
+    tf2_ros::TransformListener tfListener(tfBuffer);
+    ros::Duration timeout(3.0);
+    bool transform_exists = tfBuffer.canTransform("world", "quality_control_sensor_1_frame", ros::Time(0), timeout);
+    if (transform_exists)
+        transformStamped = tfBuffer.lookupTransform("world", "quality_control_sensor_1_frame", ros::Time(0));
+    else
+        ROS_INFO_STREAM("Cannot transform from quality_control_sensor_1_frame to world");
+    geometry_msgs::PoseStamped new_pose;
+    new_pose.header.seq = 1;
+    new_pose.header.stamp = ros::Time(0);
+    new_pose.header.frame_id = "quality_control_sensor_1_frame";
+    new_pose.pose = model_pose;
+    tf2::doTransform(new_pose, new_pose, transformStamped);
+    faulty_part_pose = new_pose.pose;
+    
+    ROS_INFO_STREAM("Transformed order part pose detected from quality sensor: " 
+                    << new_pose.pose.position.x << std::endl
+                    << new_pose.pose.position.y << std::endl
+                    << new_pose.pose.position.z << std::endl
+                    << new_pose.pose.orientation.x << std::endl
+                    << new_pose.pose.orientation.y << std::endl
+                    << new_pose.pose.orientation.z << std::endl
+                    << new_pose.pose.orientation.w);
+    
+    }
+}
+
+
+void GantryControl::placePart(part part, 
+                              std::string agv, 
+                              ros::NodeHandle node){
+    ros::Subscriber quality_sensor_1_sub = node.subscribe("/ariac/quality_control_sensor_1", 1000, qualityCallback);
     auto target_pose_in_tray = getTargetWorldPose(part.pose, agv);
     ROS_INFO_STREAM("Settled tray pose:" << target_pose_in_tray.position.x << " " 
                                          << target_pose_in_tray.position.y << " "
@@ -402,8 +461,18 @@ void GantryControl::placePart(part part, std::string agv){
     left_arm_group_.move();
     deactivateGripper("left_arm");
     auto state = getGripperState("left_arm");
-    if (state.attached)
+    
+    ros::Duration(2).sleep();
+    if (state.attached) {
+        std::cout << "Part faulty: " << is_part_faulty << std::endl;
+        if (is_part_faulty) {
+            std::cout << "Part faulty inside: " << is_part_faulty << std::endl;
+            part.pose = faulty_part_pose;
+            pickPart(part);
+        }
         goToPresetLocation(start_);
+        deactivateGripper("left_arm");
+    }
 }
 
 void GantryControl::gantryGo(PresetLocation location) {
@@ -427,6 +496,9 @@ void GantryControl::gantryCome(PresetLocation location) {
     goToPresetLocation(location);
     location.gantry[2] = 0;
     goToPresetLocation(location);
+    auto state = getGripperState("left_arm");
+    if (state.attached)
+        deactivateGripper("left_arm");
 }
 
 bool GantryControl::move2start ( float x, float y ) {
