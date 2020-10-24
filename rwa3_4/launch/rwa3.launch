@@ -15,7 +15,7 @@
   <arg unless="$(arg fill_demo_shipment)" name="fill_demo_shipment_args" value="" />
   <arg     if="$(arg fill_demo_shipment)" name="fill_demo_shipment_args" value="--fill-demo-shipment" />
 
-  <arg name="load_moveit" default="false" />
+  <arg name="load_moveit" default="true" />
   <arg unless="$(arg load_moveit)" name="load_moveit_args" value="" />
   <arg     if="$(arg load_moveit)" name="load_moveit_args" value="--load-moveit" />
 

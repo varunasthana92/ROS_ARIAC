@@ -96,7 +96,7 @@ int main(int argc, char ** argv) {
     //--2-Look for parts in this order
     //--We go to this bin because a camera above
     //--this bin found one of the parts in the order
-
+    
     for(auto &shipment: buildObj.order_recieved.shipments) {
         for(auto &product: shipment.products) {
             do {
