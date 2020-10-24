@@ -42,6 +42,7 @@
 
 
 
+
 int main(int argc, char ** argv) {
     ros::init(argc, argv, "rwa3_node");
     ros::NodeHandle node;
@@ -83,7 +84,7 @@ int main(int argc, char ** argv) {
     comp.getClock();
 
     ros::Subscriber order_sub = node.subscribe("/ariac/orders", 1000, &BuildClass::orderCallback, &buildObj);
-
+    
 
     GantryControl gantry(node);
     gantry.init();
@@ -98,19 +99,23 @@ int main(int argc, char ** argv) {
 
     for(auto &shipment: buildObj.order_recieved.shipments) {
         for(auto &product: shipment.products) {
-            buildObj.queryPart(product);
-            ROS_INFO_STREAM("For product " << product.tray << " cam " << product.p.camFrame);
-            // ROS_INFO_STREAM("Preloc size " << gantry.preLoc.size());
-            ROS_INFO_STREAM("Position of trg y:" << product.p.pose.position.y);
-            float Y_pose = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y );
-            // gantry.gantryGo(gantry.preLoc[product.p.camFrame]);
-            gantry.pickPart(product.p);
-            geometry_msgs::Pose robot_pose = gantry.getRobotPose();
-            gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose  );
-            // gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
-            gantry.placePart(product.p, product.tray);
-            gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
+            do {
+                buildObj.queryPart(product);
+                ROS_INFO_STREAM("For product " << product.tray << " cam " << product.p.camFrame);
+                // ROS_INFO_STREAM("Preloc size " << gantry.preLoc.size());
+                ROS_INFO_STREAM("Position of trg y:" << product.p.pose.position.y);
+                float Y_pose = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y );
+                // gantry.gantryGo(gantry.preLoc[product.p.camFrame]);
+                gantry.pickPart(product.p);
+                geometry_msgs::Pose robot_pose = gantry.getRobotPose();
+                gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose);
+                // gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
+                product.p.pose=product.pose;
+                }while(!gantry.placePart(product.p, shipment.agv_id, node));
+
+//            gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
         }
+        comp.shipAgv(shipment.agv_id, shipment.shipment_type);
     }
     exit(0);
     // for(int i =0; i < buildObj.order_recieved.shipments.size(); ++i){

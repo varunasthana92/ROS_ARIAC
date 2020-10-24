@@ -3,6 +3,62 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/static_transform_broadcaster.h>
 #include <geometry_msgs/TransformStamped.h>
+#include <nist_gear/LogicalCameraImage.h>
+
+// Variable to store if current part is faulty
+bool is_part_faulty = false;
+
+// Variable to hold faulty part pose
+geometry_msgs::Pose faulty_part_pose;
+
+// Quality control sensor 1 callback
+void qualityCallback(const nist_gear::LogicalCameraImage& msg) {
+    if (msg.models.size() != 0) {
+        ROS_INFO_STREAM("Detected faulty part!: " << (msg.models[0]).type);
+        is_part_faulty = true;
+        geometry_msgs::Pose model_pose = (msg.models[0]).pose;
+        /*
+        ROS_INFO_STREAM("Faulty part pose: " 
+                    << model_pose.position.x << std::endl
+                    << model_pose.position.y << std::endl 
+                    << model_pose.position.z << std::endl
+                    << model_pose.orientation.x << std::endl
+                    << model_pose.orientation.y << std::endl
+                    << model_pose.orientation.z << std::endl
+                    << model_pose.orientation.w);*/
+
+    // Transform pose detected from quality sensor 1 to world frame
+    /* [TODO] Need to refactor this part as seperate function to tranform pose in one
+     reference frame to another (For reusability) */
+    geometry_msgs::TransformStamped transformStamped;
+    tf2_ros::Buffer tfBuffer;
+    tf2_ros::TransformListener tfListener(tfBuffer);
+    ros::Duration timeout(3.0);
+    bool transform_exists = tfBuffer.canTransform("world", "quality_control_sensor_1_frame", ros::Time(0), timeout);
+    if (transform_exists)
+        transformStamped = tfBuffer.lookupTransform("world", "quality_control_sensor_1_frame", ros::Time(0));
+    else
+        ROS_INFO_STREAM("Cannot transform from quality_control_sensor_1_frame to world");
+    geometry_msgs::PoseStamped new_pose;
+    new_pose.header.seq = 1;
+    new_pose.header.stamp = ros::Time(0);
+    new_pose.header.frame_id = "quality_control_sensor_1_frame";
+    new_pose.pose = model_pose;
+    tf2::doTransform(new_pose, new_pose, transformStamped);
+    faulty_part_pose = new_pose.pose;
+    
+    ROS_INFO_STREAM("Transformed order part pose detected from quality sensor: " 
+                    << new_pose.pose.position.x << std::endl
+                    << new_pose.pose.position.y << std::endl
+                    << new_pose.pose.position.z << std::endl
+                    << new_pose.pose.orientation.x << std::endl
+                    << new_pose.pose.orientation.y << std::endl
+                    << new_pose.pose.orientation.z << std::endl
+                    << new_pose.pose.orientation.w);
+    
+    }
+}
+
 
 GantryControl::GantryControl(ros::NodeHandle & node):
         node_("/ariac/gantry"),
@@ -84,6 +140,11 @@ void GantryControl::init() {
     agv2_.gantry = {0.6, 6.9, PI};
     agv2_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     agv2_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+
+    agv2_org.gantry = {0.4, 6.9, PI};
+    agv2_org.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    agv2_org.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+
 
     // cam1_.gantry = {3.104, 1.80, 0.};
     // cam1_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
@@ -332,6 +393,8 @@ bool GantryControl::pickPart(part part){
         }
         else {
             ROS_INFO_STREAM("[Gripper] = object not attached");
+            if (is_part_faulty)
+                part.pose = faulty_part_pose;
             int max_attempts{5};
             int current_attempt{0};
             while(!state.attached) {
@@ -387,23 +450,42 @@ bool GantryControl::pickPart(part part){
 //    ros::waitForShutdown();
 }
 
-void GantryControl::placePart(part part, std::string agv){
+bool GantryControl::placePart(part part,
+                              std::string agv, 
+                              ros::NodeHandle node){
+    ros::Subscriber quality_sensor_1_sub = node.subscribe("/ariac/quality_control_sensor_1", 1000, qualityCallback);
     auto target_pose_in_tray = getTargetWorldPose(part.pose, agv);
     ROS_INFO_STREAM("Settled tray pose:" << target_pose_in_tray.position.x << " " 
                                          << target_pose_in_tray.position.y << " "
                                          << target_pose_in_tray.position.z);
     ros::Duration(3.0).sleep();
     goToPresetLocation(agv2_);
-    ROS_INFO_STREAM("Trying to roate gantry");
+    ROS_INFO_STREAM("Trying to rotate gantry");
     rotate_gantry(4.8);
     target_pose_in_tray.position.z += (ABOVE_TARGET + 1.5*model_height[part.type]);
 
     left_arm_group_.setPoseTarget(target_pose_in_tray);
     left_arm_group_.move();
     deactivateGripper("left_arm");
-    auto state = getGripperState("left_arm");
-    if (state.attached)
+//    auto state = getGripperState("left_arm");
+    
+    ros::Duration(2).sleep();
+//    if (state.attached) {
+//        std::cout << "Part faulty: " << is_part_faulty << std::endl;
+    if (is_part_faulty) {
+        std::cout << "Part faulty inside: " << is_part_faulty << std::endl;
+        part.pose = faulty_part_pose;
+        pickPart(part);
+        is_part_faulty = false;
+        goToPresetLocation(agv2_org);
         goToPresetLocation(start_);
+        deactivateGripper("left_arm");
+        return false;
+    }
+//        goToPresetLocation(agv2_org);
+
+//    }
+    return true;
 }
 
 void GantryControl::gantryGo(PresetLocation location) {
@@ -427,6 +509,9 @@ void GantryControl::gantryCome(PresetLocation location) {
     goToPresetLocation(location);
     location.gantry[2] = 0;
     goToPresetLocation(location);
+    auto state = getGripperState("left_arm");
+    if (state.attached)
+        deactivateGripper("left_arm");
 }
 
 bool GantryControl::move2start ( float x, float y ) {
@@ -437,7 +522,7 @@ bool GantryControl::move2start ( float x, float y ) {
     ROS_INFO_STREAM("Position of trg in move2start y:" << y);
     ROS_INFO_STREAM("Position of trg in move2start robot x:" << x);
     ROS_INFO_STREAM("Position of trg in move2start robot x:" << y);
-    float offset_y = 1.3;
+    float offset_y = 0.2;
     float offset_x = 0.2;
 
     // offset_y *= -1;
@@ -478,7 +563,7 @@ bool GantryControl::move2start ( float x, float y ) {
             move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
 
             ROS_INFO_STREAM("Position of trg in move2start y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  str_7");
+            ROS_INFO_STREAM("Position of trg  str_3");
 
             goToPresetLocation(move);
 
@@ -506,7 +591,7 @@ bool GantryControl::move2start ( float x, float y ) {
             move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
 
             ROS_INFO_STREAM("Position of trg in move2start y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  str_7");
+            ROS_INFO_STREAM("Position of trg  str_5");
 
             goToPresetLocation(move);
 
@@ -532,17 +617,17 @@ bool GantryControl::move2start ( float x, float y ) {
             move.gantry[0] = x;
             move.gantry[1] -= offset_y;
             move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
-
+            ROS_INFO_STREAM("Position of trg in move2start x:" << move.gantry[0]);
             ROS_INFO_STREAM("Position of trg in move2start y:" << move.gantry[1]);
             ROS_INFO_STREAM("Position of trg  str_7");
 
             goToPresetLocation(move);
 
             move.gantry[0] = 0;
-            move.gantry[1] -= offset_y;
+//            move.gantry[1] -= offset_y;
             move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
             goToPresetLocation(move);
-            goToPresetLocation(start_);
+//            goToPresetLocation(start_);
             return true;
         }
         else if( y <= -6.6){
@@ -586,10 +671,10 @@ bool GantryControl::move2start ( float x, float y ) {
             move.gantry[1] -= offset_y;
 
             ROS_INFO_STREAM("Position of trg in move2start y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  str_111");
+            ROS_INFO_STREAM("Position of trg  str_11");
 
             goToPresetLocation(move);
-            goToPresetLocation(start_);
+//            goToPresetLocation(start_);
             return true;
         }
         else  if( y <= 0 && y > -3.6){
@@ -644,6 +729,8 @@ float GantryControl::move2trg  ( float x, float y ) {
 
     ROS_INFO_STREAM("Position of trg in move2trg y:" << y);
     ROS_INFO_STREAM("Position of trg in move2trg offset y:" << offset_y);
+    ROS_INFO_STREAM("Position of trg X: " << x);
+    ROS_INFO_STREAM("Position of trg Y:" << y);
 
     PresetLocation move, move_trg;
     move.gantry = {x,y,0};
@@ -800,16 +887,20 @@ float GantryControl::move2trg  ( float x, float y ) {
             return -move_trg.gantry[1];
         }
         else  if( y <= 3.6 && y > 0){
+            offset_y = 0.6;
+            offset_final_x = 0.85;
             move.gantry[0] = 0;
-            move.gantry[1] -= offset_y;
+            ROS_INFO_STREAM("Position of trg in move2trg y (0):" << move.gantry[1]);
+//            move.gantry[1] -= offset_y;
 
             ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
             ROS_INFO_STREAM("Position of trg  trg_11");
+            ROS_INFO_STREAM("Position of value of offset_y :" << offset_y);
 
             goToPresetLocation(move);
             
             move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] -= offset_final_y;
+//            move_trg.gantry[1] -= offset_y;
             goToPresetLocation(move_trg);
             return -move_trg.gantry[1];
         }

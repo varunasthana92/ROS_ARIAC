@@ -90,7 +90,7 @@ typedef struct Shipment {
 
 typedef struct Product {
     std::string type;
-    geometry_msgs::Pose pose;
+    geometry_msgs::Pose pose; //thisone
     part p; // NEW here!
     // std::string frame_of_origin;
     geometry_msgs::Pose actual_pose;

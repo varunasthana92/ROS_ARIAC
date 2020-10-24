@@ -51,7 +51,7 @@ class GantryControl {
 
 //    bool pickPart(part part, std::string arm_name);
     bool pickPart(part part);
-    void placePart(part part, std::string agv);
+    bool placePart(part part, std::string agv, ros::NodeHandle node);
 
     
     /// Send command message to robot controller
@@ -62,7 +62,6 @@ class GantryControl {
     void deactivateGripper(std::string gripper_id);
     void gantryGo(PresetLocation location);
     void gantryCome(PresetLocation location);
-
     bool move2start ( float x, float y );
     float move2trg ( float x, float y);
 
@@ -81,7 +80,7 @@ class GantryControl {
     cam5 cam5_; cam6 cam6_; cam7 cam7_; cam8 cam8_;
     cam9 cam9_; cam10 cam10_; cam11 cam11_; cam12 cam12_;
     cam13 cam13_; cam14 cam14_; cam15 cam15_; cam16 cam16_;
-    cam17 cam17_;
+    cam17 cam17_; cam17 agv2_org;
     static const int num_preLoc = 20;
     void setPrelocations();
     std::vector<PresetLocation> preLoc = {start_, cam1_, cam2_, cam3_, cam4_, cam5_, 

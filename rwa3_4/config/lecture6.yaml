@@ -44,7 +44,8 @@ orders:
     destinations: [agv2]
     products:
       part_0:
-        type: pulley_part_red
+        # type: pulley_part_red
+        type: disk_part_green
         pose:
           xyz: [-0.12, -0.2, 0]
           rpy: [0, 0, 0]
