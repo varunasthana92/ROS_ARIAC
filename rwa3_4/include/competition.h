@@ -26,7 +26,7 @@ public:
     void startCompetition();
     void endCompetition();
 
-
+    void shipAgv(std::string agv, std::string ship_type);
     void competition_state_callback(const std_msgs::String::ConstPtr & msg);
     void competition_clock_callback(const rosgraph_msgs::Clock::ConstPtr & msg);
     void order_callback(const nist_gear::Order::ConstPtr & msg);

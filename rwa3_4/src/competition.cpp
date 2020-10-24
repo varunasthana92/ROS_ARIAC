@@ -2,6 +2,7 @@
 #include "utils.h"
 
 #include <std_srvs/Trigger.h>
+#include <nist_gear/AGVControl.h>
 ////////////////////////////////////////////////////
 
 Competition::Competition(ros::NodeHandle & node): current_score_(0)
@@ -73,6 +74,38 @@ void Competition::startCompetition() {
     ROS_ERROR_STREAM("[competition][startCompetition] Failed to start the competition: " << srv.response.message);
   } else {
     ROS_INFO("[competition][startCompetition] Competition started!");
+  }
+}
+
+void Competition::shipAgv(std::string agv, std::string ship_type) {
+  // Create a Service client for the correct service, i.e. '/ariac/start_competition'.
+  ros::ServiceClient start_client;
+  
+  if(agv == "agv2"){
+    node_.serviceClient<nist_gear::AGVControl>("/ariac/agv2");
+
+  ROS_INFO_STREAM("[competition][ship_agv] IIIIFFFFFF..." << agv);
+  }
+  else if(agv == "agv1"){
+    node_.serviceClient<nist_gear::AGVControl>("/ariac/agv1");
+  }
+  // If it's not already ready, wait for it to be ready.
+  // Calling the Service using the client before the server is ready would fail.
+  if (!start_client.exists()) {
+    ROS_INFO("[competition][ship_agv] Waiting for the shipment service to be ready...");
+    start_client.waitForExistence();
+    ROS_INFO("[competition][ship_agv] Shipment is now ready.");
+  }
+  ROS_INFO_STREAM("[competition][ship_agv] Requesting ship start..." << agv);
+
+  ROS_INFO_STREAM("[competition][ship_agv] Requesting ship start..." << ship_type);
+  nist_gear::AGVControl srv;
+  srv.request.shipment_type = ship_type;
+  start_client.call(srv);
+  if (!srv.response.success) {  // If not successful, print out why.
+    ROS_ERROR_STREAM("[competition][ship_agv] Failed to ship the competition: " << srv.response.message);
+  } else {
+    ROS_INFO("[competition][ship_agv] ship started!");
   }
 }
 
