@@ -52,7 +52,6 @@ class GantryControl {
 //    bool pickPart(part part, std::string arm_name);
     bool pickPart(part part);
     bool placePart(part part, std::string agv, ros::NodeHandle node);
-
     
     /// Send command message to robot controller
     bool send_command(trajectory_msgs::JointTrajectory command_msg);
