@@ -79,29 +79,28 @@ void Competition::startCompetition() {
 
 void Competition::shipAgv(std::string agv, std::string ship_type) {
   // Create a Service client for the correct service, i.e. '/ariac/start_competition'.
-  ros::ServiceClient start_client;
-  
-  if(agv == "agv2"){
-    node_.serviceClient<nist_gear::AGVControl>("/ariac/agv2");
-
-  ROS_INFO_STREAM("[competition][ship_agv] IIIIFFFFFF..." << agv);
-  }
-  else if(agv == "agv1"){
+  ros::ServiceClient agv1_client = 
     node_.serviceClient<nist_gear::AGVControl>("/ariac/agv1");
-  }
-  // If it's not already ready, wait for it to be ready.
-  // Calling the Service using the client before the server is ready would fail.
-  if (!start_client.exists()) {
-    ROS_INFO("[competition][ship_agv] Waiting for the shipment service to be ready...");
-    start_client.waitForExistence();
-    ROS_INFO("[competition][ship_agv] Shipment is now ready.");
-  }
-  ROS_INFO_STREAM("[competition][ship_agv] Requesting ship start..." << agv);
-
-  ROS_INFO_STREAM("[competition][ship_agv] Requesting ship start..." << ship_type);
+  ros::ServiceClient agv2_client = 
+    node_.serviceClient<nist_gear::AGVControl>("/ariac/agv2");
+  
   nist_gear::AGVControl srv;
   srv.request.shipment_type = ship_type;
-  start_client.call(srv);
+  
+  ROS_INFO_STREAM("For " << agv << " Shipment type " << ship_type);
+  if(agv == "agv2"){
+    if (!agv2_client.exists()) {
+      agv2_client.waitForExistence();
+    }
+    agv2_client.call(srv);
+  }
+  else if(agv == "agv1"){
+    if (!agv1_client.exists()) {
+      agv1_client.waitForExistence();
+    }
+    agv1_client.call(srv);
+  }
+  
   if (!srv.response.success) {  // If not successful, print out why.
     ROS_ERROR_STREAM("[competition][ship_agv] Failed to ship the competition: " << srv.response.message);
   } else {
