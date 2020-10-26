@@ -85,8 +85,8 @@ int main(int argc, char ** argv) {
 
     ros::Subscriber order_sub = node.subscribe("/ariac/orders", 1000, &BuildClass::orderCallback, &buildObj);
     
-
     GantryControl gantry(node);
+    ros::Subscriber quality_sensor_1_sub = node.subscribe("/ariac/quality_control_sensor_1", 1000, &GantryControl::qualityCallback, &gantry);
     gantry.init();
     gantry.goToPresetLocation(gantry.start_);
 
@@ -97,6 +97,7 @@ int main(int argc, char ** argv) {
     //--We go to this bin because a camera above
     //--this bin found one of the parts in the order
     
+    std::string arm = "left";
     for(auto &shipment: buildObj.order_recieved.shipments) {
         for(auto &product: shipment.products) {
             do {
@@ -107,17 +108,25 @@ int main(int argc, char ** argv) {
                 float Y_pose = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y );
                 // gantry.gantryGo(gantry.preLoc[product.p.camFrame]);
                 gantry.pickPart(product.p);
-                geometry_msgs::Pose robot_pose = gantry.getRobotPose();
+                //geometry_msgs::Pose robot_pose = gantry.getRobotPose();
                 gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose);
                 // gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
                 product.p.pose=product.pose;
-                }while(!gantry.placePart(product.p, shipment.agv_id, node));
+                if (product.p.pose.orientation.x == 1 || product.p.pose.orientation.x == -1) {
+                    std::cout << "product.p.pose.orientation.x inside: " << product.p.pose.orientation.x << std::endl;
+                    gantry.flipPart();
+                    arm = "right";
+                    gantry.activateGripper("right_arm");
+                    gantry.deactivateGripper("left_arm");
+                }
+                }while(!gantry.placePart(product.p, shipment.agv_id, arm, node));
 
 //            gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
         }
+        gantry.goToPresetLocation(gantry.start_);
         comp.shipAgv(shipment.agv_id, shipment.shipment_type);
     }
-    exit(0);
+
     // for(int i =0; i < buildObj.order_recieved.shipments.size(); ++i){
     //     for(int j =0; j < buildObj.order_recieved.shipments[i].products.size(); ++j){
     //         ProdGantryControl

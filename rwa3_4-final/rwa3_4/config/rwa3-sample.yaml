@@ -44,26 +44,25 @@ orders:
     destinations: [agv2]
     products:
       part_0:
-        type: disk_part_green
+        type: pulley_part_red
         pose:
           xyz: [-0.12, -0.2, 0]
           rpy: [0, 0, 0]
-      # part_1:
-      #   type: pulley_part_red
-      #   pose:
-      #     xyz: [0.12, 0.2, 0]
-      #     rpy: [0, 0, 0]
-      #     # rpy: ['pi', 0, 0]
-      # part_2:
-      #   type: disk_part_green
-      #   pose:
-      #     xyz: [0.0, 0.0, 0]
-      #     rpy: [0, 0, 0]
-      # part_3:
-      #   type: disk_part_blue
-      #   pose:
-      #     xyz: [-0.15, 0.2, 0]
-      #     rpy: [0, 0, 0]
+      part_1:
+        type: pulley_part_red
+        pose:
+          xyz: [0.12, 0.2, 0]
+          rpy: ['pi', 0, 0]
+      part_2:
+        type: disk_part_green
+        pose:
+          xyz: [0.0, 0.0, 0]
+          rpy: [0, 0, 0]
+      part_3:
+        type: disk_part_blue
+        pose:
+          xyz: [-0.15, 0.2, 0]
+          rpy: [0, 0, 0]
 
 
 models_over_bins:
@@ -96,5 +95,5 @@ models_over_shelves:
 
 #Faulty products
 faulty_products:
-  - pulley_part_red_2  #disk_part_blue_1
+  - disk_part_green_9
   - disk_part_green_5

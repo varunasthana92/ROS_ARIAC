@@ -5,57 +5,28 @@
 #include <geometry_msgs/TransformStamped.h>
 #include <nist_gear/LogicalCameraImage.h>
 
-// Variable to store if current part is faulty
-bool is_part_faulty = false;
-
-// Variable to hold faulty part pose
-geometry_msgs::Pose faulty_part_pose;
-
 // Quality control sensor 1 callback
-void qualityCallback(const nist_gear::LogicalCameraImage& msg) {
+void GantryControl::qualityCallback(const nist_gear::LogicalCameraImage& msg) {
     if (msg.models.size() != 0) {
         ROS_INFO_STREAM("Detected faulty part!: " << (msg.models[0]).type);
         is_part_faulty = true;
         geometry_msgs::Pose model_pose = (msg.models[0]).pose;
-        /*
-        ROS_INFO_STREAM("Faulty part pose: " 
-                    << model_pose.position.x << std::endl
-                    << model_pose.position.y << std::endl 
-                    << model_pose.position.z << std::endl
-                    << model_pose.orientation.x << std::endl
-                    << model_pose.orientation.y << std::endl
-                    << model_pose.orientation.z << std::endl
-                    << model_pose.orientation.w);*/
-
-    // Transform pose detected from quality sensor 1 to world frame
-    /* [TODO] Need to refactor this part as seperate function to tranform pose in one
-     reference frame to another (For reusability) */
-    geometry_msgs::TransformStamped transformStamped;
-    tf2_ros::Buffer tfBuffer;
-    tf2_ros::TransformListener tfListener(tfBuffer);
-    ros::Duration timeout(3.0);
-    bool transform_exists = tfBuffer.canTransform("world", "quality_control_sensor_1_frame", ros::Time(0), timeout);
-    if (transform_exists)
-        transformStamped = tfBuffer.lookupTransform("world", "quality_control_sensor_1_frame", ros::Time(0));
-    else
-        ROS_INFO_STREAM("Cannot transform from quality_control_sensor_1_frame to world");
-    geometry_msgs::PoseStamped new_pose;
-    new_pose.header.seq = 1;
-    new_pose.header.stamp = ros::Time(0);
-    new_pose.header.frame_id = "quality_control_sensor_1_frame";
-    new_pose.pose = model_pose;
-    tf2::doTransform(new_pose, new_pose, transformStamped);
-    faulty_part_pose = new_pose.pose;
-    
-    ROS_INFO_STREAM("Transformed order part pose detected from quality sensor: " 
-                    << new_pose.pose.position.x << std::endl
-                    << new_pose.pose.position.y << std::endl
-                    << new_pose.pose.position.z << std::endl
-                    << new_pose.pose.orientation.x << std::endl
-                    << new_pose.pose.orientation.y << std::endl
-                    << new_pose.pose.orientation.z << std::endl
-                    << new_pose.pose.orientation.w);
-    
+        geometry_msgs::TransformStamped transformStamped;
+        tf2_ros::Buffer tfBuffer;
+        tf2_ros::TransformListener tfListener(tfBuffer);
+        ros::Duration timeout(1.0);
+        bool transform_exists = tfBuffer.canTransform("world", "quality_control_sensor_1_frame", ros::Time(0), timeout);
+        if (transform_exists)
+            transformStamped = tfBuffer.lookupTransform("world", "quality_control_sensor_1_frame", ros::Time(0));
+        else
+            ROS_INFO_STREAM("Cannot transform from quality_control_sensor_1_frame to world");
+        geometry_msgs::PoseStamped new_pose;
+        new_pose.header.seq = 1;
+        new_pose.header.stamp = ros::Time(0);
+        new_pose.header.frame_id = "quality_control_sensor_1_frame";
+        new_pose.pose = model_pose;
+        tf2::doTransform(new_pose, new_pose, transformStamped);
+        faulty_part_pose = new_pose.pose;       
     }
 }
 
@@ -89,24 +60,24 @@ void GantryControl::rotate_gantry(double angle) {
     send_command(command_msg);
 }
 
-void GantryControl::setPrelocations() {
-    preLoc[0] = start_;
-    preLoc[1] = cam1_;
-    preLoc[2] = cam2_;
-    preLoc[3] = cam3_;
-    preLoc[4] = cam4_;
-    preLoc[5] = cam5_;
-    preLoc[6] = cam6_;
-    preLoc[7] = cam7_;
-    preLoc[8] = cam8_;
-    preLoc[9] = cam9_;
-    preLoc[10] = cam10_;
-    preLoc[11] = cam11_;
-    preLoc[12] = cam12_;
-    preLoc[13] = cam13_;
-    preLoc[14] = cam14_;
-    preLoc[15] = cam15_;
-}
+// void GantryControl::setPrelocations() {
+//     preLoc[0] = start_;
+//     preLoc[1] = cam1_;
+//     preLoc[2] = cam2_;
+//     preLoc[3] = cam3_;
+//     preLoc[4] = cam4_;
+//     preLoc[5] = cam5_;
+//     preLoc[6] = cam6_;
+//     preLoc[7] = cam7_;
+//     preLoc[8] = cam8_;
+//     preLoc[9] = cam9_;
+//     preLoc[10] = cam10_;
+//     preLoc[11] = cam11_;
+//     preLoc[12] = cam12_;
+//     preLoc[13] = cam13_;
+//     preLoc[14] = cam14_;
+//     preLoc[15] = cam15_;
+// }
 
 void GantryControl::init() {
     ROS_INFO_STREAM("[GantryControl::init] init... ");
@@ -141,71 +112,80 @@ void GantryControl::init() {
     agv2_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     agv2_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    agv2_org.gantry = {0.4, 6.9, PI};
-    agv2_org.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    agv2_org.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    agv2_right_.gantry = {-0.6, 6.9, PI};
+    agv2_right_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    agv2_right_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    
+    // agv2_org.gantry = {0.4, 6.9, PI};
+    // agv2_org.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // agv2_org.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
+    flipped_pulley_.gantry = {0, 0, 0};
+    flipped_pulley_.left_arm = {-1.29, -0.25, 1.63, 6.28, 1.63, 3.20};
+    flipped_pulley_.right_arm = {1.26, -3.14, -1.76, -0.13, 1.76, 0.88};
 
     // cam1_.gantry = {3.104, 1.80, 0.};
     // cam1_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     // cam1_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
     
-    cam2_.gantry = {3.0208, -1.7029, 0.};
-    cam2_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    cam2_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam2_.gantry = {3.0208, -1.7029, 0.};
+    // cam2_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam2_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    cam3_.gantry = {4.9927, -1.7029, 0.};
-    cam3_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    cam3_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
-    // Cam 4
-    cam4_.gantry = {5.1227, 1.7322, 0.};
-    cam4_.left_arm = {0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    cam4_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam3_.gantry = {4.9927, -1.7029, 0.};
+    // cam3_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam3_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // // Cam 4
+    // cam4_.gantry = {5.1227, 1.7322, 0.};
+    // cam4_.left_arm = {0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam4_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    cam5_.gantry = {3.104, 1.80, 0.};
-    cam5_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    cam5_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam5_.gantry = {3.104, 1.80, 0.};
+    // cam5_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam5_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    cam6_.gantry = {-15.77, 1.5, 0.};
-    cam6_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    cam6_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam6_.gantry = {-15.77, 1.5, 0.};
+    // cam6_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam6_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    cam7_.gantry = {-13.77, 1.5, 0.};
-    cam7_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    cam7_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam7_.gantry = {-13.77, 1.5, 0.};
+    // cam7_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam7_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
     
-    cam8_.gantry = {-15.77, -4.20, 0.};
-    cam8_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    cam8_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam8_.gantry = {-15.77, -4.20, 0.};
+    // cam8_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam8_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    cam9_.gantry = {-13.77, -4.20, 0.};
-    cam9_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    cam9_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam9_.gantry = {-13.77, -4.20, 0.};
+    // cam9_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam9_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    cam10_.gantry = {-15.77, 4.3, 0.};
-    cam10_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    cam10_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam10_.gantry = {-15.77, 4.3, 0.};
+    // cam10_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam10_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    cam11_.gantry = {-13.77, 4.3, 0.};
-    cam11_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    cam11_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam11_.gantry = {-13.77, 4.3, 0.};
+    // cam11_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam11_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    cam12_.gantry = {4.93, 4.75, 0.};
-    cam12_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    cam12_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam12_.gantry = {4.93, 4.75, 0.};
+    // cam12_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam12_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    cam13_.gantry = {2.9, 4.75, 0.};
-    cam13_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    cam13_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam13_.gantry = {2.9, 4.75, 0.};
+    // cam13_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam13_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
     
-    cam14_.gantry = {4.9, -4.7, 0.};
-    cam14_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    cam14_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam14_.gantry = {4.9, -4.7, 0.};
+    // cam14_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam14_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    cam15_.gantry = {2.85, -4.7, 0.};
-    cam15_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    cam15_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
-    setPrelocations();
+    // cam15_.gantry = {2.85, -4.7, 0.};
+    // cam15_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // cam15_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+
+
+    // setPrelocations();
     //--Raw pointers are frequently used to refer to the planning group for improved performance.
     //--To start, we will create a pointer that references the current robot’s state.
     const moveit::core::JointModelGroup* joint_model_group =
@@ -282,7 +262,7 @@ stats GantryControl::getStats(std::string function) {
 }
 
 geometry_msgs::Pose GantryControl::getTargetWorldPose(geometry_msgs::Pose target,
-                                                      std::string agv){
+                                                      std::string agv, std::string arm){
     static tf2_ros::StaticTransformBroadcaster br;
     geometry_msgs::TransformStamped transformStamped;
 
@@ -292,7 +272,7 @@ geometry_msgs::Pose GantryControl::getTargetWorldPose(geometry_msgs::Pose target
     else
         kit_tray = "kit_tray_2";
     transformStamped.header.stamp = ros::Time::now();
-    transformStamped.header.frame_id = "kit_tray_2";
+    transformStamped.header.frame_id = kit_tray;
     transformStamped.child_frame_id = "target_frame";
     transformStamped.transform.translation.x = target.position.x;
     transformStamped.transform.translation.y = target.position.y;
@@ -314,6 +294,13 @@ geometry_msgs::Pose GantryControl::getTargetWorldPose(geometry_msgs::Pose target
 
     geometry_msgs::TransformStamped world_target_tf;
     geometry_msgs::TransformStamped ee_target_tf;
+
+    std::string ee_link;
+    if (arm.compare("left")==0)
+        ee_link = "left_ee_link";
+    else
+        ee_link = "right_ee_link";
+
     for (int i=0; i< 10; i++) {
         try {
             world_target_tf = tfBuffer.lookupTransform("world", "target_frame",
@@ -326,7 +313,7 @@ geometry_msgs::Pose GantryControl::getTargetWorldPose(geometry_msgs::Pose target
         }
 
         try {
-            ee_target_tf = tfBuffer.lookupTransform("target_frame", "left_ee_link",
+            ee_target_tf = tfBuffer.lookupTransform("target_frame", ee_link,
                                                  ros::Time(0), timeout);
         }
         catch (tf2::TransformException &ex) {
@@ -346,6 +333,11 @@ geometry_msgs::Pose GantryControl::getTargetWorldPose(geometry_msgs::Pose target
     world_target.orientation.w = ee_target_tf.transform.rotation.w;
 
     return world_target;
+}
+
+void GantryControl::flipPart() {
+    goToPresetLocation(flipped_pulley_);
+    return;
 }
 
 bool GantryControl::pickPart(part part){
@@ -451,68 +443,80 @@ bool GantryControl::pickPart(part part){
 }
 
 bool GantryControl::placePart(part part,
-                              std::string agv, 
+                              std::string agv,
+                              std::string arm,
                               ros::NodeHandle node){
-    ros::Subscriber quality_sensor_1_sub = node.subscribe("/ariac/quality_control_sensor_1", 1000, qualityCallback);
-    auto target_pose_in_tray = getTargetWorldPose(part.pose, agv);
-    ROS_INFO_STREAM("Settled tray pose:" << target_pose_in_tray.position.x << " " 
-                                         << target_pose_in_tray.position.y << " "
-                                         << target_pose_in_tray.position.z);
-    ros::Duration(3.0).sleep();
-    goToPresetLocation(agv2_);
-    ROS_INFO_STREAM("Trying to rotate gantry");
-    rotate_gantry(4.8);
-    target_pose_in_tray.position.z += (ABOVE_TARGET + 1.5*model_height[part.type]);
 
-    left_arm_group_.setPoseTarget(target_pose_in_tray);
-    left_arm_group_.move();
-    deactivateGripper("left_arm");
-//    auto state = getGripperState("left_arm");
-    
+    auto target_pose_in_tray = getTargetWorldPose(part.pose, agv, arm);
+    ROS_INFO_STREAM("Settled tray pose:" << target_pose_in_tray.position.x << " " 
+                                            << target_pose_in_tray.position.y << " "
+                                            << target_pose_in_tray.position.z);
+    ros::Duration(3.0).sleep();
+    auto left_state = getGripperState("left_arm");
+    auto right_state = getGripperState("right_arm");
+    target_pose_in_tray.position.z += (ABOVE_TARGET + 1.5*model_height[part.type]);
+    geometry_msgs::Pose currentPose;
+    if (left_state.attached) {
+        goToPresetLocation(agv2_);
+        currentPose = right_arm_group_.getCurrentPose().pose;
+        target_pose_in_tray.orientation.x = currentPose.orientation.x;
+        target_pose_in_tray.orientation.y = currentPose.orientation.y;
+        target_pose_in_tray.orientation.z = currentPose.orientation.z;
+        target_pose_in_tray.orientation.w = currentPose.orientation.w;
+        left_arm_group_.setPoseTarget(target_pose_in_tray);
+        left_arm_group_.move();
+        deactivateGripper("left_arm");
+    } else if (right_state.attached){
+        goToPresetLocation(agv2_right_);
+        currentPose = right_arm_group_.getCurrentPose().pose;
+        target_pose_in_tray.orientation.x = currentPose.orientation.x;
+        target_pose_in_tray.orientation.y = currentPose.orientation.y;
+        target_pose_in_tray.orientation.z = currentPose.orientation.z;
+        target_pose_in_tray.orientation.w = currentPose.orientation.w;
+
+        right_arm_group_.setPoseTarget(target_pose_in_tray);
+        right_arm_group_.move();
+        deactivateGripper("right_arm");
+    }
     ros::Duration(2).sleep();
-//    if (state.attached) {
-//        std::cout << "Part faulty: " << is_part_faulty << std::endl;
     if (is_part_faulty) {
-        std::cout << "Part faulty inside: " << is_part_faulty << std::endl;
+        ROS_INFO_STREAM("Part faulty inside: " << is_part_faulty);
         part.pose = faulty_part_pose;
         pickPart(part);
         is_part_faulty = false;
-        goToPresetLocation(agv2_org);
+        goToPresetLocation(agv2_);
         goToPresetLocation(start_);
         deactivateGripper("left_arm");
         return false;
     }
-//        goToPresetLocation(agv2_org);
-
-//    }
     return true;
 }
 
-void GantryControl::gantryGo(PresetLocation location) {
-    double x,y,a;
-    x = location.gantry[0];
-    y = location.gantry[1];
-    a = location.gantry[2];
-    location.gantry[0] = 0;
-    location.gantry[2] = 0;
-    goToPresetLocation(location);
-    location.gantry[0] = x;
-    goToPresetLocation(location);
-    location.gantry[2] = a;
-    goToPresetLocation(location);
-}
+// void GantryControl::gantryGo(PresetLocation location) {
+//     double x,y,a;
+//     x = location.gantry[0];
+//     y = location.gantry[1];
+//     a = location.gantry[2];
+//     location.gantry[0] = 0;
+//     location.gantry[2] = 0;
+//     goToPresetLocation(location);
+//     location.gantry[0] = x;
+//     goToPresetLocation(location);
+//     location.gantry[2] = a;
+//     goToPresetLocation(location);
+// }
 
-void GantryControl::gantryCome(PresetLocation location) {
-    location.gantry[0] = 0;
-    goToPresetLocation(location);
-    location.gantry[1] = 0;
-    goToPresetLocation(location);
-    location.gantry[2] = 0;
-    goToPresetLocation(location);
-    auto state = getGripperState("left_arm");
-    if (state.attached)
-        deactivateGripper("left_arm");
-}
+// void GantryControl::gantryCome(PresetLocation location) {
+//     location.gantry[0] = 0;
+//     goToPresetLocation(location);
+//     location.gantry[1] = 0;
+//     goToPresetLocation(location);
+//     location.gantry[2] = 0;
+//     goToPresetLocation(location);
+//     auto state = getGripperState("left_arm");
+//     if (state.attached)
+//         deactivateGripper("left_arm");
+// }
 
 bool GantryControl::move2start ( float x, float y ) {
 

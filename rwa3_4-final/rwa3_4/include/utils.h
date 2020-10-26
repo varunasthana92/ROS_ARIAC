@@ -60,7 +60,7 @@ typedef struct PresetLocation {
     std::vector<double> right_arm;
 } start, bin3, agv1, agv2, cam1, cam2, cam3, cam4,
   cam5, cam6, cam7, cam8, cam9, cam10, cam11,
-  cam12, cam13, cam14, cam15, cam16, cam17;
+  cam12, cam13, cam14, cam15, cam16, cam17, flipped_pulley;
 
 
 typedef struct Part {
