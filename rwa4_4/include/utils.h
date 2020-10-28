@@ -85,12 +85,14 @@ typedef struct Shipment {
     std::string shipment_type;
     std::string agv_id;
     std::vector<Product> products;
+    int prodComplete = 0;
     order* parent_order;
 } shipment;
 
 typedef struct Product {
     std::string type;
     geometry_msgs::Pose pose; //thisone
+    geometry_msgs::Pose agv_world_pose;
     part p; // NEW here!
     // std::string frame_of_origin;
     geometry_msgs::Pose actual_pose;
@@ -103,6 +105,7 @@ typedef struct Product {
     bool high_priority;
     int correction_attempts;
     int service_attempts;
+    bool part_placed = false;
 
     // Product(); // contructor
 } product;
@@ -119,5 +122,9 @@ typedef struct Stats {
   int fails = 0;
 } stats;
 
+struct agvInfo{
+    std::unordered_map<std::string, Product>> prod_on_tray;
+    int count = 0;
+};
 
 #endif

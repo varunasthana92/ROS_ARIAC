@@ -24,10 +24,12 @@ public:
 class BuildClass{
 private:
     std::string pick;
+    agvInfo avg1, agv2;
+    Parts *conveyor_Part = NULL;
     allStaticParts non_moving_part_data;
     bool callBackOnce[16];   // for 16 logical cameras, not including onveyor belt camera cam_id = 1
 public:
-    Order order_recieved;
+    std::vector<Order> allOrders;
 public:
     BuildClass(){
         for(int i = 0; i < 16; ++i){
@@ -38,5 +40,4 @@ public:
     int queryPart(Product &prod);    // pass by reference
     void logical_camera_callback(const nist_gear::LogicalCameraImage::ConstPtr & msg, int cam_id);
 };
-
 #endif

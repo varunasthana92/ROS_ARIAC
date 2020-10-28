@@ -42,7 +42,6 @@
 
 
 
-
 int main(int argc, char ** argv) {
     ros::init(argc, argv, "rwa3_node");
     ros::NodeHandle node;
@@ -99,12 +98,21 @@ int main(int argc, char ** argv) {
     //--this bin found one of the parts in the order
     
     std::string arm = "left";
-    for(auto &shipment: buildObj.order_recieved.shipments) {
-        for(auto &product: shipment.products) {
+
+    for(int oid =0; oid < buildObj.allOrders.size(); ++oid){
+        auto &shipment = buildObj.allOrders[oid].shipments;
+        if(shipment.prodComplete == shipment.products.size()){
+            continue;
+        }
+        for(auto &product: shipment.products){
             do {
-                buildObj.queryPart(product);
+                product.parent_shipment = &shipment;
+                if(!buildObj.queryPart(product)){
+                    shipment.products.pushback(products);
+                    break;
+                }
                 ROS_INFO_STREAM("For product " << product.tray << " cam " << product.p.camFrame);
-//                gantry.conveyor();
+                // gantry.conveyor();
                 // ROS_INFO_STREAM("Preloc size " << gantry.preLoc.size());
                 ROS_INFO_STREAM("Position of trg y:" << product.p.pose.position.y);
                 float Y_pose = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y );
@@ -122,7 +130,15 @@ int main(int argc, char ** argv) {
                     gantry.activateGripper("right_arm");
                     gantry.deactivateGripper("left_arm");
                 }
-                }while(!gantry.placePart(product.p, shipment.agv_id, arm, node));
+                int status = 0;
+                if(shipment.agv_id == "agv1")
+                    status = gantry.placePart(product, shipment.agv_id, arm, buildObj.agv1);
+                else:
+                    status = gantry.placePart(product, shipment.agv_id, arm, buildObj.agv2);
+
+                if(status)
+                    shipment.prodComplete++;
+            }while(!status);
 
 //            gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
         }
