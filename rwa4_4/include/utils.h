@@ -87,6 +87,7 @@ typedef struct Shipment {
     std::vector<Product> products;
     int prodComplete = 0;
     order* parent_order;
+    int parent_order_idx;
 } shipment;
 
 typedef struct Product {
@@ -123,7 +124,7 @@ typedef struct Stats {
 } stats;
 
 struct agvInfo{
-    std::unordered_map<std::string, Product>> prod_on_tray;
+    std::unordered_map<std::string, Product> prod_on_tray;
     int count = 0;
 };
 

@@ -24,8 +24,8 @@ public:
 class BuildClass{
 private:
     std::string pick;
-    agvInfo avg1, agv2;
-    Parts *conveyor_Part = NULL;
+    agvInfo agv1, agv2;
+    Part *conveyor_Part = NULL;
     allStaticParts non_moving_part_data;
     bool callBackOnce[16];   // for 16 logical cameras, not including onveyor belt camera cam_id = 1
 public:

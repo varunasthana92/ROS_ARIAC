@@ -480,7 +480,7 @@ bool GantryControl::pickPart(part part){
 bool GantryControl::placePart(product &product,
                               std::string agv,
                               std::string arm,
-                              agvInfo &avg_data){
+                              agvInfo &agv_data){
     Part part = product.p;
 
     auto target_pose_in_tray = getTargetWorldPose(part.pose, agv, arm);
@@ -527,7 +527,7 @@ bool GantryControl::placePart(product &product,
         product.agv_world_pose = target_pose_in_tray;
         agv_data.prod_on_tray[product.type].push_back(product);
         agv_data.count++;
-        
+
         deactivateGripper("right_arm");
     }
     
