@@ -99,35 +99,53 @@ int main(int argc, char ** argv) {
     //--this bin found one of the parts in the order
     
     std::string arm = "left";
-    for(auto &shipment: buildObj.order_recieved.shipments) {
-        for(auto &product: shipment.products) {
-            do {
-                buildObj.queryPart(product);
-                ROS_INFO_STREAM("For product " << product.tray << " cam " << product.p.camFrame);
-//                gantry.conveyor();
-                // ROS_INFO_STREAM("Preloc size " << gantry.preLoc.size());
-                ROS_INFO_STREAM("Position of trg y:" << product.p.pose.position.y);
-                float Y_pose = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y );
-                // gantry.gantryGo(gantry.preLoc[product.p.camFrame]);
-                gantry.pickPart(product.p);
+    for(int oid =0; oid < buildObj.allOrders.size(); ++oid){
+            // auto &allshipment = buildObj.allOrders[oid].shipments;
+        for(auto &shipment : buildObj.allOrders[oid].shipments){
+            shipment.parent_order = &buildObj.allOrders[oid];
+            shipment.parent_order_idx = oid;
+            if(shipment.prodComplete == shipment.products.size()){
+                continue;
+            }
+            for(auto &product: shipment.products){
+                int status = 0;
+                do {
+                    product.parent_shipment = &shipment;
+                    if(!buildObj.queryPart(product)){
+                        shipment.products.push_back(product);
+                        break;
+                    }
+                    ROS_INFO_STREAM("For product " << product.tray << " cam " << product.p.camFrame);
+                    // gantry.conveyor();
+                    // ROS_INFO_STREAM("Preloc size " << gantry.preLoc.size());
+                    ROS_INFO_STREAM("Position of trg y:" << product.p.pose.position.y);
+                    float Y_pose = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y );
+                    // gantry.gantryGo(gantry.preLoc[product.p.camFrame]);
+                    gantry.pickPart(product.p);
 
-                //geometry_msgs::Pose robot_pose = gantry.getRobotPose();
-                gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose);
-                // gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
-                product.p.pose=product.pose;
-                if (product.p.pose.orientation.x == 1 || product.p.pose.orientation.x == -1) {
-                    std::cout << "product.p.pose.orientation.x inside: " << product.p.pose.orientation.x << std::endl;
-                    gantry.flipPart();
-                    arm = "right";
-                    gantry.activateGripper("right_arm");
-                    gantry.deactivateGripper("left_arm");
-                }
-                }while(!gantry.placePart(product.p, shipment.agv_id, arm, node));
+                    //geometry_msgs::Pose robot_pose = gantry.getRobotPose();
+                    gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose);
+                    // gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
+                    product.p.pose=product.pose;
+                    if (product.p.pose.orientation.x == 1 || product.p.pose.orientation.x == -1) {
+                        std::cout << "product.p.pose.orientation.x inside: " << product.p.pose.orientation.x << std::endl;
+                        gantry.flipPart();
+                        arm = "right";
+                        gantry.activateGripper("right_arm");
+                        gantry.deactivateGripper("left_arm");
+                    }
+                    if(shipment.agv_id == "agv1")
+                        status = gantry.placePart(product, shipment.agv_id, arm, buildObj.agv1);
+                    else
+                        status = gantry.placePart(product, shipment.agv_id, arm, buildObj.agv2);
 
-//            gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
+                    if(status)
+                        shipment.prodComplete++;
+                }while(!status);
+            }
+            gantry.goToPresetLocation(gantry.start_);
+            comp.shipAgv(shipment.agv_id, shipment.shipment_type);
         }
-        gantry.goToPresetLocation(gantry.start_);
-        comp.shipAgv(shipment.agv_id, shipment.shipment_type);
     }
 
     // for(int i =0; i < buildObj.order_recieved.shipments.size(); ++i){

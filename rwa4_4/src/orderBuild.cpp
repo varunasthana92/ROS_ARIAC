@@ -33,6 +33,7 @@ void allStaticParts::setPart(similarParts* data){
 void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {
     Product product_recieved;
     Shipment shipment_recieved;
+    Order order_recieved;
     order_recieved.order_id = ordermsg.order_id;
     for(const auto &ship: ordermsg.shipments) {
         shipment_recieved.shipment_type = ship.shipment_type;

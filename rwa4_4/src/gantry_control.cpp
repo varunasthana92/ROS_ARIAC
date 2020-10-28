@@ -479,11 +479,12 @@ bool GantryControl::pickPart(part part){
 //    ros::waitForShutdown();
 }
 
-bool GantryControl::placePart(part part,
+bool GantryControl::placePart(Product &product,
                               std::string agv,
                               std::string arm,
-                              ros::NodeHandle node){
-
+                              agvInfo &agv_data){
+    
+    Part part = product.p;
     auto target_pose_in_tray = getTargetWorldPose(part.pose, agv, arm);
     ROS_INFO_STREAM("Settled tray pose:" << target_pose_in_tray.position.x << " " 
                                             << target_pose_in_tray.position.y << " "
@@ -502,6 +503,15 @@ bool GantryControl::placePart(part part,
         target_pose_in_tray.orientation.w = currentPose.orientation.w;
         left_arm_group_.setPoseTarget(target_pose_in_tray);
         left_arm_group_.move();
+
+        product.agv_world_pose = target_pose_in_tray;
+        product.agv_id = agv;
+        product.part_placed = true;
+        
+        product.agv_world_pose = target_pose_in_tray;
+        agv_data.prod_on_tray[product.type].push_back(product);
+        agv_data.count++;
+
         deactivateGripper("left_arm");
     } else if (right_state.attached){
         goToPresetLocation(agv2_right_);
@@ -513,6 +523,15 @@ bool GantryControl::placePart(part part,
 
         right_arm_group_.setPoseTarget(target_pose_in_tray);
         right_arm_group_.move();
+
+        product.agv_world_pose = target_pose_in_tray;
+        product.agv_id = agv;
+        product.part_placed = true;
+
+        product.agv_world_pose = target_pose_in_tray;
+        agv_data.prod_on_tray[product.type].push_back(product);
+        agv_data.count++;
+
         deactivateGripper("right_arm");
     }
     
