@@ -73,7 +73,7 @@ int main(int argc, char ** argv) {
     BuildClass buildObj;
     logical_cam_subscribers.resize(17);
     for(int i=0; i<17; i++) {
-    logical_cam_subscribers[i] = node.subscribe<nist_gear::LogicalCameraImage>( logical_camera_topics[i], 10, 
+        logical_cam_subscribers[i] = node.subscribe<nist_gear::LogicalCameraImage>( logical_camera_topics[i], 10, 
                                                                           boost::bind(&BuildClass::logical_camera_callback,
                                                                                       &buildObj, _1, i+1));
     }
@@ -87,7 +87,7 @@ int main(int argc, char ** argv) {
     
     GantryControl gantry(node);
     ros::Subscriber quality_sensor_1_sub = node.subscribe("/ariac/quality_control_sensor_1", 1000, &GantryControl::qualityCallback, &gantry);
-    ros::Subscriber logical_camera_17_sub = node.subscribe("/ariac/ariac/logical_camera_17", 1000, &GantryControl::logicalCallback, &gantry);
+    // ros::Subscriber logical_camera_17_sub = node.subscribe("/ariac/ariac/logical_camera_17", 1000, &GantryControl::logicalCallback, &gantry);
     gantry.init();
     gantry.goToPresetLocation(gantry.start_);
 
