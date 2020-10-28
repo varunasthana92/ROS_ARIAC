@@ -49,6 +49,7 @@ void GantryControl::logicalCallback(const nist_gear::LogicalCameraImage& msg) {
         new_pose.header.frame_id = "logical_camera_17_frame";
         new_pose.pose = model_pose;
         tf2::doTransform(new_pose, new_pose, transformStamped);
+        /*
         part_placed_pose_incorrect = new_pose.pose; 
         ROS_INFO_STREAM("Incorrect part pose: " << part_placed_pose_incorrect.position.x << std::endl
                                                 << part_placed_pose_incorrect.position.y << std::endl
@@ -57,6 +58,7 @@ void GantryControl::logicalCallback(const nist_gear::LogicalCameraImage& msg) {
                                                 << part_placed_pose_incorrect.orientation.y << std::endl
                                                 << part_placed_pose_incorrect.orientation.z << std::endl
                                                 << part_placed_pose_incorrect.orientation.w)
+        */
     }
 }
 
@@ -514,7 +516,7 @@ bool GantryControl::placePart(part part,
         deactivateGripper("right_arm");
     }
     
-    bool is_part_placed_correct = poseMatches(target_pose_in_tray, part_placed_pose_incorrect)
+    //bool is_part_placed_correct = poseMatches(target_pose_in_tray, part_placed_pose_incorrect)
     
     ros::Duration(2).sleep();
     if (is_part_faulty) {
@@ -527,6 +529,7 @@ bool GantryControl::placePart(part part,
         deactivateGripper("left_arm");
         return false;
     } 
+    /*
     if (is_part_placed_correct) {
         ROS_INFO_STREAM("Part placed incorrectly: " << is_part_placed_correct);
         part.pose = faulty_part_pose;
@@ -537,7 +540,7 @@ bool GantryControl::placePart(part part,
         deactivateGripper("left_arm");
         return false;
     }
-
+    */
     return true;
 }
 

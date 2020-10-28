@@ -61,6 +61,7 @@ class GantryControl {
     void rotate_gantry(double angle);
     void activateGripper(std::string gripper_id);
     void deactivateGripper(std::string gripper_id);
+    void logicalCallback(const nist_gear::LogicalCameraImage& msg);
     // void gantryGo(PresetLocation location);
     // void gantryCome(PresetLocation location);
     void flipPart();
