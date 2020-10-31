@@ -93,7 +93,7 @@ void BuildClass::logical_camera_callback(const nist_gear::LogicalCameraImage::Co
             part_idx++;
             geometry_msgs::TransformStamped transformStamped;
             try{
-
+                
                 transformStamped = tfBuffer.lookupTransform("world", frame_name, ros::Time(0), timeout);
                 // tf2::Quaternion q(  transformStamped.transform.rotation.x,
                 //                     transformStamped.transform.rotation.y,

@@ -37,20 +37,26 @@
 #include "competition.h"
 #include "utils.h"
 #include "gantry_control.h"
+#include "conveyer.h"
 
 #include <tf2/LinearMath/Quaternion.h>
+
+#include <ros/console.h>
 
 
 
 
 int main(int argc, char ** argv) {
+    if( ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug) ) {
+        ros::console::notifyLoggerLevelsChanged();
+    }
     ros::init(argc, argv, "rwa3_node");
     ros::NodeHandle node;
     ros::AsyncSpinner spinner(50);
     spinner.start();
 
     std::vector<std::string> logical_camera_topics {
-      "/ariac/logical_camera_1",
+    //   "/ariac/logical_camera_1",
       "/ariac/logical_camera_2",
       "/ariac/logical_camera_3",
       "/ariac/logical_camera_4",
@@ -71,12 +77,25 @@ int main(int argc, char ** argv) {
     std::vector<ros::Subscriber> logical_cam_subscribers;
 
     BuildClass buildObj;
-    logical_cam_subscribers.resize(17);
-    for(int i=0; i<17; i++) {
+    logical_cam_subscribers.resize(logical_camera_topics.size());
+    for(int i=0; i<logical_camera_topics.size(); i++) {
     logical_cam_subscribers[i] = node.subscribe<nist_gear::LogicalCameraImage>( logical_camera_topics[i], 10, 
                                                                           boost::bind(&BuildClass::logical_camera_callback,
                                                                                       &buildObj, _1, i+1));
     }
+   
+    // ros::Duration timeout(5.0);
+
+    // geometry_msgs::TransformStamped C_to_W_transform;
+    // tf2_ros::Buffer tfBuffer_;
+    // try {
+	// 	C_to_W_transform = tfBuffer_.lookupTransform("world", "logical_camera_1_frame", ros::Time(0), timeout);
+	// }
+    // catch (tf2::TransformException &ex) {
+    //     ROS_FATAL_STREAM( "Nogt able to find the conveyer camera frame -- " << ex.what());
+    //     ros::Duration(1.0).sleep();
+	// }
+
     Competition comp(node);
     comp.init();
 
@@ -85,99 +104,49 @@ int main(int argc, char ** argv) {
 
     ros::Subscriber order_sub = node.subscribe("/ariac/orders", 1000, &BuildClass::orderCallback, &buildObj);
     
+    ConveyerParts conve(node);
     GantryControl gantry(node);
     ros::Subscriber quality_sensor_1_sub = node.subscribe("/ariac/quality_control_sensor_1", 1000, &GantryControl::qualityCallback, &gantry);
     ros::Subscriber logical_camera_17_sub = node.subscribe("/ariac/ariac/logical_camera_17", 1000, &GantryControl::logicalCallback, &gantry);
     gantry.init();
     gantry.goToPresetLocation(gantry.start_);
 
-    // ros::spinOnce();
-
-    //--1-Read order
-    //--2-Look for parts in this order
-    //--We go to this bin because a camera above
-    //--this bin found one of the parts in the order
-    
     std::string arm = "left";
     for(auto &shipment: buildObj.order_recieved.shipments) {
         for(auto &product: shipment.products) {
             do {
-                buildObj.queryPart(product);
-                ROS_INFO_STREAM("For product " << product.tray << " cam " << product.p.camFrame);
-//                gantry.conveyor();
-                // ROS_INFO_STREAM("Preloc size " << gantry.preLoc.size());
-                ROS_INFO_STREAM("Position of trg y:" << product.p.pose.position.y);
-                float Y_pose = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y );
-                // gantry.gantryGo(gantry.preLoc[product.p.camFrame]);
-                gantry.pickPart(product.p);
+                if(product.type.size()!=0) {
+                    buildObj.queryPart(product);
+                    ROS_INFO_STREAM("For product " << product.tray << " cam " << product.p.camFrame);
+                    // gantry.conveyor();
+                    // ROS_INFO_STREAM("Preloc size " << gantry.preLoc.size());
+                    ROS_INFO_STREAM("Position of trg y:" << product.p.pose.position.y);
+                    float Y_pose = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y );
+                    // gantry.gantryGo(gantry.preLoc[product.p.camFrame]);
+                    gantry.pickPart(product.p);
 
-                //geometry_msgs::Pose robot_pose = gantry.getRobotPose();
-                gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose);
-                // gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
-                product.p.pose=product.pose;
-                if (product.p.pose.orientation.x == 1 || product.p.pose.orientation.x == -1) {
-                    std::cout << "product.p.pose.orientation.x inside: " << product.p.pose.orientation.x << std::endl;
-                    gantry.flipPart();
-                    arm = "right";
-                    gantry.activateGripper("right_arm");
-                    gantry.deactivateGripper("left_arm");
+                    //geometry_msgs::Pose robot_pose = gantry.getRobotPose();
+                    gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose);
+                    // gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
+                    product.p.pose=product.pose;
+                    if (product.p.pose.orientation.x == 1 || product.p.pose.orientation.x == -1) {
+                        std::cout << "product.p.pose.orientation.x inside: " << product.p.pose.orientation.x << std::endl;
+                        gantry.flipPart();
+                        arm = "right";
+                        gantry.activateGripper("right_arm");
+                        gantry.deactivateGripper("left_arm");
+                    }
+                }
+                else {
+                    ROS_INFO_STREAM("No name of part");
                 }
                 }while(!gantry.placePart(product.p, shipment.agv_id, arm, node));
-
-//            gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
+            // gantry.gantryCome(gantry.preLoc[product.p.camFrame]);
         }
         gantry.goToPresetLocation(gantry.start_);
         comp.shipAgv(shipment.agv_id, shipment.shipment_type);
     }
 
-    // for(int i =0; i < buildObj.order_recieved.shipments.size(); ++i){
-    //     for(int j =0; j < buildObj.order_recieved.shipments[i].products.size(); ++j){
-    //         ProdGantryControl
-    //         PresetLocation tempPose = gantry.cam4_;
-    //         tempPose.gantry[0] = my_part.pose.position.x - 0.4;
-    //         tempPose.gantry[1] = -my_part.pose.position.y;
-
-    //         gantry.goToPresetLocation(tempPose);
-    //         part part_in_tray;
-    //         part_in_tray.pose = currProd.pose;
-
-    //         gantry.pickPart(my_part);
-
-    //         std::string agv_to_build =  buildObj.order_recieved.shipments[i].agv_id;
-    //         gantry.placePart(buildObj.order_recieved.shipments[i].products[j].p, "agv2");
-    //         int temp;
-    //         std::cin >> temp;
-    //     }
-    // }
-    // gantry.goToPresetLocation(gantry.bin3_);
-
-
-    // // --You should receive the following information from a camera
-    // part my_part;
-    // my_part.type = "pulley_part_red";
-    // my_part.pose.position.x = 4.365789;
-    // my_part.pose.position.y = 1.173381;
-    // my_part.pose.position.z = 0.728011;
-    // my_part.pose.orientation.x = 0.012;
-    // my_part.pose.orientation.y = -0.004;
-    // my_part.pose.orientation.z = 0.002;
-    // my_part.pose.orientation.w = 1.000;
-
-    // // --get pose of part in tray from /ariac/orders
-    // part part_in_tray;
-    // part_in_tray.type = "pulley_part_red";
-    // part_in_tray.pose.position.x = -0.12;
-    // part_in_tray.pose.position.x = -0.2;
-    // part_in_tray.pose.position.x = 0.0;
-    // part_in_tray.pose.orientation.x = 0.0;
-    // part_in_tray.pose.orientation.y = 0.0;
-    // part_in_tray.pose.orientation.z = 0.0;
-    // part_in_tray.pose.orientation.w = 1.0;
-
-    // // --Go pick the part
-    // gantry.pickPart(my_part);
-    // // --Go place the part
-    // gantry.placePart(part_in_tray, "agv2");
 
     comp.endCompetition();
     spinner.stop();

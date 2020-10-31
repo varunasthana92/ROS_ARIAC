@@ -161,6 +161,7 @@ add_executable(rwa4_node
         src/gantry_control.cpp
         src/utils.cpp
         src/orderBuild.cpp
+        src/conveyer.cpp
         )
 
 ## Rename C++ executable without prefix

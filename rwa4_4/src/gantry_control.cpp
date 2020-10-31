@@ -387,7 +387,10 @@ bool GantryControl::pickPart(part part){
     geometry_msgs::Pose currentPose = left_arm_group_.getCurrentPose().pose;
 
 //    ROS_INFO_STREAM("[left_arm_group_]= " << currentPose.position.x << ", " << currentPose.position.y << "," << currentPose.position.z);
-
+    if(part.type.size()==0) {
+        ROS_INFO_STREAM("Part name is not present");
+        return false;
+    }
     part.pose.position.z = part.pose.position.z + model_height.at(part.type) + GRIPPER_HEIGHT - EPSILON;
     part.pose.orientation.x = currentPose.orientation.x;
     part.pose.orientation.y = currentPose.orientation.y;
