@@ -63,6 +63,7 @@ class GantryControl {
     void activateGripper(std::string gripper_id);
     void deactivateGripper(std::string gripper_id);
     void logicalCallback(const nist_gear::LogicalCameraImage& msg);
+    void pickFromConveyor(const Product &product);
     // void gantryGo(PresetLocation location);
     // void gantryCome(PresetLocation location);
     void flipPart();
@@ -83,6 +84,7 @@ class GantryControl {
     flipped_pulley flipped_pulley_;
     agv1 agv1_, agv1_right_;
     agv2 agv2_, agv2_right_;
+    conveyor_up conveyor_up_;
  
     static const int num_preLoc = 20;
 

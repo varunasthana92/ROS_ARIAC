@@ -82,18 +82,6 @@ GantryControl::GantryControl(ros::NodeHandle & node):
     ROS_INFO_STREAM("[GantryControl::GantryControl] constructor called... ");
 }
 
-void GantryControl::rotate_gantry(double angle) {
-    trajectory_msgs::JointTrajectory command_msg;
-    trajectory_msgs::JointTrajectoryPoint points;
-    points.positions = current_gantry_controller_state_.actual.positions;
-    points.positions[1] = angle;
-    command_msg.joint_names.push_back("small_long_joint");
-    command_msg.joint_names.push_back("torso_base_main_joint");
-    command_msg.joint_names.push_back("torso_rail_joint");
-    command_msg.points.push_back(points);
-    send_command(command_msg);
-}
-
 void GantryControl::init() {
     ROS_INFO_STREAM("[GantryControl::init] init... ");
     double time_called = ros::Time::now().toSec();
@@ -138,6 +126,10 @@ void GantryControl::init() {
     flipped_pulley_.gantry = {0, 0, 0};
     flipped_pulley_.left_arm = {-1.29, -0.25, 1.63, 6.28, 1.63, 3.20};
     flipped_pulley_.right_arm = {1.26, -3.14, -1.76, -0.13, 1.76, 0.88};
+
+    conveyor_up_.gantry = {0, 1.2, 1.29};
+    conveyor_up_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    conveyor_up_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
 
     // setPrelocations();
@@ -201,7 +193,6 @@ void GantryControl::init() {
     // Move robot to init position
     ROS_INFO("[GantryControl::init] Init position ready)...");
 }
-
 
 stats GantryControl::getStats(std::string function) {
     if (function == "init") return init_;
@@ -431,7 +422,7 @@ bool GantryControl::placePart(Product &product,
     }
     if (left_state.attached) {
         goToPresetLocation(agv_in_use);
-        currentPose = right_arm_group_.getCurrentPose().pose;
+        currentPose = left_arm_group_.getCurrentPose().pose;
         target_pose_in_tray.orientation.x = currentPose.orientation.x;
         target_pose_in_tray.orientation.y = currentPose.orientation.y;
         target_pose_in_tray.orientation.z = currentPose.orientation.z;
@@ -497,32 +488,6 @@ bool GantryControl::placePart(Product &product,
     */
     return true;
 }
-
-// void GantryControl::gantryGo(PresetLocation location) {
-//     double x,y,a;
-//     x = location.gantry[0];
-//     y = location.gantry[1];
-//     a = location.gantry[2];
-//     location.gantry[0] = 0;
-//     location.gantry[2] = 0;
-//     goToPresetLocation(location);
-//     location.gantry[0] = x;
-//     goToPresetLocation(location);
-//     location.gantry[2] = a;
-//     goToPresetLocation(location);
-// }
-
-// void GantryControl::gantryCome(PresetLocation location) {
-//     location.gantry[0] = 0;
-//     goToPresetLocation(location);
-//     location.gantry[1] = 0;
-//     goToPresetLocation(location);
-//     location.gantry[2] = 0;
-//     goToPresetLocation(location);
-//     auto state = getGripperState("left_arm");
-//     if (state.attached)
-//         deactivateGripper("left_arm");
-// }
 
 bool GantryControl::move2start ( float x, float y ) {
 
@@ -957,6 +922,42 @@ float GantryControl::move2trg  ( float x, float y ) {
             return -move_trg.gantry[1];
         }
         return 0;
+    }
+}
+
+void GantryControl::pickFromConveyor(const Product &product) {
+    ROS_INFO_STREAM("Going to pick " << product.type << " from conveyor ...");
+    geometry_msgs::Pose estimated_conveyor_pose = product.estimated_conveyor_pose;
+    ROS_DEBUG_STREAM("Estimated_conveyor_pose: " << estimated_conveyor_pose.position.x << std::endl
+                                                 << estimated_conveyor_pose.position.y << std::endl
+                                                 << estimated_conveyor_pose.position.z << std::endl
+                                                 << estimated_conveyor_pose.orientation.x << std::endl
+                                                 << estimated_conveyor_pose.orientation.y << std::endl
+                                                 << estimated_conveyor_pose.orientation.z << std::endl
+                                                 << estimated_conveyor_pose.orientation.w);
+    conveyor_up_.gantry = {0, -estimated_conveyor_pose.position.y, 1.29};
+    goToPresetLocation(conveyor_up_);
+
+    conveyor_up_.gantry = {estimated_conveyor_pose.position.x, -estimated_conveyor_pose.position.y, 1.29};
+    goToPresetLocation(conveyor_up_);
+
+    ROS_INFO_STREAM("Waiting to pick up ... ");
+    activateGripper("left_arm");
+    auto left_gripper_status = getGripperState("left_arm");
+    while (!left_gripper_status.attached) {
+       geometry_msgs::Pose pickup_pose;
+       pickup_pose.position.x = estimated_conveyor_pose.position.x;
+       pickup_pose.position.y = estimated_conveyor_pose.position.y;
+       // pickup_pose.position.z = 0.87 + 0.01;
+       pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height.at(product.type) + GRIPPER_HEIGHT - EPSILON;
+
+       auto currentPose = left_arm_group_.getCurrentPose().pose;
+       pickup_pose.orientation.x = currentPose.orientation.x;
+       pickup_pose.orientation.y = currentPose.orientation.y;
+       pickup_pose.orientation.z = currentPose.orientation.z;
+       pickup_pose.orientation.w = currentPose.orientation.w;
+       left_arm_group_.setPoseTarget(pickup_pose);
+       left_arm_group_.move();    
     }
 }
 

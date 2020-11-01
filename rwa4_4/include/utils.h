@@ -53,7 +53,7 @@ typedef struct PresetLocation {
     std::vector<double> gantry;
     std::vector<double> left_arm;
     std::vector<double> right_arm;
-} start, bin3, agv1, agv2, flipped_pulley;
+} start, bin3, agv1, agv2, flipped_pulley, conveyor_up;
 
 
 typedef struct Part {
