@@ -1,5 +1,6 @@
 #include "orderBuild.h"
 #include <unordered_map>
+#include "conveyer.h"
 
 int allStaticParts::getPart(Product &prod){
     std::string name = prod.type;
@@ -58,6 +59,7 @@ void BuildClass::setList(Product &product_received, int num_shipment, std::strin
         }
         
     }else{
+        product_received.mv_prod = true;
         if(mv_order){
             struct all_Order *temp = new(all_Order);
             temp->prod = mv_order->prod;
@@ -86,61 +88,87 @@ void BuildClass::setList(Product &product_received, int num_shipment, std::strin
     return;    
 }
 
-struct all_Order* BuildClass::getList(){
+struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
     int st_order_shipment_num_top = -1;
     int mv_order_shipment_num_top = -1;
     if(mv_order){
         mv_order_shipment_num_top = mv_order->ship_num;
-    }else{
-        mv_order_shipment_num_top = -1;
     }
+    
     if(st_order){
         st_order_shipment_num_top = st_order->ship_num;
-    }else{
-        st_order_shipment_num_top = -1;
     }
 
     struct all_Order* mv_temp = NULL;
     struct all_Order* st_temp = NULL;
-    if(mv_order_shipment_num_top != -1){
-        mv_temp = mv_order;
-        mv_order = mv_order->next;
-        mv_temp->next = NULL;
-    }
 
-    if(st_order_shipment_num_top != -1){
+    if(st_order_shipment_num_top != -1 && mv_order_shipment_num_top != -1){
         st_temp = st_order;
-        st_order = st_order->next;
-        st_temp->next = NULL;
-    }
-
-    if(mv_temp && st_temp){
+        mv_temp = mv_order;
         if(mv_temp->ship_num >= st_temp->ship_num){
             curr_build_shipment_num = mv_temp->ship_num;
-            st_temp->next = st_order;
-            st_order = st_temp;
-            ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
-            return mv_temp;
-        }else{
-            curr_build_shipment_num = st_temp->ship_num;
-            mv_temp->next = mv_order;
-            mv_order = mv_temp;
-            ROS_INFO_STREAM("Static Part " << st_temp->prod.type);
-            return st_temp;
+            struct all_Order* mv_dummy_head = new(all_Order);
+            mv_dummy_head->ship_num = -2;
+            mv_dummy_head->next = mv_order;
+            struct all_Order* mv_temp_prev = mv_dummy_head;
+            do{
+                bool status = conveyerPartsObj.giveClosestPart(mv_temp->prod.type, mv_temp->prod.estimated_conveyor_pose);
+                if(status){
+                    ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
+                    mv_temp_prev->next = mv_temp->next;
+                    mv_order = mv_dummy_head->next;
+                    delete(mv_dummy_head);
+                    ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
+                    return mv_temp;
+                }
+                mv_temp_prev = mv_temp;
+                mv_temp = mv_temp->next;
+            }while(mv_temp && mv_temp->ship_num == curr_build_shipment_num);
+        }
+        curr_build_shipment_num = st_temp->ship_num;
+        st_order = st_order->next;
+        st_temp->next = NULL;
+        ROS_INFO_STREAM("Static Part " << st_temp->prod.type);
+        return st_temp;
+
+    }else if(st_order_shipment_num_top != -1){
+        st_temp = st_order;
+        curr_build_shipment_num = st_temp->ship_num;
+        st_order = st_order->next;
+        st_temp->next = NULL;
+        ROS_INFO_STREAM("Static Part " << st_temp->prod.type);
+        return st_temp;
+
+    }else if(mv_order_shipment_num_top != -1){
+        mv_temp = mv_order;
+        curr_build_shipment_num = mv_temp->ship_num;
+
+        struct all_Order* mv_dummy_head = new(all_Order);
+        mv_dummy_head->ship_num = -2;
+        mv_dummy_head->next = mv_order;
+        struct all_Order* mv_temp_prev = mv_dummy_head;
+
+        bool status = false;
+        while(!status){
+            status = conveyerPartsObj.giveClosestPart(mv_temp->prod.type, mv_temp->prod.estimated_conveyor_pose);
+            if(status){
+                ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
+                mv_temp_prev->next = mv_temp->next;
+                mv_order = mv_dummy_head->next;
+                delete(mv_dummy_head);
+                ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
+                return mv_temp;
+            }
+            mv_temp_prev = mv_temp;
+            mv_temp = mv_temp->next;
+            if(mv_temp == NULL){
+                mv_temp_prev = mv_dummy_head;
+                mv_temp = mv_order;
+            }
         }
     }
 
-    if(mv_temp){
-        curr_build_shipment_num = mv_temp->ship_num;
-        ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
-        return mv_temp;
-    }else if(st_temp){
-        curr_build_shipment_num = st_temp->ship_num;
-        ROS_INFO_STREAM("Static Part " << st_temp->prod.type);
-        return st_temp;
-    }else{
-        return NULL;
-    }
+    return NULL;
 }
 
 void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {

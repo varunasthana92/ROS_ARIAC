@@ -37,6 +37,7 @@
 #include <trajectory_msgs/JointTrajectory.h>
 
 #include "utils.h"
+#include "conveyer.h"
 #include <nist_gear/LogicalCameraImage.h>
 
 

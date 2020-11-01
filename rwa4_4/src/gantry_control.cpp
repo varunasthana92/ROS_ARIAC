@@ -4,6 +4,8 @@
 #include <tf2_ros/static_transform_broadcaster.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <nist_gear/LogicalCameraImage.h>
+#include "utils.h"
+#include "conveyer.h"
 
 // Quality control sensor 1 callback
 void GantryControl::qualityCallback(const nist_gear::LogicalCameraImage& msg) {

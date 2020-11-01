@@ -37,6 +37,7 @@
 #include "competition.h"
 #include "utils.h"
 #include "gantry_control.h"
+#include "conveyer.h"
 
 #include <tf2/LinearMath/Quaternion.h>
 
@@ -71,6 +72,7 @@ int main(int argc, char ** argv) {
     std::vector<ros::Subscriber> logical_cam_subscribers;
 
     BuildClass buildObj;
+    ConveyerParts conveyerPartsObj;
     logical_cam_subscribers.resize(17);
     for(int i=0; i<17; i++) {
     logical_cam_subscribers[i] = node.subscribe<nist_gear::LogicalCameraImage>( logical_camera_topics[i], 10, 
@@ -97,10 +99,9 @@ int main(int argc, char ** argv) {
     std::string curr_shipment_type;
     struct all_Order* curr_prod = new(all_Order);
 
-    ros::spinOnce();
     while(buildObj.st_order || buildObj.mv_order){
         delete(curr_prod);
-        curr_prod = buildObj.getList();
+        curr_prod = buildObj.getList(conveyerPartsObj);
 
         if(curr_build_shipment_num == -1){
             curr_build_shipment_num = curr_prod->ship_num;
@@ -142,6 +143,10 @@ int main(int argc, char ** argv) {
             else
                 status = gantry.placePart(product, product.agv_id, arm, buildObj.agv2);
         }while(!status);
+
+        // if(status){
+            
+        // }
     }
 
     gantry.goToPresetLocation(gantry.start_);

@@ -5,6 +5,7 @@
 #include <nist_gear/LogicalCameraImage.h>
 #include <nist_gear/Order.h>
 #include "utils.h"
+#include "conveyer.h"
 
 struct all_Order{
     Product prod;
@@ -56,7 +57,7 @@ public:
     }
     void orderCallback(const nist_gear::Order& ordermsg);
     void setList(Product &product_received, int num_shipment, std::string shipment_type);
-    struct all_Order* getList();
+    struct all_Order* getList(ConveyerParts &conveyerPartsObj);
     int queryPart(Product &prod);    // pass by reference
     void logical_camera_callback(const nist_gear::LogicalCameraImage::ConstPtr & msg, int cam_id);
 };

@@ -91,6 +91,7 @@ typedef struct Product {
     // std::string frame_of_origin;
     // geometry_msgs::Pose actual_pose;
     // std::string actual_pose_frame;
+    geometry_msgs::Pose estimated_conveyor_pose; //pose for robot in world frame- wait at it with gripper activated
     std::string agv_id;
     std::string tray;
     std::string arm_name;
@@ -100,6 +101,7 @@ typedef struct Product {
     int correction_attempts;
     int service_attempts;
     bool part_placed = false;
+    bool mv_prod = false;
     int shipId;
 
     // Product(); // contructor
