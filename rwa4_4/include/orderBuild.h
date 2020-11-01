@@ -58,6 +58,7 @@ public:
     void orderCallback(const nist_gear::Order& ordermsg);
     void setList(Product &product_received, int num_shipment, std::string shipment_type);
     struct all_Order* getList(ConveyerParts &conveyerPartsObj);
+    // struct all_Order* getList();
     int queryPart(Product &prod);    // pass by reference
     void logical_camera_callback(const nist_gear::LogicalCameraImage::ConstPtr & msg, int cam_id);
 };

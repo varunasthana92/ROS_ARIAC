@@ -32,7 +32,9 @@ void allStaticParts::setPart(similarParts* data){
 }
 
 void BuildClass::setList(Product &product_received, int num_shipment, std::string shipment_type){
+    ROS_DEBUG_STREAM("Setting part  " << product_received.type);
     if(queryPart(product_received)){
+        ROS_INFO_STREAM("in static lsit part  " << product_received.type);
         if(st_order){
             struct all_Order *temp = new(all_Order);
             temp->prod = st_order->prod;
@@ -59,6 +61,7 @@ void BuildClass::setList(Product &product_received, int num_shipment, std::strin
         }
         
     }else{
+        ROS_INFO_STREAM("in moving lsit part  " << product_received.type);
         product_received.mv_prod = true;
         if(mv_order){
             struct all_Order *temp = new(all_Order);
@@ -92,10 +95,12 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
     int st_order_shipment_num_top = -1;
     int mv_order_shipment_num_top = -1;
     if(mv_order){
+        ROS_DEBUG_STREAM("For moving lsit  " << mv_order->prod.type);
         mv_order_shipment_num_top = mv_order->ship_num;
     }
     
     if(st_order){
+        ROS_DEBUG_STREAM("For static list  " << st_order->prod.type);
         st_order_shipment_num_top = st_order->ship_num;
     }
 
@@ -113,6 +118,7 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
             struct all_Order* mv_temp_prev = mv_dummy_head;
             do{
                 bool status = conveyerPartsObj.giveClosestPart(mv_temp->prod.type, mv_temp->prod.estimated_conveyor_pose);
+                // bool status = false;
                 if(status){
                     ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
                     mv_temp_prev->next = mv_temp->next;
@@ -229,7 +235,7 @@ void BuildClass::logical_camera_callback(const nist_gear::LogicalCameraImage::Co
             part_idx++;
             geometry_msgs::TransformStamped transformStamped;
             try{
-
+                
                 transformStamped = tfBuffer.lookupTransform("world", frame_name, ros::Time(0), timeout);
                 // tf2::Quaternion q(  transformStamped.transform.rotation.x,
                 //                     transformStamped.transform.rotation.y,

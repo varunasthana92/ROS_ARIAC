@@ -41,10 +41,15 @@
 
 #include <tf2/LinearMath/Quaternion.h>
 
+#include <ros/console.h>
+
 
 
 
 int main(int argc, char ** argv) {
+    if( ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug) ) {
+        ros::console::notifyLoggerLevelsChanged();
+    }
     ros::init(argc, argv, "rwa3_node");
     ros::NodeHandle node;
     ros::AsyncSpinner spinner(50);
@@ -72,13 +77,25 @@ int main(int argc, char ** argv) {
     std::vector<ros::Subscriber> logical_cam_subscribers;
 
     BuildClass buildObj;
-    ConveyerParts conveyerPartsObj;
-    logical_cam_subscribers.resize(17);
-    for(int i=0; i<17; i++) {
+    logical_cam_subscribers.resize(logical_camera_topics.size());
+    for(int i=0; i<logical_camera_topics.size(); i++) {
     logical_cam_subscribers[i] = node.subscribe<nist_gear::LogicalCameraImage>( logical_camera_topics[i], 10, 
                                                                           boost::bind(&BuildClass::logical_camera_callback,
                                                                                       &buildObj, _1, i+1));
     }
+   
+    // ros::Duration timeout(5.0);
+
+    // geometry_msgs::TransformStamped C_to_W_transform;
+    // tf2_ros::Buffer tfBuffer_;
+    // try {
+	// 	C_to_W_transform = tfBuffer_.lookupTransform("world", "logical_camera_1_frame", ros::Time(0), timeout);
+	// }
+    // catch (tf2::TransformException &ex) {
+    //     ROS_FATAL_STREAM( "Nogt able to find the conveyer camera frame -- " << ex.what());
+    //     ros::Duration(1.0).sleep();
+	// }
+
     Competition comp(node);
     comp.init();
 
@@ -87,12 +104,13 @@ int main(int argc, char ** argv) {
 
     ros::Subscriber order_sub = node.subscribe("/ariac/orders", 1000, &BuildClass::orderCallback, &buildObj);
     
+    ConveyerParts conveyerPartsObj(node);
     GantryControl gantry(node);
     ros::Subscriber quality_sensor_1_sub = node.subscribe("/ariac/quality_control_sensor_1", 1000, &GantryControl::qualityCallback, &gantry);
     ros::Subscriber logical_camera_17_sub = node.subscribe("/ariac/ariac/logical_camera_17", 1000, &GantryControl::logicalCallback, &gantry);
     gantry.init();
     gantry.goToPresetLocation(gantry.start_);
-    
+       
     std::string arm = "left";
     int curr_build_shipment_num = -1;
     std::string curr_agv;
@@ -100,9 +118,10 @@ int main(int argc, char ** argv) {
     struct all_Order* curr_prod = new(all_Order);
 
     while(buildObj.st_order || buildObj.mv_order){
+
         delete(curr_prod);
         curr_prod = buildObj.getList(conveyerPartsObj);
-
+        ROS_DEBUG_STREAM("For shipement " << curr_prod->ship_num);
         if(curr_build_shipment_num == -1){
             curr_build_shipment_num = curr_prod->ship_num;
             curr_agv = curr_prod->prod.agv_id;
@@ -116,8 +135,8 @@ int main(int argc, char ** argv) {
             curr_build_shipment_num = curr_prod->ship_num;
             curr_agv = curr_prod->prod.agv_id;
             curr_shipment_type = curr_prod->shipment_type;
-
         }
+
         ROS_INFO_STREAM("For shipement " << curr_prod->ship_num);
         arm = "left";
         bool status = true;
@@ -151,34 +170,6 @@ int main(int argc, char ** argv) {
 
     gantry.goToPresetLocation(gantry.start_);
     comp.shipAgv(curr_agv, curr_shipment_type);
-
-    // // --You should receive the following information from a camera
-    // part my_part;
-    // my_part.type = "pulley_part_red";
-    // my_part.pose.position.x = 4.365789;
-    // my_part.pose.position.y = 1.173381;
-    // my_part.pose.position.z = 0.728011;
-    // my_part.pose.orientation.x = 0.012;
-    // my_part.pose.orientation.y = -0.004;
-    // my_part.pose.orientation.z = 0.002;
-    // my_part.pose.orientation.w = 1.000;
-
-    // // --get pose of part in tray from /ariac/orders
-    // part part_in_tray;
-    // part_in_tray.type = "pulley_part_red";
-    // part_in_tray.pose.position.x = -0.12;
-    // part_in_tray.pose.position.x = -0.2;
-    // part_in_tray.pose.position.x = 0.0;
-    // part_in_tray.pose.orientation.x = 0.0;
-    // part_in_tray.pose.orientation.y = 0.0;
-    // part_in_tray.pose.orientation.z = 0.0;
-    // part_in_tray.pose.orientation.w = 1.0;
-
-    // // --Go pick the part
-    // gantry.pickPart(my_part);
-    // // --Go place the part
-    // gantry.placePart(part_in_tray, "agv2");
-
     comp.endCompetition();
     spinner.stop();
     ros::shutdown();
