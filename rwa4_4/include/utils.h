@@ -49,18 +49,11 @@ enum PartStates {FREE, BOOKED, UNREACHABLE, ON_TRAY, GRIPPED, GOING_HOME,
   REMOVE_FROM_TRAY, LOST};
 
 
-enum WayPoints {START, CAM1, CAM2, CAM3, CAM4, CAM5, CAM6, CAM7,
-                CAM8, CAM9, CAM10, CAM11, CAM12, CAM13, CAM14,
-                CAM15, CAM16, CAM17, AGV1, AGV2};
-
-
 typedef struct PresetLocation {
     std::vector<double> gantry;
     std::vector<double> left_arm;
     std::vector<double> right_arm;
-} start, bin3, agv1, agv2, cam1, cam2, cam3, cam4,
-  cam5, cam6, cam7, cam8, cam9, cam10, cam11,
-  cam12, cam13, cam14, cam15, cam16, cam17, flipped_pulley;
+} start, bin3, agv1, agv2, flipped_pulley;
 
 
 typedef struct Part {
@@ -85,16 +78,20 @@ typedef struct Shipment {
     std::string shipment_type;
     std::string agv_id;
     std::vector<Product> products;
+    int prodComplete = 0;
     order* parent_order;
+    int parent_order_idx;
 } shipment;
 
 typedef struct Product {
     std::string type;
-    geometry_msgs::Pose pose; //thisone
+    geometry_msgs::Pose pose; //relative pose in tray
+    geometry_msgs::Pose agv_world_pose;
     part p; // NEW here!
     // std::string frame_of_origin;
-    geometry_msgs::Pose actual_pose;
-    std::string actual_pose_frame;
+    // geometry_msgs::Pose actual_pose;
+    // std::string actual_pose_frame;
+    geometry_msgs::Pose estimated_conveyor_pose; //pose for robot in world frame- wait at it with gripper activated
     std::string agv_id;
     std::string tray;
     std::string arm_name;
@@ -103,6 +100,9 @@ typedef struct Product {
     bool high_priority;
     int correction_attempts;
     int service_attempts;
+    bool part_placed = false;
+    bool mv_prod = false;
+    int shipId;
 
     // Product(); // contructor
 } product;
@@ -119,5 +119,9 @@ typedef struct Stats {
   int fails = 0;
 } stats;
 
+struct agvInfo{
+    std::unordered_map<std::string, std::vector<Product>> prod_on_tray;
+    int count = 0;
+};
 
 #endif
