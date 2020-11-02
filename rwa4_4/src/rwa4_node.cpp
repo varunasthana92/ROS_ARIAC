@@ -95,7 +95,7 @@ int main(int argc, char ** argv) {
     //     ROS_FATAL_STREAM( "Nogt able to find the conveyer camera frame -- " << ex.what());
     //     ros::Duration(1.0).sleep();
 	// }
-    for(int i = 0; i < 10; ++i)
+    for(int i = 0; i < 50; ++i)
         ros::spinOnce();
     Competition comp(node);
     comp.init();
