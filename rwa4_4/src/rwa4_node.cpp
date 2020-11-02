@@ -95,7 +95,8 @@ int main(int argc, char ** argv) {
     //     ROS_FATAL_STREAM( "Nogt able to find the conveyer camera frame -- " << ex.what());
     //     ros::Duration(1.0).sleep();
 	// }
-
+    for(int i = 0; i < 10; ++i)
+        ros::spinOnce();
     Competition comp(node);
     comp.init();
 
@@ -146,7 +147,7 @@ int main(int argc, char ** argv) {
                 buildObj.queryPart(product);
             }
             ROS_INFO_STREAM("For product " << product.type << " cam " << product.p.camFrame);
-            ROS_INFO_STREAM("For part " << product.p.type << " cam " << product.p.camFrame);
+            ROS_INFO_STREAM("With mv_prod as" << product.mv_prod);
 
             if (product.mv_prod) {
                 gantry.pickFromConveyor(product);
@@ -156,7 +157,7 @@ int main(int argc, char ** argv) {
                 gantry.pickPart(product.p);
                 gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose);
             }
-            
+
             product.p.pose = product.pose;
             if (product.p.pose.orientation.x == 1 || product.p.pose.orientation.x == -1) {
                 gantry.flipPart();

@@ -24,20 +24,20 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 		// ROS_DEBUG_STREAM("No parts detected on conveyer belt camera");
 		return;
 	}
-	current_pose = getPose_W(msg.models[0].pose);
 	// When seen for the first time set the name, first seen time and first seen position
 	if(msg.models.size()==1 && current_detection.type.size()==0) {
+		current_pose = getPose_W(msg.models[0].pose);
 		if(current_pose.position.y < part_read_limit) {
-			ROS_WARN_STREAM("Not taking in cosideration " << current_pose.position.y);
+			// ROS_WARN_STREAM("Not taking in cosideration " << current_pose.position.y);
 			return;
 		} 
 		current_detection.type = msg.models[0].type;  // Setting name of the part if not assigned
-		ROS_DEBUG_STREAM("Product name on conveyer set to " << current_detection.type);
+		// ROS_DEBUG_STREAM("Product name on conveyer set to " << current_detection.type);
 	}
 	// First pose and time detection
 	if(current_detection.first_look_time == -1) {
 		current_detection.first_look_time = giveCurrentTime();
-		ROS_DEBUG_STREAM("Product on conveyer was watched first at " << current_detection.first_look_time << " seconds");
+		// ROS_DEBUG_STREAM("Product on conveyer was watched first at " << current_detection.first_look_time << " seconds");
 		current_detection.first_pose = getPose_W(msg.models[0].pose);
 		return;
 	}
@@ -49,8 +49,9 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 			return;
 		}
 		current_detection.second_look_time = giveCurrentTime();
-		ROS_DEBUG_STREAM("Product on conveyer was watched second time at " << current_detection.second_look_time << " seconds");
+		// ROS_DEBUG_STREAM("Product on conveyer was watched second time at " << current_detection.second_look_time << " seconds");
 		current_detection.second_pose = getPose_W(msg.models[0].pose);
+		current_detection.current_pose = getPose_W(msg.models[0].pose);
 		calculateSpeed();
 		current_detection.part_set = true;
 		allConveyerParts.emplace_back(current_detection);
@@ -83,10 +84,10 @@ bool ConveyerParts::giveClosestPart(const std::string &part_name, geometry_msgs:
 			ROS_INFO_STREAM("Found the part on conveyer");
 			poseOnConveyer = allConveyerParts[i].current_pose;
 			poseOnConveyer.position.y -= offset;
-			ROS_INFO_STREAM("This pose would be great to pick up a part from conveyer "
-							<< " X : " << poseOnConveyer.position.x
-							<< " Y : " << poseOnConveyer.position.y
-							<< " Z : " << poseOnConveyer.position.z);
+			// ROS_INFO_STREAM("This pose would be great to pick up a part from conveyer "
+			// 				<< " X : " << poseOnConveyer.position.x
+			// 				<< " Y : " << poseOnConveyer.position.y
+			// 				<< " Z : " << poseOnConveyer.position.z);
 			allConveyerParts.erase(allConveyerParts.begin()+i);
 			return true;
 		}
@@ -98,10 +99,10 @@ void ConveyerParts::updateCurrentPoses() {
 	for(auto &part: allConveyerParts) {
 		double time_elapsed = giveCurrentTime() - part.first_look_time;
 		part.current_pose.position.y = part.first_pose.position.y - part.speed*time_elapsed;
-		ROS_DEBUG_STREAM("New position of " << part.type << " is " 
-							<< " X : " << part.current_pose.position.x
-							<< " Y : " << part.current_pose.position.y
-							<< " Z : " << part.current_pose.position.z);
+		// ROS_DEBUG_STREAM("New position of " << part.type << " is " 
+		// 					<< " X : " << part.current_pose.position.x
+		// 					<< " Y : " << part.current_pose.position.y
+		// 					<< " Z : " << part.current_pose.position.z);
 	}
 	return;
 }

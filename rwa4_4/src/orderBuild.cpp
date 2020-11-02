@@ -178,7 +178,6 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
 }
 
 void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {
-    Product product_recieved;
     Shipment shipment_recieved;
     Order order_recieved;
     order_recieved.order_id = ordermsg.order_id;
@@ -188,6 +187,7 @@ void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {
         shipment_recieved.shipment_type = ship.shipment_type;
         shipment_recieved.agv_id = ship.agv_id;
         for(const auto &prod: ship.products) {
+        	Product product_recieved;
             product_recieved.type = prod.type;
             product_recieved.agv_id = ship.agv_id;
             product_recieved.pose = prod.pose;

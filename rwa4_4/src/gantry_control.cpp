@@ -131,7 +131,6 @@ void GantryControl::init() {
     conveyor_up_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     conveyor_up_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-
     // setPrelocations();
     //--Raw pointers are frequently used to refer to the planning group for improved performance.
     //--To start, we will create a pointer that references the current robot’s state.
@@ -935,10 +934,10 @@ void GantryControl::pickFromConveyor(const Product &product) {
                                                  << estimated_conveyor_pose.orientation.y << std::endl
                                                  << estimated_conveyor_pose.orientation.z << std::endl
                                                  << estimated_conveyor_pose.orientation.w);
-    conveyor_up_.gantry = {0, -estimated_conveyor_pose.position.y, 1.29};
+    conveyor_up_.gantry = {0, -estimated_conveyor_pose.position.y + 0.6, 0};
     goToPresetLocation(conveyor_up_);
 
-    conveyor_up_.gantry = {estimated_conveyor_pose.position.x, -estimated_conveyor_pose.position.y, 1.29};
+    conveyor_up_.gantry = {estimated_conveyor_pose.position.x - 0.4, -estimated_conveyor_pose.position.y + 0.6, 0};
     goToPresetLocation(conveyor_up_);
 
     ROS_INFO_STREAM("Waiting to pick up ... ");
