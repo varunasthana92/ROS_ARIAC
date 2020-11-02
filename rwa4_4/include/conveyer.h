@@ -43,7 +43,7 @@ class ConveyerParts {
     double part_read_limit=3.6;
     double max_y_limit=0;
     double conveyer_end_y=0;
-    double offset=1.0;
+    double offset=0.7;
     geometry_msgs::Pose getPose_W(const geometry_msgs::Pose &pose_C);
     ros::NodeHandle node_;
     geometry_msgs::Pose current_pose;

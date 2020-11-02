@@ -24,9 +24,10 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 		// ROS_DEBUG_STREAM("No parts detected on conveyer belt camera");
 		return;
 	}
-	current_pose = getPose_W(msg.models[0].pose);
+	
 	// When seen for the first time set the name, first seen time and first seen position
 	if(msg.models.size()==1 && current_detection.type.size()==0) {
+		current_pose = getPose_W(msg.models[0].pose);
 		if(current_pose.position.y < part_read_limit) {
 			ROS_WARN_STREAM("Not taking in cosideration " << current_pose.position.y);
 			return;
@@ -51,9 +52,10 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 		current_detection.second_look_time = giveCurrentTime();
 		ROS_DEBUG_STREAM("Product on conveyer was watched second time at " << current_detection.second_look_time << " seconds");
 		current_detection.second_pose = getPose_W(msg.models[0].pose);
+		current_detection.current_pose = getPose_W(msg.models[0].pose);
 		calculateSpeed();
 		current_detection.part_set = true;
-		allConveyerParts.emplace_back(current_detection);
+		allConveyerParts.push_back(current_detection);
 		return;
 	}
 	updateCurrentPoses();
