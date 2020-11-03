@@ -93,7 +93,7 @@ bool ConveyerParts::checkPart(const std::string &part_name) {
 void ConveyerParts::pickPoseNow(geometry_msgs::Pose &poseOnConveyer){
 	double time_elapsed = giveCurrentTime() - part2pick.first_look_time;
 	part2pick.current_pose.position.y = part2pick.first_pose.position.y - part2pick.speed*time_elapsed;
-	part2pick.current_pose.position.y -= part2pick.speed*3;
+	part2pick.current_pose.position.y -= part2pick.speed*4;
 	poseOnConveyer = part2pick.current_pose; 
 	return;
 }
