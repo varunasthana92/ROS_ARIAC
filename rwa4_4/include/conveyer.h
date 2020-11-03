@@ -35,6 +35,7 @@ class ConveyerParts {
     Detection current_detection;
     std::vector<Detection> allConveyerParts;
     void conveyerLogicalCameraCallback(const nist_gear::LogicalCameraImage& msg);
+    void pickPoseNow(geometry_msgs::Pose &poseOnConveyer);
     ConveyerParts(ros::NodeHandle& node); // Constructor
     void Init();
     bool checkPart(const std::string &part_name);
@@ -43,7 +44,7 @@ class ConveyerParts {
     double part_read_limit = 3.0;
     double max_y_limit = 0;
     double conveyer_end_y = 0;
-    double offset= 0.7;
+    double offset= 0;
     geometry_msgs::Pose getPose_W(const geometry_msgs::Pose &pose_C);
     ros::NodeHandle node_;
     geometry_msgs::Pose current_pose;
@@ -56,6 +57,7 @@ class ConveyerParts {
     void updateCurrentPoses();
     void checkBoundaries();
     void checkCurrentPartSet();
+    Detection part2pick;
 };
 
 #endif

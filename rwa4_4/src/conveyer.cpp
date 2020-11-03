@@ -30,7 +30,7 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 	// When seen for the first time set the name, first seen time and first seen position
 	if(msg.models.size()==1 && current_detection.type.size()==0) {
 		current_pose = getPose_W(msg.models[0].pose);
-		if(current_pose.position.y <= part_read_limit) {
+		if(current_pose.position.y - 0.0001 <= part_read_limit) {
 			// ROS_WARN_STREAM("Not taking in cosideration " << current_pose.position.y);
 			updateCurrentPoses();
 			checkBoundaries();
@@ -38,7 +38,6 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 		} 
 		current_detection.type = msg.models[0].type;  // Setting name of the part if not assigned
 		ROS_INFO_STREAM("Product name on conveyer set to " << current_detection.type);
-		ROS_FATAL_STREAM("Product y =  " << current_pose.position.y);
 	}
 	// First pose and time detection
 	if(current_detection.first_look_time == -1) {
@@ -91,6 +90,14 @@ bool ConveyerParts::checkPart(const std::string &part_name) {
 	return false;
 }
 
+void ConveyerParts::pickPoseNow(geometry_msgs::Pose &poseOnConveyer){
+	double time_elapsed = giveCurrentTime() - part2pick.first_look_time;
+	part2pick.current_pose.position.y = part2pick.first_pose.position.y - part2pick.speed*time_elapsed;
+	part2pick.current_pose.position.y -= part2pick.speed*3;
+	poseOnConveyer = part2pick.current_pose; 
+	return;
+}
+
 bool ConveyerParts::giveClosestPart(const std::string &part_name, geometry_msgs::Pose &poseOnConveyer) {
 	ROS_WARN_STREAM("No. of parts on conveyer = " << allConveyerParts.size());
 	updateCurrentPoses();
@@ -101,11 +108,14 @@ bool ConveyerParts::giveClosestPart(const std::string &part_name, geometry_msgs:
 			ROS_INFO_STREAM("Found the part on conveyer");
 			poseOnConveyer = allConveyerParts[i].current_pose;
 			poseOnConveyer.position.y -= offset;
-			// ROS_INFO_STREAM("This pose would be great to pick up a part from conveyer "
-			// 				<< " X : " << poseOnConveyer.position.x
-			// 				<< " Y : " << poseOnConveyer.position.y
-			// 				<< " Z : " << poseOnConveyer.position.z);
+			ROS_INFO_STREAM("This pose would be great to pick up a part from conveyer "
+							<< " X : " << poseOnConveyer.position.x
+							<< " Y : " << poseOnConveyer.position.y
+							<< " Z : " << poseOnConveyer.position.z);
+			part2pick = allConveyerParts[i];
 			allConveyerParts.erase(allConveyerParts.begin()+i);
+			
+			// part2pick.current_pose = poseOnConveyer;
 			return true;
 		}
 	}
