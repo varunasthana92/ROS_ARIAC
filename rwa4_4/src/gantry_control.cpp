@@ -10,7 +10,7 @@
 // Quality control sensor 1 callback
 void GantryControl::qualityCallback1(const nist_gear::LogicalCameraImage& msg) {
     if (msg.models.size() != 0) {
-        ROS_INFO_STREAM("Detected faulty part on agv2 : " << (msg.models[0]).type);
+        // ROS_INFO_STREAM("Detected faulty part on agv2 : " << (msg.models[0]).type);
         is_part_faulty_agv2 = true;
         geometry_msgs::Pose model_pose = (msg.models[0]).pose;
         geometry_msgs::TransformStamped transformStamped;
@@ -34,7 +34,7 @@ void GantryControl::qualityCallback1(const nist_gear::LogicalCameraImage& msg) {
 
 void GantryControl::qualityCallback2(const nist_gear::LogicalCameraImage& msg) {
     if (msg.models.size() != 0) {
-        ROS_INFO_STREAM("Detected faulty part n agv1 : " << (msg.models[0]).type);
+        // ROS_INFO_STREAM("Detected faulty part n agv1 : " << (msg.models[0]).type);
         is_part_faulty_agv1 = true;
         geometry_msgs::Pose model_pose = (msg.models[0]).pose;
         geometry_msgs::TransformStamped transformStamped;
@@ -58,8 +58,8 @@ void GantryControl::qualityCallback2(const nist_gear::LogicalCameraImage& msg) {
 
 void GantryControl::logicalCallback16(const nist_gear::LogicalCameraImage& msg) {
     if (msg.models.size() != 0) {
-        ROS_INFO_STREAM("Detected part from logical camera 16 on agv1: " << (msg.models[-1]).type);
-        geometry_msgs::Pose model_pose = (msg.models[-1]).pose;
+        // ROS_INFO_STREAM("Detected part from logical camera 16 on agv1: " << (msg.models[0]).type);
+        geometry_msgs::Pose model_pose = (msg.models[0]).pose;
         geometry_msgs::TransformStamped transformStamped;
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
@@ -90,8 +90,8 @@ void GantryControl::logicalCallback16(const nist_gear::LogicalCameraImage& msg) 
 
 void GantryControl::logicalCallback17(const nist_gear::LogicalCameraImage& msg) {
     if (msg.models.size() != 0) {
-        ROS_INFO_STREAM("Detected part from logical camera: " << (msg.models[-1]).type);
-        geometry_msgs::Pose model_pose = (msg.models[-1]).pose;
+        // ROS_INFO_STREAM("Detected part from logical camera: " << (msg.models[0]).type);
+        geometry_msgs::Pose model_pose = (msg.models[0]).pose;
         geometry_msgs::TransformStamped transformStamped;
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
@@ -385,9 +385,10 @@ bool GantryControl::pickPart(part part){
     	faulty_part_pose = &faulty_part_pose_agv2;
     }
     auto state = getGripperState("left_arm");
-    while(!state.enabled)
+    while(!state.enabled){
         activateGripper("left_arm");
         state = getGripperState("left_arm");
+    }
 
     if (state.enabled) {
         ROS_INFO_STREAM("[Gripper] = enabled");
@@ -1023,10 +1024,10 @@ void GantryControl::pickFromConveyor(const Product &product) {
                                                  << estimated_conveyor_pose.orientation.y << std::endl
                                                  << estimated_conveyor_pose.orientation.z << std::endl
                                                  << estimated_conveyor_pose.orientation.w);
-    conveyor_up_.gantry = {0, -estimated_conveyor_pose.position.y + 0.4, 1.57};
+    conveyor_up_.gantry = {0, -estimated_conveyor_pose.position.y, 0};
     goToPresetLocation(conveyor_up_);
 
-    conveyor_up_.gantry = {estimated_conveyor_pose.position.x, -estimated_conveyor_pose.position.y + 0.4, 1.57};
+    conveyor_up_.gantry = {estimated_conveyor_pose.position.x - 0.4, -estimated_conveyor_pose.position.y, 0};
     goToPresetLocation(conveyor_up_);
 
     ROS_INFO_STREAM("Waiting to pick up ... ");
@@ -1038,8 +1039,8 @@ void GantryControl::pickFromConveyor(const Product &product) {
     }
     geometry_msgs::Pose pickup_pose;
     pickup_pose.position.x = estimated_conveyor_pose.position.x;
-    pickup_pose.position.y = estimated_conveyor_pose.position.y + 0.4;
-    pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height.at(product.type) + GRIPPER_HEIGHT + 0.016 - EPSILON;
+    pickup_pose.position.y = estimated_conveyor_pose.position.y;
+    pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height.at(product.type) + GRIPPER_HEIGHT + 0.0155 - EPSILON;
 
     auto currentPose = left_arm_group_.getCurrentPose().pose;
     pickup_pose.orientation.x = currentPose.orientation.x;

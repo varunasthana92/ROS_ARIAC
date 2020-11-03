@@ -22,24 +22,31 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 	// No part detected
 	if(msg.models.size()!=1 && current_detection.type.size()==0) {
 		// ROS_DEBUG_STREAM("No parts detected on conveyer belt camera");
+		updateCurrentPoses();
+		checkBoundaries();
 		return;
 	}
 	
 	// When seen for the first time set the name, first seen time and first seen position
 	if(msg.models.size()==1 && current_detection.type.size()==0) {
 		current_pose = getPose_W(msg.models[0].pose);
-		if(current_pose.position.y < part_read_limit) {
-			ROS_WARN_STREAM("Not taking in cosideration " << current_pose.position.y);
+		if(current_pose.position.y <= part_read_limit) {
+			// ROS_WARN_STREAM("Not taking in cosideration " << current_pose.position.y);
+			updateCurrentPoses();
+			checkBoundaries();
 			return;
 		} 
 		current_detection.type = msg.models[0].type;  // Setting name of the part if not assigned
-		ROS_DEBUG_STREAM("Product name on conveyer set to " << current_detection.type);
+		ROS_INFO_STREAM("Product name on conveyer set to " << current_detection.type);
+		ROS_FATAL_STREAM("Product y =  " << current_pose.position.y);
 	}
 	// First pose and time detection
 	if(current_detection.first_look_time == -1) {
 		current_detection.first_look_time = giveCurrentTime();
 		ROS_DEBUG_STREAM("Product on conveyer was watched first at " << current_detection.first_look_time << " seconds");
 		current_detection.first_pose = getPose_W(msg.models[0].pose);
+		updateCurrentPoses();
+		checkBoundaries();
 		return;
 	}
 	// Second pose and time and speed
@@ -47,15 +54,18 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 		double present_time = giveCurrentTime();
 		// Too soon and close
 		if(present_time - current_detection.first_look_time <= 0.01) {
+			updateCurrentPoses();
+			checkBoundaries();
 			return;
 		}
 		current_detection.second_look_time = giveCurrentTime();
 		ROS_DEBUG_STREAM("Product on conveyer was watched second time at " << current_detection.second_look_time << " seconds");
 		current_detection.second_pose = getPose_W(msg.models[0].pose);
 		current_detection.current_pose = getPose_W(msg.models[0].pose);
-		calculateSpeed();
 		current_detection.part_set = true;
+		calculateSpeed();
 		allConveyerParts.push_back(current_detection);
+		ROS_WARN_STREAM("No. of parts on conveyer = " << allConveyerParts.size());
 		return;
 	}
 	updateCurrentPoses();
@@ -65,7 +75,9 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 
 void ConveyerParts::checkCurrentPartSet() {
 	if(current_detection.part_set && current_detection.current_pose.position.y < part_read_limit) {
-		ROS_DEBUG_STREAM( current_detection.type << " is well set. Removing data from class");
+		// ROS_WARN_STREAM( " y =" << current_detection.current_pose.position.y);
+		// ROS_DEBUG_STREAM( " with set = " << current_detection.part_set);
+		ROS_WARN_STREAM( current_detection.type << " is well set. Removing data from class");
 		current_detection.emptyDetection();
 	}
 }
@@ -80,15 +92,19 @@ bool ConveyerParts::checkPart(const std::string &part_name) {
 }
 
 bool ConveyerParts::giveClosestPart(const std::string &part_name, geometry_msgs::Pose &poseOnConveyer) {
+	ROS_WARN_STREAM("No. of parts on conveyer = " << allConveyerParts.size());
+	updateCurrentPoses();
+	checkBoundaries();
+	checkCurrentPartSet();
 	for(int i=0; i<allConveyerParts.size(); i++) {
 		if(allConveyerParts[i].type.compare(part_name) == 0) {
 			ROS_INFO_STREAM("Found the part on conveyer");
 			poseOnConveyer = allConveyerParts[i].current_pose;
 			poseOnConveyer.position.y -= offset;
-			ROS_INFO_STREAM("This pose would be great to pick up a part from conveyer "
-							<< " X : " << poseOnConveyer.position.x
-							<< " Y : " << poseOnConveyer.position.y
-							<< " Z : " << poseOnConveyer.position.z);
+			// ROS_INFO_STREAM("This pose would be great to pick up a part from conveyer "
+			// 				<< " X : " << poseOnConveyer.position.x
+			// 				<< " Y : " << poseOnConveyer.position.y
+			// 				<< " Z : " << poseOnConveyer.position.z);
 			allConveyerParts.erase(allConveyerParts.begin()+i);
 			return true;
 		}
@@ -105,18 +121,28 @@ void ConveyerParts::updateCurrentPoses() {
 		// 					<< " Y : " << part.current_pose.position.y
 		// 					<< " Z : " << part.current_pose.position.z);
 	}
+
+	if(current_detection.part_set){
+		double time_elapsed = giveCurrentTime() - current_detection.first_look_time;
+		current_detection.current_pose.position.y = current_detection.first_pose.position.y - current_detection.speed*time_elapsed;
+	}
 	return;
 }
 
 void ConveyerParts::checkBoundaries() {
 	if(allConveyerParts.size()!=0) {
 		double distance_from_end = std::abs(allConveyerParts[0].current_pose.position.y - conveyer_end_y);
-		// ROS_DEBUG_STREAM(allConveyerParts[0].type << " is far at " << distance_from_end);
-		if(distance_from_end <= max_y_limit) {
-			ROS_INFO_STREAM( allConveyerParts[0].type << " is out of limit now. Removing it. ");
+		// ROS_DEBUG_STREAM("Part is far at " << allConveyerParts[0].current_pose.position.y);
+		// if(distance_from_end <= max_y_limit) {
+		if(allConveyerParts[0].current_pose.position.y <= max_y_limit) {
+			ROS_WARN_STREAM( allConveyerParts[0].type << " is out of limit now. Removing it. ");
+			// ROS_WARN_STREAM( "at position y = " << allConveyerParts[0].current_pose.position.y);
+			// ROS_WARN_STREAM("Before boundary check No. of parts on conveyer = " << allConveyerParts.size());
 			allConveyerParts.erase(allConveyerParts.begin());
+			ROS_WARN_STREAM("No. of parts on conveyer = " << allConveyerParts.size());
 		}
 	}
+	
 	return;
 }
 
@@ -148,7 +174,7 @@ ConveyerParts::ConveyerParts(ros::NodeHandle &node) {
 			C_to_W_transform = tfBuffer_.lookupTransform("world", "logical_camera_1_frame", ros::Time(0), timeout);
 		}
 		catch (tf2::TransformException &ex) {
-			ROS_FATAL_STREAM( "Nogt able to find the conveyer camera frame -- " << ex.what());
+			ROS_FATAL_STREAM( "Not able to find the conveyer camera frame -- " << ex.what());
 			ros::Duration(1.0).sleep();
 		}
 		if(C_to_W_transform.child_frame_id.size()>0) found=true; 
@@ -162,9 +188,9 @@ ConveyerParts::ConveyerParts(ros::NodeHandle &node) {
 geometry_msgs::Pose ConveyerParts::getPose_W(const geometry_msgs::Pose &pose_C) {
 	geometry_msgs::Pose pose_now;
 	tf2::doTransform(pose_C, pose_now, C_to_W_transform);
-	ROS_DEBUG_STREAM(" --- Pose in world --- " << " X : " << pose_now.position.x 
-										       << " Y : " << pose_now.position.y
-									 	       << " Z : " << pose_now.position.z);
+	// ROS_DEBUG_STREAM(" --- Pose in world --- " << " X : " << pose_now.position.x 
+	// 									       << " Y : " << pose_now.position.y
+	// 								 	       << " Z : " << pose_now.position.z);
 	return pose_now;
 }
 
