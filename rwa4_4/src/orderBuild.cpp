@@ -13,6 +13,7 @@ int allStaticParts::getPart(Product &prod){
             data = temp->parts_data;     
             delete(temp);
             prod.p = *data;
+            prod.p.agv_id = prod.agv_id;
             return 1;
         }
         // std::cout << "\nread from function " << prod.p.frame << std::endl;
@@ -71,12 +72,14 @@ void BuildClass::setList(Product &product_received, int num_shipment, std::strin
             temp->next = mv_order->next;
 
             mv_order->prod = product_received;
+            mv_order->prod.p.agv_id = product_received.agv_id;
             mv_order->ship_num = num_shipment;
             mv_order->shipment_type = shipment_type;
             mv_order->next = temp;
         }else{
             mv_order = new(all_Order);
             mv_order->prod = product_received;
+            mv_order->prod.p.agv_id = product_received.agv_id;
             mv_order->ship_num = num_shipment;
             mv_order->shipment_type = shipment_type;
             mv_order->next = NULL;
@@ -89,6 +92,37 @@ void BuildClass::setList(Product &product_received, int num_shipment, std::strin
         }
     }
     return;    
+}
+
+void BuildClass::pushList(struct all_Order* prod){
+    struct all_Order* temp;
+    if(prod->prod.mv_prod){
+        temp = mv_order;
+        if(temp == NULL){
+            mv_order = prod;
+            mv_order->next = NULL;
+            return;
+        }
+    }else{
+        queryPart(prod->prod);
+        temp = st_order;
+        if(temp == NULL){
+            st_order = prod;
+            st_order->next = NULL;
+            return;
+        }
+    }
+
+    while(temp->next && temp->ship_num > prod->ship_num){
+        temp = temp->next;
+    }
+
+    struct all_Order* next;
+    next = temp->next;
+    temp->next = prod;
+    temp = temp->next;
+    temp->next = next;
+    return;
 }
 
 struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
@@ -125,6 +159,8 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
                     mv_order = mv_dummy_head->next;
                     delete(mv_dummy_head);
                     ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
+                    mv_temp->prod.p.type = mv_temp->prod.type;
+                    mv_temp->prod.p.camFrame = 1;
                     return mv_temp;
                 }
                 mv_temp_prev = mv_temp;
@@ -163,6 +199,8 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
                 mv_order = mv_dummy_head->next;
                 delete(mv_dummy_head);
                 ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
+                mv_temp->prod.p.type = mv_temp->prod.type;
+                mv_temp->prod.p.camFrame = 1;
                 return mv_temp;
             }
             mv_temp_prev = mv_temp;
@@ -178,7 +216,8 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
 }
 
 void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {
-    Product product_recieved;
+    while(camCount < 14)
+        continue;
     Shipment shipment_recieved;
     Order order_recieved;
     order_recieved.order_id = ordermsg.order_id;
@@ -188,6 +227,7 @@ void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {
         shipment_recieved.shipment_type = ship.shipment_type;
         shipment_recieved.agv_id = ship.agv_id;
         for(const auto &prod: ship.products) {
+            Product product_recieved;
             product_recieved.type = prod.type;
             product_recieved.agv_id = ship.agv_id;
             product_recieved.pose = prod.pose;
@@ -209,12 +249,11 @@ void BuildClass::logical_camera_callback(const nist_gear::LogicalCameraImage::Co
     if(cam_id == 1)
         return;
     
-    if( callBackOnce[cam_id-2]){
+    if(callBackOnce[cam_id-2]){
         ros::Duration timeout(5.0);
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
         int i=0, part_idx=1;
-        std::cout<< "\n wwwwwwwwwwwwwwwwww CAM ID = " <<cam_id <<"\n";
         while (i < msg->models.size()){
             std::string partName = msg->models[i].type;
             if (i!=0 && msg->models[i].type != msg->models[i-1].type) {
@@ -259,6 +298,7 @@ void BuildClass::logical_camera_callback(const nist_gear::LogicalCameraImage::Co
                 continue;
             }
         }
+        camCount++;
         callBackOnce[cam_id - 2] = false;
     }
     return;
