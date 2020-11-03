@@ -38,15 +38,20 @@ class ConveyerParts {
     ConveyerParts(ros::NodeHandle& node); // Constructor
     void Init();
     bool checkPart(const std::string &part_name);
+    double estimated_time=0;
     bool giveClosestPart(const std::string &part_name, geometry_msgs::Pose &poseOnConveyer);  // Will give the current location of the part on conveyer 
+    bool checkForPick();
   private:
-    double part_read_limit=3.6;
+    double part_read_limit=3.0;
     double max_y_limit=0;
-    double conveyer_end_y=0;
-    double offset=0.7;
+    double conveyer_end_y=-2;
+    double offset=2.0;
+    geometry_msgs::Pose pick_pose;
+    Detection pick_part;
+    bool ready_for_pick=false;
     geometry_msgs::Pose getPose_W(const geometry_msgs::Pose &pose_C);
     ros::NodeHandle node_;
-    geometry_msgs::Pose current_pose;
+    // geometry_msgs::Pose current_pose;
     double start_time = 0;
     double velocity = 0;
     tf2_ros::Buffer tfBuffer_;

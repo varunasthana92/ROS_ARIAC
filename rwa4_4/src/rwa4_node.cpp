@@ -149,7 +149,7 @@ int main(int argc, char ** argv) {
             ROS_INFO_STREAM("For part " << product.p.type << " cam " << product.p.camFrame);
 
             if (product.mv_prod) {
-                gantry.pickFromConveyor(product);
+                gantry.pickFromConveyor(product, conveyerPartsObj);
             } else {
                 ROS_DEBUG_STREAM("Not picking from conveyor!!!!!!!!!!!!");
                 float Y_pose = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y );

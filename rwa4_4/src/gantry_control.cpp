@@ -925,7 +925,7 @@ float GantryControl::move2trg  ( float x, float y ) {
     }
 }
 
-void GantryControl::pickFromConveyor(const Product &product) {
+void GantryControl::pickFromConveyor(const Product &product, ConveyerParts &conveyerPartsObj) {
     ROS_INFO_STREAM("Going to pick " << product.type << " from conveyor ...");
     geometry_msgs::Pose estimated_conveyor_pose = product.estimated_conveyor_pose;
     ROS_DEBUG_STREAM("Estimated_conveyor_pose: " << estimated_conveyor_pose.position.x << std::endl
@@ -935,30 +935,45 @@ void GantryControl::pickFromConveyor(const Product &product) {
                                                  << estimated_conveyor_pose.orientation.y << std::endl
                                                  << estimated_conveyor_pose.orientation.z << std::endl
                                                  << estimated_conveyor_pose.orientation.w);
-    conveyor_up_.gantry = {0, -estimated_conveyor_pose.position.y, 1.57};
-    goToPresetLocation(conveyor_up_);
+    // conveyor_up_.gantry = {0, -estimated_conveyor_pose.position.y, 1.57};
+    // goToPresetLocation(conveyor_up_);
 
-    conveyor_up_.gantry = {estimated_conveyor_pose.position.x, -estimated_conveyor_pose.position.y, 1.57};
+    conveyor_up_.gantry = {estimated_conveyor_pose.position.x, -estimated_conveyor_pose.position.y+0.2, 1.57};
     goToPresetLocation(conveyor_up_);
 
     ROS_INFO_STREAM("Waiting to pick up ... ");
     activateGripper("left_arm");
     auto left_gripper_status = getGripperState("left_arm");
-    geometry_msgs::Pose pickup_pose;
+    geometry_msgs::Pose pickup_pose, pre_pickup_pose;
+    
     pickup_pose.position.x = estimated_conveyor_pose.position.x;
-    pickup_pose.position.y = estimated_conveyor_pose.position.y + 0.4;
-    pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height.at(product.type) + GRIPPER_HEIGHT + 0.013 - EPSILON;
+    pickup_pose.position.y = estimated_conveyor_pose.position.y ;
+    pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height.at(product.type) + GRIPPER_HEIGHT + 0.01 - EPSILON;
 
     auto currentPose = left_arm_group_.getCurrentPose().pose;
     pickup_pose.orientation.x = currentPose.orientation.x;
     pickup_pose.orientation.y = currentPose.orientation.y;
     pickup_pose.orientation.z = currentPose.orientation.z;
     pickup_pose.orientation.w = currentPose.orientation.w;
-    left_arm_group_.setPoseTarget(pickup_pose);
+
+    pre_pickup_pose = pickup_pose;
+
+    pre_pickup_pose.position.z += 0.03; 
+
+    left_arm_group_.setPoseTarget(pre_pickup_pose);
     left_arm_group_.move();
+
+    left_arm_group_.setPoseTarget(pickup_pose);
+
     while (!left_gripper_status.attached) {
-        ROS_DEBUG_STREAM_THROTTLE(10, "Waiting for part to be picked");
+        if(conveyerPartsObj.checkForPick()) {
+            left_arm_group_.move();
+            break;
+        }
+        ROS_DEBUG_STREAM_THROTTLE(1,"Estimated time is: " << conveyerPartsObj.estimated_time << "Current time: " << ros::Time::now().toSec());
     }
+    left_arm_group_.setPoseTarget(pre_pickup_pose);
+    left_arm_group_.move();
 }
 
 void GantryControl::goToPresetLocation(PresetLocation location) {
