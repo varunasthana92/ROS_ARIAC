@@ -54,10 +54,10 @@ void BuildClass::setList(Product &product_received, int num_shipment, std::strin
             st_order->next = NULL;
             st_order_left = true;
         }
-        if(num_shipment > ship_top_prod_static.size()){
-            ship_top_prod_static.push_back(st_order);
+        if(num_shipment > ship_prod_top_address_static.size()){
+            ship_prod_top_address_static.push_back(st_order);
         }else{
-            ship_top_prod_static[num_shipment -1] = st_order;
+            ship_prod_top_address_static[num_shipment -1] = st_order;
         }
         
     }else{
@@ -82,13 +82,44 @@ void BuildClass::setList(Product &product_received, int num_shipment, std::strin
             mv_order->next = NULL;
             mv_order_left = true;
         }
-        if(num_shipment > ship_top_prod_moving.size()){
-            ship_top_prod_moving.push_back(mv_order);
+        if(num_shipment > ship_prod_top_address_moving.size()){
+            ship_prod_top_address_moving.push_back(mv_order);
         }else{
-            ship_top_prod_moving[num_shipment -1] = mv_order;
+            ship_prod_top_address_moving[num_shipment -1] = mv_order;
         }
     }
-    return;    
+    return;
+}
+
+void BuildClass::pushList(struct all_Order* prod){
+	struct all_Order* temp;
+	if(prod->prod.mv_prod){
+		temp = mv_order;
+		if(temp == NULL){
+			mv_order = prod;
+			mv_order->next = NULL;
+			return;
+		}
+	}else{
+		queryPart(prod->prod);
+		temp = st_order;
+		if(temp == NULL){
+			st_order = prod;
+			st_order->next = NULL;
+			return;
+		}
+	}
+
+	while(temp->next && temp->ship_num > prod->ship_num){
+		temp = temp->next;
+	}
+
+	struct all_Order* next;
+	next = temp->next;
+	temp->next = prod;
+	temp = temp->next;
+	temp->next = next;
+	return;
 }
 
 struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
@@ -125,6 +156,8 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
                     mv_order = mv_dummy_head->next;
                     delete(mv_dummy_head);
                     ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
+                    mv_temp->prod.p.type = mv_temp->prod.type;
+                    mv_temp->prod.p.camFrame = 17;
                     return mv_temp;
                 }
                 mv_temp_prev = mv_temp;
@@ -163,6 +196,8 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
                 mv_order = mv_dummy_head->next;
                 delete(mv_dummy_head);
                 ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
+                mv_temp->prod.p.type = mv_temp->prod.type;
+                mv_temp->prod.p.camFrame = 17;
                 return mv_temp;
             }
             mv_temp_prev = mv_temp;

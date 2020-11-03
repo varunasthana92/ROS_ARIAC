@@ -469,7 +469,7 @@ bool GantryControl::placePart(Product &product,
         part.pose = faulty_part_pose;
         pickPart(part);
         is_part_faulty = false;
-        goToPresetLocation(agv2_);
+        goToPresetLocation(agv_in_use);
         goToPresetLocation(start_);
         deactivateGripper("left_arm");
         return false;
