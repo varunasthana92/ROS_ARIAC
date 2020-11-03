@@ -18,6 +18,10 @@ static double giveCurrentTime() {
 	return ros::Time::now().toSec();
 }
 
+double round (double x) {
+    return std::floor(x + 0.5f);
+}
+
 void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCameraImage& msg) {
 	updateCurrentPoses();
 	checkBoundaries();
@@ -88,7 +92,7 @@ bool ConveyerParts::checkForPick() {
 		pick_part.current_pose.position.y = pick_part.first_pose.position.y - pick_part.speed*time_elapsed  ;
 		double distance_left = pick_part.current_pose.position.y - pick_pose.position.y;
 		ROS_DEBUG_STREAM_THROTTLE(1,"Current distance from pickup location --> " << distance_left );
-		if(distance_left <= 0.01) {
+		if(distance_left <= 0.1) {
 			ROS_WARN_STREAM("****** Try to pick up now ******");
 			return true;
 		}
@@ -157,8 +161,8 @@ void ConveyerParts::calculateSpeed() {
 	time_taken = current_detection.second_look_time - current_detection.first_look_time;
 	distance = current_detection.first_pose.position.y - current_detection.second_pose.position.y;
  	if(time_taken!=0) {
-		// current_detection.speed = std::abs(distance/time_taken);
-		current_detection.speed = 0.2;
+		double speed = std::abs(distance/time_taken);
+		current_detection.speed = round(speed*10)/10;  // Round off
 		ROS_INFO_STREAM("Speed of " << current_detection.type << " is set to " << current_detection.speed);
 		return;
 	}
