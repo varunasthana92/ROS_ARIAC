@@ -48,7 +48,9 @@ class GantryControl {
 
     void init();
     stats getStats(std::string function);
-    void qualityCallback(const nist_gear::LogicalCameraImage& msg);
+    void qualityCallback1(const nist_gear::LogicalCameraImage& msg);
+    void qualityCallback2(const nist_gear::LogicalCameraImage& msg);
+
 
 //    bool moveGantry(std::string waypoints);
 
@@ -62,7 +64,8 @@ class GantryControl {
     void rotate_gantry(double angle);
     void activateGripper(std::string gripper_id);
     void deactivateGripper(std::string gripper_id);
-    void logicalCallback(const nist_gear::LogicalCameraImage& msg);
+    void logicalCallback16(const nist_gear::LogicalCameraImage& msg);
+    void logicalCallback17(const nist_gear::LogicalCameraImage& msg);
     void pickFromConveyor(const Product &product);
     // void gantryGo(PresetLocation location);
     // void gantryCome(PresetLocation location);
@@ -82,8 +85,8 @@ class GantryControl {
     start start_;
     bin3 bin3_;
     flipped_pulley flipped_pulley_;
-    agv1 agv1_, agv1_right_;
-    agv2 agv2_, agv2_right_;
+    agv1 agv1_, agv1_drop, agv1_right_;
+    agv2 agv2_, agv2_drop, agv2_right_;
     conveyor_up conveyor_up_;
  
     static const int num_preLoc = 20;
@@ -104,9 +107,11 @@ class GantryControl {
     moveit::planning_interface::MoveGroupInterface right_ee_link_group_;
 
     // Variable to store if current part is faulty
-    bool is_part_faulty = false;
+    bool is_part_faulty_agv1 = false;
+    bool is_part_faulty_agv2 = false;
     // Variable to hold faulty part pose
-    geometry_msgs::Pose faulty_part_pose;
+    geometry_msgs::Pose faulty_part_pose_agv1;
+    geometry_msgs::Pose faulty_part_pose_agv2;
 
     double left_ee_roll_;
     double left_ee_pitch_;

@@ -100,10 +100,10 @@ void ConveyerParts::updateCurrentPoses() {
 	for(auto &part: allConveyerParts) {
 		double time_elapsed = giveCurrentTime() - part.first_look_time;
 		part.current_pose.position.y = part.first_pose.position.y - part.speed*time_elapsed;
-		ROS_DEBUG_STREAM("New position of " << part.type << " is " 
-							<< " X : " << part.current_pose.position.x
-							<< " Y : " << part.current_pose.position.y
-							<< " Z : " << part.current_pose.position.z);
+		// ROS_DEBUG_STREAM("New position of " << part.type << " is " 
+		// 					<< " X : " << part.current_pose.position.x
+		// 					<< " Y : " << part.current_pose.position.y
+		// 					<< " Z : " << part.current_pose.position.z);
 	}
 	return;
 }
@@ -111,7 +111,7 @@ void ConveyerParts::updateCurrentPoses() {
 void ConveyerParts::checkBoundaries() {
 	if(allConveyerParts.size()!=0) {
 		double distance_from_end = std::abs(allConveyerParts[0].current_pose.position.y - conveyer_end_y);
-		ROS_DEBUG_STREAM(allConveyerParts[0].type << " is far at " << distance_from_end);
+		// ROS_DEBUG_STREAM(allConveyerParts[0].type << " is far at " << distance_from_end);
 		if(distance_from_end <= max_y_limit) {
 			ROS_INFO_STREAM( allConveyerParts[0].type << " is out of limit now. Removing it. ");
 			allConveyerParts.erase(allConveyerParts.begin());

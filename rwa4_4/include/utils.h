@@ -63,9 +63,8 @@ typedef struct Part {
   std::string frame; // model frame (e.g., "logical_camera_1_frame")
   int camFrame;
   ros::Time time_stamp;
-  std::string id;
+  std::string agv_id, id;
   PartStates state; // model state (enum PartStates)
-  bool faulty = false;
 } part;
 
 typedef struct Position {

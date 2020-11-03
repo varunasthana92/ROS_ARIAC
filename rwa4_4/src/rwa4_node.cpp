@@ -71,8 +71,8 @@ int main(int argc, char ** argv) {
       "/ariac/logical_camera_13",
       "/ariac/logical_camera_14",
       "/ariac/logical_camera_15",
-      "/ariac/logical_camera_16",
-      "/ariac/logical_camera_17"
+      // "/ariac/logical_camera_16",
+      // "/ariac/logical_camera_17"
       };
     std::vector<ros::Subscriber> logical_cam_subscribers;
 
@@ -109,8 +109,12 @@ int main(int argc, char ** argv) {
     
     ConveyerParts conveyerPartsObj(node);
     GantryControl gantry(node);
-    ros::Subscriber quality_sensor_1_sub = node.subscribe("/ariac/quality_control_sensor_1", 1000, &GantryControl::qualityCallback, &gantry);
-    ros::Subscriber logical_camera_17_sub = node.subscribe("/ariac/ariac/logical_camera_17", 1000, &GantryControl::logicalCallback, &gantry);
+    ros::Subscriber quality_sensor_1_sub = node.subscribe("/ariac/quality_control_sensor_1", 1000, &GantryControl::qualityCallback1, &gantry);
+    ros::Subscriber logical_camera_17_sub = node.subscribe("/ariac/ariac/logical_camera_17", 1000, &GantryControl::logicalCallback17, &gantry);
+    
+    ros::Subscriber quality_sensor_2_sub = node.subscribe("/ariac/quality_control_sensor_2", 1000, &GantryControl::qualityCallback2, &gantry);
+    ros::Subscriber logical_camera_16_sub = node.subscribe("/ariac/ariac/logical_camera_16", 1000, &GantryControl::logicalCallback16, &gantry);
+    
     gantry.init();
     gantry.goToPresetLocation(gantry.start_);
        

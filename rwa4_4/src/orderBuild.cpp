@@ -13,6 +13,7 @@ int allStaticParts::getPart(Product &prod){
             data = temp->parts_data;     
             delete(temp);
             prod.p = *data;
+            prod.p.agv_id = prod.agv_id;
             return 1;
         }
         // std::cout << "\nread from function " << prod.p.frame << std::endl;
@@ -71,12 +72,14 @@ void BuildClass::setList(Product &product_received, int num_shipment, std::strin
             temp->next = mv_order->next;
 
             mv_order->prod = product_received;
+            mv_order->prod.p.agv_id = product_received.agv_id;
             mv_order->ship_num = num_shipment;
             mv_order->shipment_type = shipment_type;
             mv_order->next = temp;
         }else{
             mv_order = new(all_Order);
             mv_order->prod = product_received;
+            mv_order->prod.p.agv_id = product_received.agv_id;
             mv_order->ship_num = num_shipment;
             mv_order->shipment_type = shipment_type;
             mv_order->next = NULL;
@@ -157,7 +160,7 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
                     delete(mv_dummy_head);
                     ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
                     mv_temp->prod.p.type = mv_temp->prod.type;
-                    mv_temp->prod.p.camFrame = 17;
+                    mv_temp->prod.p.camFrame = 1;
                     return mv_temp;
                 }
                 mv_temp_prev = mv_temp;
@@ -197,7 +200,7 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
                 delete(mv_dummy_head);
                 ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
                 mv_temp->prod.p.type = mv_temp->prod.type;
-                mv_temp->prod.p.camFrame = 17;
+                mv_temp->prod.p.camFrame = 1;
                 return mv_temp;
             }
             mv_temp_prev = mv_temp;
