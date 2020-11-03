@@ -1040,7 +1040,7 @@ void GantryControl::pickFromConveyor(const Product &product) {
     geometry_msgs::Pose pickup_pose;
     pickup_pose.position.x = estimated_conveyor_pose.position.x;
     pickup_pose.position.y = estimated_conveyor_pose.position.y;
-    pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height.at(product.type) + GRIPPER_HEIGHT + 0.0155 - EPSILON;
+    pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height.at(product.type) + GRIPPER_HEIGHT + 0.0158 - EPSILON;
 
     auto currentPose = left_arm_group_.getCurrentPose().pose;
     pickup_pose.orientation.x = currentPose.orientation.x;
