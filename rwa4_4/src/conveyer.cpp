@@ -30,7 +30,7 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 	// When seen for the first time set the name, first seen time and first seen position
 	if(msg.models.size()==1 && current_detection.type.size()==0) {
 		current_pose = getPose_W(msg.models[0].pose);
-		if(current_pose.position.y - 0.0001 <= part_read_limit) {
+		if(current_pose.position.y - 0.001 <= part_read_limit) {
 			// ROS_WARN_STREAM("Not taking in cosideration " << current_pose.position.y);
 			updateCurrentPoses();
 			checkBoundaries();
@@ -52,7 +52,7 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 	if(current_detection.second_look_time == -1) {
 		double present_time = giveCurrentTime();
 		// Too soon and close
-		if(present_time - current_detection.first_look_time <= 0.01) {
+		if(present_time - current_detection.first_look_time <= 2) {
 			updateCurrentPoses();
 			checkBoundaries();
 			return;
@@ -93,7 +93,7 @@ bool ConveyerParts::checkPart(const std::string &part_name) {
 void ConveyerParts::pickPoseNow(geometry_msgs::Pose &poseOnConveyer){
 	double time_elapsed = giveCurrentTime() - part2pick.first_look_time;
 	part2pick.current_pose.position.y = part2pick.first_pose.position.y - part2pick.speed*time_elapsed;
-	part2pick.current_pose.position.y -= part2pick.speed*4;
+	part2pick.current_pose.position.y -= part2pick.speed*3.7;
 	poseOnConveyer = part2pick.current_pose; 
 	return;
 }
