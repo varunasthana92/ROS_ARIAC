@@ -216,7 +216,8 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
 }
 
 void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {
-    Product product_recieved;
+	while(camCount < 14)
+		continue;
     Shipment shipment_recieved;
     Order order_recieved;
     order_recieved.order_id = ordermsg.order_id;
@@ -248,12 +249,11 @@ void BuildClass::logical_camera_callback(const nist_gear::LogicalCameraImage::Co
     if(cam_id == 1)
         return;
     
-    if( callBackOnce[cam_id-2]){
+    if(callBackOnce[cam_id-2]){
         ros::Duration timeout(5.0);
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
         int i=0, part_idx=1;
-        std::cout<< "\n wwwwwwwwwwwwwwwwww CAM ID = " <<cam_id <<"\n";
         while (i < msg->models.size()){
             std::string partName = msg->models[i].type;
             if (i!=0 && msg->models[i].type != msg->models[i-1].type) {
@@ -298,6 +298,7 @@ void BuildClass::logical_camera_callback(const nist_gear::LogicalCameraImage::Co
                 continue;
             }
         }
+        camCount++;
         callBackOnce[cam_id - 2] = false;
     }
     return;

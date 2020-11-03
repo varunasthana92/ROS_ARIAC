@@ -44,6 +44,7 @@ private:
     std::vector<struct all_Order*> ship_prod_top_address_static;
     std::vector<struct all_Order*> ship_prod_top_address_moving;
     bool callBackOnce[14];   // for 16 logical cameras, not including onveyor belt camera cam_id = 1
+    int camCount=0;
 public:
     struct agvInfo agv1, agv2;
     std::vector<Order> allOrders;

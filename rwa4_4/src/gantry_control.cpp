@@ -167,7 +167,7 @@ void GantryControl::init() {
     agv1_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     agv1_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    agv1_drop.gantry = {-0.6, -4, 0.};
+    agv1_drop.gantry = {0, -5, 0.};
     agv1_drop.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     agv1_drop.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
@@ -179,7 +179,7 @@ void GantryControl::init() {
     agv2_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     agv2_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    agv2_drop.gantry = {0.6, 4, PI};
+    agv2_drop.gantry = {0, 5, PI};
     agv2_drop.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     agv2_drop.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
@@ -1023,10 +1023,10 @@ void GantryControl::pickFromConveyor(const Product &product) {
                                                  << estimated_conveyor_pose.orientation.y << std::endl
                                                  << estimated_conveyor_pose.orientation.z << std::endl
                                                  << estimated_conveyor_pose.orientation.w);
-    conveyor_up_.gantry = {0, -estimated_conveyor_pose.position.y, 1.57};
+    conveyor_up_.gantry = {0, -estimated_conveyor_pose.position.y + 0.4, 1.57};
     goToPresetLocation(conveyor_up_);
 
-    conveyor_up_.gantry = {estimated_conveyor_pose.position.x, -estimated_conveyor_pose.position.y, 1.57};
+    conveyor_up_.gantry = {estimated_conveyor_pose.position.x, -estimated_conveyor_pose.position.y + 0.4, 1.57};
     goToPresetLocation(conveyor_up_);
 
     ROS_INFO_STREAM("Waiting to pick up ... ");
@@ -1039,7 +1039,7 @@ void GantryControl::pickFromConveyor(const Product &product) {
     geometry_msgs::Pose pickup_pose;
     pickup_pose.position.x = estimated_conveyor_pose.position.x;
     pickup_pose.position.y = estimated_conveyor_pose.position.y + 0.4;
-    pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height.at(product.type) + GRIPPER_HEIGHT + 0.011 - EPSILON;
+    pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height.at(product.type) + GRIPPER_HEIGHT + 0.016 - EPSILON;
 
     auto currentPose = left_arm_group_.getCurrentPose().pose;
     pickup_pose.orientation.x = currentPose.orientation.x;

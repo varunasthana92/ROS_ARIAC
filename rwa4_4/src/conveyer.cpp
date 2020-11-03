@@ -135,6 +135,7 @@ void ConveyerParts::calculateSpeed() {
 	}
 }
 
+
 ConveyerParts::ConveyerParts(ros::NodeHandle &node) {
 	node_ = node;
 	tf2_ros::TransformListener tfListener(tfBuffer_);

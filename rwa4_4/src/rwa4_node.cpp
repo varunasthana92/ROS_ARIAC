@@ -83,22 +83,7 @@ int main(int argc, char ** argv) {
                                                                           boost::bind(&BuildClass::logical_camera_callback,
                                                                                       &buildObj, _1, i+1));
     }
-   
-    // ros::Duration timeout(5.0);
 
-    // geometry_msgs::TransformStamped C_to_W_transform;
-    // tf2_ros::Buffer tfBuffer_;
-    // try {
-	// 	C_to_W_transform = tfBuffer_.lookupTransform("world", "logical_camera_1_frame", ros::Time(0), timeout);
-	// }
-    // catch (tf2::TransformException &ex) {
-    //     ROS_FATAL_STREAM( "Nogt able to find the conveyer camera frame -- " << ex.what());
-    //     ros::Duration(1.0).sleep();
-	// }
-
-    for(int i = 0; i < 50; ++i){
-        ros::spinOnce();
-    }
     Competition comp(node);
     comp.init();
 
