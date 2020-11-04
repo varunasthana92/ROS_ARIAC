@@ -1146,7 +1146,7 @@ float GantryControl::move2trg  ( float x, float y ) {
     }
 }
 
-void GantryControl::pickFromConveyor(const Product &product, ConveyerParts &conveyerPartsObj) {
+void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPartsObj) {
     ROS_INFO_STREAM("Going to pick " << product.type << " from conveyor ...");
     geometry_msgs::Pose estimated_conveyor_pose = product.estimated_conveyor_pose;
     ROS_DEBUG_STREAM("Estimated_conveyor_pose: " << estimated_conveyor_pose.position.x << std::endl
@@ -1156,7 +1156,7 @@ void GantryControl::pickFromConveyor(const Product &product, ConveyerParts &conv
                                                  << estimated_conveyor_pose.orientation.y << std::endl
                                                  << estimated_conveyor_pose.orientation.z << std::endl
                                                  << estimated_conveyor_pose.orientation.w);
-    
+
     conveyor_up_.gantry = {estimated_conveyor_pose.position.x, -estimated_conveyor_pose.position.y+0.2, 1.57};
     goToPresetLocation(conveyor_up_);
 
@@ -1208,6 +1208,21 @@ void GantryControl::pickFromConveyor(const Product &product, ConveyerParts &conv
     left_arm_group_.move();
     left_arm_group_.setPoseTarget(currentPose);
     left_arm_group_.move();
+
+
+    tf2::Quaternion q_robot( 0, 0, 0.7068252, 0.7073883);
+
+    tf2::Quaternion q_init_part(product.estimated_conveyor_pose.orientation.x,
+                                product.estimated_conveyor_pose.orientation.y,
+                                product.estimated_conveyor_pose.orientation.z,
+                                product.estimated_conveyor_pose.orientation.w);
+
+    tf2::Quaternion q_rslt = q_init_part*q_robot.inverse();
+    product.p.pose = product.estimated_conveyor_pose;
+    product.p.pose.orientation.x = q_rslt.x();
+    product.p.pose.orientation.y = q_rslt.y();
+    product.p.pose.orientation.z = q_rslt.z();
+    product.p.pose.orientation.w = q_rslt.w();
     return;
 }
 

@@ -153,10 +153,7 @@ int main(int argc, char ** argv) {
         }
 
         bool status = true;
-        if(product.agv_id == "agv1")
-            status = gantry.placePart(product, product.agv_id, arm);
-        else
-            status = gantry.placePart(product, product.agv_id, arm);
+        status = gantry.placePart(product, product.agv_id, arm);
         
         if(!status){
             buildObj.pushList(curr_prod);
