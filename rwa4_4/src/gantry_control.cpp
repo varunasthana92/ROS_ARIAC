@@ -7,6 +7,7 @@
 #include "utils.h"
 #include "conveyer.h"
 
+
 // Quality control sensor 1 callback
 void GantryControl::qualityCallback1(const nist_gear::LogicalCameraImage& msg) {
     if (msg.models.size() != 0) {
@@ -57,9 +58,11 @@ void GantryControl::qualityCallback2(const nist_gear::LogicalCameraImage& msg) {
 }
 
 void GantryControl::logicalCallback16(const nist_gear::LogicalCameraImage& msg) {
-    if (msg.models.size() != 0) {
+    for(auto curr_model : msg.models){
         // ROS_INFO_STREAM("Detected part from logical camera 16 on agv1: " << (msg.models[0]).type);
-        geometry_msgs::Pose model_pose = (msg.models[msg.models.size()-1]).pose;
+        geometry_msgs::Pose model_pose = curr_model.pose;
+        std::string model_name = curr_model.type;
+
         geometry_msgs::TransformStamped transformStamped;
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
@@ -69,13 +72,13 @@ void GantryControl::logicalCallback16(const nist_gear::LogicalCameraImage& msg) 
             transformStamped = tfBuffer.lookupTransform("world", "logical_camera_16_frame", ros::Time(0));
         else
             ROS_INFO_STREAM("Cannot transform from logical_camera_16_frame to world");
-        geometry_msgs::PoseStamped new_pose;
-        new_pose.header.seq = 1;
-        new_pose.header.stamp = ros::Time(0);
-        new_pose.header.frame_id = "logical_camera_16_frame";
-        new_pose.pose = model_pose;
-        tf2::doTransform(new_pose, new_pose, transformStamped);
-        part_placed_pose_agv1 = new_pose.pose; 
+        geometry_msgs::Pose world_pose;
+        tf2::doTransform(model_pose, world_pose, transformStamped);
+
+        if(not check_exist_on_agv(model_name, world_pose, agv1_allParts)){
+            part_placed_pose_agv1 = world_pose;
+            return;
+        }
         /*
         ROS_INFO_STREAM("Incorrect part pose: " << part_placed_pose_agv1.position.x << std::endl
                                                 << part_placed_pose_agv1.position.y << std::endl
@@ -89,9 +92,12 @@ void GantryControl::logicalCallback16(const nist_gear::LogicalCameraImage& msg) 
 }
 
 void GantryControl::logicalCallback17(const nist_gear::LogicalCameraImage& msg) {
-    if (msg.models.size() != 0) {
+    for(auto curr_model : msg.models){
         // ROS_INFO_STREAM("Detected part from logical camera: " << (msg.models[0]).type);
-        geometry_msgs::Pose model_pose = (msg.models[msg.models.size()-1]).pose;
+
+        geometry_msgs::Pose model_pose = curr_model.pose;
+        std::string model_name = curr_model.type;
+
         geometry_msgs::TransformStamped transformStamped;
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
@@ -101,24 +107,41 @@ void GantryControl::logicalCallback17(const nist_gear::LogicalCameraImage& msg) 
             transformStamped = tfBuffer.lookupTransform("world", "logical_camera_17_frame", ros::Time(0));
         else
             ROS_INFO_STREAM("Cannot transform from logical_camera_17_frame to world");
-        geometry_msgs::PoseStamped new_pose;
-        new_pose.header.seq = 1;
-        new_pose.header.stamp = ros::Time(0);
-        new_pose.header.frame_id = "logical_camera_17_frame";
-        new_pose.pose = model_pose;
-        tf2::doTransform(new_pose, new_pose, transformStamped);
-        part_placed_pose_agv2 = new_pose.pose; 
-        /*
-        ROS_INFO_STREAM("Incorrect part pose: " << part_placed_pose_agv2.position.x << std::endl
-                                                << part_placed_pose_agv2.position.y << std::endl
-                                                << part_placed_pose_agv2.position.z << std::endl
-                                                << part_placed_pose_agv2.orientation.x << std::endl
-                                                << part_placed_pose_agv2.orientation.y << std::endl
-                                                << part_placed_pose_agv2.orientation.z << std::endl
-                                                << part_placed_pose_agv2.orientation.w)
-        */
+        geometry_msgs::Pose world_pose;
+        tf2::doTransform(model_pose, world_pose, transformStamped);
+
+        if(not check_exist_on_agv(model_name, world_pose, agv1_allParts)){
+            part_placed_pose_agv2 = world_pose;
+            return;
+        }
     }
 }
+
+float getDis(const geometry_msgs::Pose &p1, const geometry_msgs::Pose &p2){
+
+    if(std::abs(p1.position.z - p2.position.z) > 0.004){
+        return -1;
+    }
+    float dis = std::pow((p1.position.x - p2.position.x),2) + std::pow((p1.position.y - p2.position.y),2);
+    return std::sqrt(dis);
+}
+
+bool GantryControl::check_exist_on_agv(const std::string &name, const geometry_msgs::Pose &part_pose, agvInfo &agv){
+    if(agv.prod_on_tray.find(name) != agv.prod_on_tray.end()){
+        for(Product prod: agv.prod_on_tray[name]){
+            float dis = getDis(part_pose, prod.agv_world_pose);
+            if(dis < 0){
+                return false;
+            }
+            if(dis < 0.03){
+                prod.agv_world_pose = part_pose;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 
 bool GantryControl::poseMatches(const geometry_msgs::Pose &pose1, 
                                 const geometry_msgs::Pose &pose2) {
@@ -527,8 +550,7 @@ bool GantryControl::pickPart(part part){
 
 bool GantryControl::placePart(Product &product,
                               std::string agv,
-                              std::string arm,
-                              agvInfo &agv_data){
+                              std::string arm){
     
     Part part = product.p;
     auto target_pose_in_tray = getTargetWorldPose(product.pose, agv, arm);
@@ -572,14 +594,17 @@ bool GantryControl::placePart(Product &product,
     PresetLocation agv_in_use;
     PresetLocation agv_in_use_drop;
     PresetLocation agv_in_use_right;
+    struct agvInfo* agv_data;
     if(agv == "agv1"){
         agv_in_use = agv1_;
         agv_in_use_drop = agv1_drop;
         agv_in_use_right = agv1_right_;
+        agv_data = &agv1_allParts;
     }else{
         agv_in_use = agv2_;
         agv_in_use_drop = agv2_drop;
         agv_in_use_right = agv2_right_;
+        agv_data = &agv2_allParts;
     }
     if (left_state.attached) {
         goToPresetLocation(agv_in_use);
@@ -588,14 +613,6 @@ bool GantryControl::placePart(Product &product,
 
         left_arm_group_.setPoseTarget(target_pose_in_tray);
         left_arm_group_.move();
-
-        product.agv_world_pose = target_pose_in_tray;
-        // product.agv_id = agv;
-        product.part_placed = true;
-        
-        product.agv_world_pose = target_pose_in_tray;
-        agv_data.prod_on_tray[product.type].push_back(product);
-        agv_data.count++;
 
         deactivateGripper("left_arm");
         left_arm_group_.setPoseTarget(currentPose);
@@ -613,7 +630,6 @@ bool GantryControl::placePart(Product &product,
 //        temp_present.right_arm[5] = yaw_;
 
         goToPresetLocation(agv_in_use_right);
-
         currentPose = left_arm_group_.getCurrentPose().pose;
         // auto robot_rpy = quaternionToEuler(currentPose);
         // float roll_ = robot_rpy[0];
@@ -636,14 +652,6 @@ bool GantryControl::placePart(Product &product,
 
         right_arm_group_.setPoseTarget(target_pose_in_tray);
         right_arm_group_.move();
-
-        product.agv_world_pose = target_pose_in_tray;
-        // product.agv_id = agv;
-        product.part_placed = true;
-
-        product.agv_world_pose = target_pose_in_tray;
-        agv_data.prod_on_tray[product.type].push_back(product);
-        agv_data.count++;
 
         deactivateGripper("right_arm");
         right_arm_group_.setPoseTarget(currentPose);
@@ -679,8 +687,12 @@ bool GantryControl::placePart(Product &product,
         return false;
     } 
     bool is_part_placed_correct = poseMatches(target_pose_in_tray, *part_placed_pose);
-    
-    if (!is_part_placed_correct) {
+    if(is_part_placed_correct){
+        product.agv_world_pose = *part_placed_pose;
+        product.part_placed = true;
+        agv_data->prod_on_tray[product.type].push_back(product);
+        agv_data->count++;
+    }else{
         ROS_INFO_STREAM("Part placed incorrectly: " << is_part_placed_correct);
         geometry_msgs::Pose original_part_pose = part.pose;
         part.pose = *part_placed_pose;
@@ -698,7 +710,7 @@ bool GantryControl::placePart(Product &product,
         //                                         << part.pose.orientation.y << std::endl
         //                                         << part.pose.orientation.z << std::endl
         //                                         << part.pose.orientation.w);
-        bool placed = placePart(product, agv, arm, agv_data);
+        bool placed = placePart(product, agv, arm);
     }
     return true;
 }
