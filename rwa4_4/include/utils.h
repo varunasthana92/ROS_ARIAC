@@ -48,6 +48,7 @@ extern std::unordered_map<std::string, double> model_height;
 enum PartStates {FREE, BOOKED, UNREACHABLE, ON_TRAY, GRIPPED, GOING_HOME,
   REMOVE_FROM_TRAY, LOST};
 
+std::vector<double> quaternionToEuler(geometry_msgs::Pose pose);
 
 typedef struct PresetLocation {
     std::vector<double> gantry;
@@ -64,7 +65,9 @@ typedef struct Part {
   int camFrame;
   ros::Time time_stamp;
   std::string agv_id, id;
+  std::vector<double> rpy_init;
   PartStates state; // model state (enum PartStates)
+  float yaw_correction= 0;
 } part;
 
 typedef struct Position {
@@ -102,6 +105,8 @@ typedef struct Product {
     bool part_placed = false;
     bool mv_prod = false;
     int shipId;
+    std::vector<double> rpy_final;
+    float yaw_correction= 0;
 
     // Product(); // contructor
 } product;

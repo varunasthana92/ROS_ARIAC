@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <geometry_msgs/Pose.h>
 
 std::unordered_map<std::string, double> model_height = {
         {"piston_rod_part_red", 0.0065}, // modified because it sinks into the surface a bit
@@ -17,3 +18,16 @@ std::unordered_map<std::string, double> model_height = {
         {"disk_part_green", 0.023},
         {"disk_part_blue", 0.023}
 };
+
+std::vector<double> quaternionToEuler(geometry_msgs::Pose pose) {
+    std::vector<double> pose_angles = {};
+    tf2::Quaternion q( pose.orientation.x,
+                        pose.orientation.y,
+                        pose.orientation.z,
+                        pose.orientation.w);
+    tf2::Matrix3x3 m(q);
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
+    pose_angles = {roll, pitch, yaw};
+    return pose_angles;
+}

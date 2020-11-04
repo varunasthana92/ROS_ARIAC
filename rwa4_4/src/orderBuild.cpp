@@ -1,6 +1,7 @@
 #include "orderBuild.h"
 #include <unordered_map>
 #include "conveyer.h"
+#include "utils.h"
 
 int allStaticParts::getPart(Product &prod){
     std::string name = prod.type;
@@ -282,11 +283,14 @@ void BuildClass::logical_camera_callback(const nist_gear::LogicalCameraImage::Co
                 // tf2::Matrix3x3 m(q);
                 // double roll, pitch, yaw;
                 // m.getRPY(roll, pitch, yaw);
+
+                
                 detected_part->time_stamp = ros::Time(0);
                 detected_part->pose.position.x = transformStamped.transform.translation.x;
                 detected_part->pose.position.y = transformStamped.transform.translation.y;
                 detected_part->pose.position.z = transformStamped.transform.translation.z;
                 detected_part->pose.orientation = transformStamped.transform.rotation;
+                detected_part->rpy_init = quaternionToEuler(detected_part->pose);
 
                 similarParts* data = new(similarParts);
                 data->parts_data = detected_part;
