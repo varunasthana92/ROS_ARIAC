@@ -66,7 +66,7 @@ class GantryControl {
     void deactivateGripper(std::string gripper_id);
     void logicalCallback16(const nist_gear::LogicalCameraImage& msg);
     void logicalCallback17(const nist_gear::LogicalCameraImage& msg);
-    void pickFromConveyor(const Product &product, ConveyerParts &conveyerPartsObj);
+    void pickFromConveyor(Product &product, ConveyerParts &conveyerPartsObj);
     bool poseMatches(const geometry_msgs::Pose &pose1, const geometry_msgs::Pose &pose2);
     bool check_exist_on_agv(const std::string &name, const geometry_msgs::Pose &part_pose, agvInfo &agv);
     void flipPart();

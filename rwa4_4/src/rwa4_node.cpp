@@ -151,7 +151,7 @@ int main(int argc, char ** argv) {
         }
 
         bool status = true;
-    
+        status = gantry.placePart(product, product.agv_id, arm);
         if(!status){
             buildObj.pushList(curr_prod);
         }else{
