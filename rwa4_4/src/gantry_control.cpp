@@ -225,7 +225,7 @@ void GantryControl::init() {
     //  right_wrist_1_joint,       right_wrist_2_joint,       right_wrist_3_joint]
     flipped_pulley_.gantry = {0, 0, 0};
     flipped_pulley_.left_arm = {-1.63, -0.25, 1.61, 6.28, 1.54, 0};
-    flipped_pulley_.right_arm = {1.61, -3.20, -1.26, -3.59, 4.66, 0};
+    flipped_pulley_.right_arm = {1.61, -3.20, -1.26, -3.59, -1.57, 0};
 
     flipped_pulley_preset.gantry = {0, 0, 0};
     flipped_pulley_preset.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
@@ -493,7 +493,7 @@ bool GantryControl::pickPart(part part){
         ROS_INFO_STREAM("[Gripper] = not enabled");
     }
     return false;
-
+    
     /**
      * We want the Cartesian path to be interpolated at a resolution of 1 cm which is why
      * we will specify 0.01 as the max step in Cartesian translation.
