@@ -439,6 +439,8 @@ bool GantryControl::placePart(Product &product,
         agv_data.count++;
 
         deactivateGripper("left_arm");
+        left_arm_group_.setPoseTarget(currentPose);
+        left_arm_group_.move();
     } else if (right_state.attached){
         goToPresetLocation(agv_in_use_right);
         currentPose = right_arm_group_.getCurrentPose().pose;
@@ -459,6 +461,8 @@ bool GantryControl::placePart(Product &product,
         agv_data.count++;
 
         deactivateGripper("right_arm");
+        right_arm_group_.setPoseTarget(currentPose);
+        right_arm_group_.move();
     }
     
     //bool is_part_placed_correct = poseMatches(target_pose_in_tray, part_placed_pose_incorrect)
@@ -948,7 +952,7 @@ void GantryControl::pickFromConveyor(const Product &product, ConveyerParts &conv
     
     pickup_pose.position.x = estimated_conveyor_pose.position.x;
     pickup_pose.position.y = estimated_conveyor_pose.position.y ;
-    pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height.at(product.type) + GRIPPER_HEIGHT + 0.01 - EPSILON;
+    pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height.at(product.type) + GRIPPER_HEIGHT - EPSILON;
 
     auto currentPose = left_arm_group_.getCurrentPose().pose;
     pickup_pose.orientation.x = currentPose.orientation.x;
@@ -973,6 +977,8 @@ void GantryControl::pickFromConveyor(const Product &product, ConveyerParts &conv
         ROS_DEBUG_STREAM_THROTTLE(1,"Estimated time is: " << conveyerPartsObj.estimated_time << "Current time: " << ros::Time::now().toSec());
     }
     left_arm_group_.setPoseTarget(pre_pickup_pose);
+    left_arm_group_.move();
+    left_arm_group_.setPoseTarget(currentPose);
     left_arm_group_.move();
 }
 
