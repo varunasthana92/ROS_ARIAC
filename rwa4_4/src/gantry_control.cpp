@@ -604,7 +604,6 @@ bool GantryControl::placePart(Product &product,
         goToPresetLocation(agv_in_use);
         
         currentPose = left_arm_group_.getCurrentPose().pose;
-
         left_arm_group_.setPoseTarget(target_pose_in_tray);
         left_arm_group_.move();
 
@@ -616,6 +615,10 @@ bool GantryControl::placePart(Product &product,
         goToPresetLocation(agv_in_use_right);
         
         currentPose = right_arm_group_.getCurrentPose().pose;
+        target_pose_in_tray.orientation.x = currentPose.orientation.x;
+        target_pose_in_tray.orientation.y = currentPose.orientation.y;
+        target_pose_in_tray.orientation.z = currentPose.orientation.z;
+        target_pose_in_tray.orientation.w = currentPose.orientation.w;
 
         right_arm_group_.setPoseTarget(target_pose_in_tray);
         right_arm_group_.move();
