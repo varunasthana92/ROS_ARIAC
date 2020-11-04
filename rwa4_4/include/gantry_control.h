@@ -68,7 +68,6 @@ class GantryControl {
     void logicalCallback17(const nist_gear::LogicalCameraImage& msg);
     void pickFromConveyor(const Product &product, ConveyerParts &conveyerPartsObj);
     bool poseMatches(const geometry_msgs::Pose &pose1, const geometry_msgs::Pose &pose2);
-    std::vector<double> quaternionToEuler(geometry_msgs::Pose pose);
     void flipPart();
     bool move2start ( float x, float y );
     float move2trg ( float x, float y);
@@ -84,7 +83,7 @@ class GantryControl {
     //--preset locations;
     start start_;
     bin3 bin3_;
-    flipped_pulley flipped_pulley_;
+    flipped_pulley flipped_pulley_, flipped_pulley_preset;
     agv1 agv1_, agv1_drop, agv1_right_;
     agv2 agv2_, agv2_drop, agv2_right_;
     conveyor_up conveyor_up_;

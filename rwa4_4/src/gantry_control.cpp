@@ -157,25 +157,6 @@ bool GantryControl::poseMatches(const geometry_msgs::Pose &pose1,
     return false;
 }
 
-std::vector<double> GantryControl::quaternionToEuler(geometry_msgs::Pose pose) {
-    std::vector<double> pose_angles = {};
-    geometry_msgs::TransformStamped transformStamped;
-    transformStamped.transform.rotation.x = pose.orientation.x;
-    transformStamped.transform.rotation.y = pose.orientation.y;
-    transformStamped.transform.rotation.z = pose.orientation.z;
-    transformStamped.transform.rotation.w = pose.orientation.w;
-    tf2::Quaternion q(
-        transformStamped.transform.rotation.x,
-        transformStamped.transform.rotation.y,
-        transformStamped.transform.rotation.z,
-        transformStamped.transform.rotation.w);
-    tf2::Matrix3x3 m(q);
-    double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
-    pose_angles = {roll, pitch, yaw};
-    return pose_angles;
-}
-
 GantryControl::GantryControl(ros::NodeHandle & node):
         node_("/ariac/gantry"),
         planning_group_ ("/ariac/gantry/robot_description"),
@@ -245,6 +226,10 @@ void GantryControl::init() {
     flipped_pulley_.gantry = {0, 0, 0};
     flipped_pulley_.left_arm = {-1.63, -0.25, 1.61, 6.28, 1.54, 0};
     flipped_pulley_.right_arm = {1.61, -3.20, -1.26, -3.59, 4.66, 0};
+
+    flipped_pulley_preset.gantry = {0, 0, 0};
+    flipped_pulley_preset.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
+    flipped_pulley_preset.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
     conveyor_up_.gantry = {0, 1.2, 1.29};
     conveyor_up_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
@@ -401,6 +386,7 @@ geometry_msgs::Pose GantryControl::getTargetWorldPose(geometry_msgs::Pose target
 }
 
 void GantryControl::flipPart() {
+    goToPresetLocation(flipped_pulley_preset);
     goToPresetLocation(flipped_pulley_);
     return;
 }
@@ -418,6 +404,16 @@ bool GantryControl::pickPart(part part){
 
 //    left_arm_group_.setPoseReferenceFrame("world");
     geometry_msgs::Pose currentPose = left_arm_group_.getCurrentPose().pose;
+    // tf2::Quaternion q_robot( currentPose.orientation.x,
+    //                         currentPose.orientation.y,
+    //                         currentPose.orientation.z,
+    //                         currentPose.orientation.w);
+    // tf2::Matrix3x3 mrobot(q_robot);
+    // double roll_arm, pitch_arm, yaw_arm;
+    // mrobot.getRPY(roll_arm, pitch_arm, yaw_arm);
+    // part.yaw_correction = yaw_arm;
+
+    // ROS_WARN_STREAM("Robot arm YAW = " << yaw_arm);
 
 //    ROS_INFO_STREAM("[left_arm_group_]= " << currentPose.position.x << ", " << currentPose.position.y << "," << currentPose.position.z);
     if(part.type.size()==0) {
@@ -534,6 +530,8 @@ bool GantryControl::placePart(Product &product,
     
     Part part = product.p;
     auto target_pose_in_tray = getTargetWorldPose(part.pose, agv, arm);
+    
+    product.rpy_final = quaternionToEuler(target_pose_in_tray);
     ROS_INFO_STREAM("Settled tray pose:" << target_pose_in_tray.position.x << " " 
                                             << target_pose_in_tray.position.y << " "
                                             << target_pose_in_tray.position.z);
@@ -555,12 +553,34 @@ bool GantryControl::placePart(Product &product,
         agv_in_use_right = agv2_right_;
     }
     if (left_state.attached) {
-        goToPresetLocation(agv_in_use);
+        auto robot_rpy = quaternionToEuler(currentPose);
+        float roll_ = robot_rpy[0];
+        float pitch_ = robot_rpy[1];
+        float yaw_ = robot_rpy[2];
+
+        auto temp_present = agv_in_use;
+
+        yaw_ = product.rpy_final[2]- part.rpy_init[2];
+
+        temp_present.left_arm[5] = yaw_;
+
+        goToPresetLocation(temp_present);
         currentPose = left_arm_group_.getCurrentPose().pose;
+        
+        
+
+        // tf2::Quaternion q_robot_new(yaw_, pitch_, roll_);
+
+        // target_pose_in_tray.orientation.x = q_robot_new.x();
+        // target_pose_in_tray.orientation.y = q_robot_new.y();
+        // target_pose_in_tray.orientation.z = q_robot_new.z();
+        // target_pose_in_tray.orientation.w = q_robot_new.w();
+
         target_pose_in_tray.orientation.x = currentPose.orientation.x;
         target_pose_in_tray.orientation.y = currentPose.orientation.y;
         target_pose_in_tray.orientation.z = currentPose.orientation.z;
         target_pose_in_tray.orientation.w = currentPose.orientation.w;
+
         left_arm_group_.setPoseTarget(target_pose_in_tray);
         left_arm_group_.move();
 
@@ -576,8 +596,34 @@ bool GantryControl::placePart(Product &product,
         left_arm_group_.setPoseTarget(currentPose);
         left_arm_group_.move();
     } else if (right_state.attached){
-        goToPresetLocation(agv_in_use_right);
+
+        auto robot_rpy = quaternionToEuler(currentPose);
+        float roll_ = robot_rpy[0];
+        float pitch_ = robot_rpy[1];
+        float yaw_ = robot_rpy[2];
+        auto temp_present = agv_in_use_right;
+
+        yaw_ = product.rpy_final[2]- part.rpy_init[2];
+
+        temp_present.right_arm[5] = yaw_;
+
+        goToPresetLocation(temp_present);
+
         currentPose = right_arm_group_.getCurrentPose().pose;
+        // auto robot_rpy = quaternionToEuler(currentPose);
+        // float roll_ = robot_rpy[0];
+        // float pitch_ = robot_rpy[1];
+        // float yaw_ = robot_rpy[2];
+
+        // yaw_ = product.rpy_final[2]- part.rpy_init[2];
+
+        // tf2::Quaternion q_robot_new(yaw_, pitch_, roll_);
+
+        // target_pose_in_tray.orientation.x = q_robot_new.x();
+        // target_pose_in_tray.orientation.y = q_robot_new.y();
+        // target_pose_in_tray.orientation.z = q_robot_new.z();
+        // target_pose_in_tray.orientation.w = q_robot_new.w();
+
         target_pose_in_tray.orientation.x = currentPose.orientation.x;
         target_pose_in_tray.orientation.y = currentPose.orientation.y;
         target_pose_in_tray.orientation.z = currentPose.orientation.z;

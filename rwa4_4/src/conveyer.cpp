@@ -35,7 +35,7 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 	}
 	
 	// When seen for the first time set the name, first seen time and first seen position
-	if(msg.models.size()==1 && current_detection.type.size()==0) {
+	if(msg.models.size()==1 && 	current_detection.type.size()==0) {
 		auto current_pose = getPose_W(msg.models[0].pose);
 		if(current_pose.position.y < part_read_limit) {
 			// ROS_DEBUG_STREAM_THROTTLE(2, "Already settled part ");
@@ -54,7 +54,7 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 	// Second pose and time and speed
 	if(current_detection.second_look_time == -1) {
 		double present_time = giveCurrentTime();
-		// Too soon and close
+		// Too soon and giveClosestPart
 		if(present_time - current_detection.first_look_time <= 0.1) {
 			return;
 		}
