@@ -30,7 +30,7 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 	// ROS_WARN_STREAM("Check consistency*************************");
 	// No part
 	if(msg.models.size()!=1 && current_detection.type.size()==0) {
-		ROS_DEBUG_STREAM_THROTTLE(2,"No parts detected on conveyer belt camera");
+		// ROS_DEBUG_STREAM_THROTTLE(2,"No parts detected on conveyer belt camera");
 		return;
 	}
 	
@@ -38,7 +38,7 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 	if(msg.models.size()==1 && current_detection.type.size()==0) {
 		auto current_pose = getPose_W(msg.models[0].pose);
 		if(current_pose.position.y < part_read_limit) {
-			ROS_DEBUG_STREAM_THROTTLE(2, "Already settled part ");
+			// ROS_DEBUG_STREAM_THROTTLE(2, "Already settled part ");
 			return;
 		} 
 		current_detection.type = msg.models[0].type;  // Setting name of the part if not assigned
