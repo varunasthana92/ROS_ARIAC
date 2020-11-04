@@ -56,7 +56,7 @@ class GantryControl {
 
 //    bool pickPart(part part, std::string arm_name);
     bool pickPart(part part);
-    bool placePart(product &product, std::string agv, std::string arm, agvInfo &avg_data);
+    bool placePart(product &product, std::string agv, std::string arm);
     
     /// Send command message to robot controller
     bool send_command(trajectory_msgs::JointTrajectory command_msg);
@@ -68,6 +68,7 @@ class GantryControl {
     void logicalCallback17(const nist_gear::LogicalCameraImage& msg);
     void pickFromConveyor(const Product &product, ConveyerParts &conveyerPartsObj);
     bool poseMatches(const geometry_msgs::Pose &pose1, const geometry_msgs::Pose &pose2);
+    bool check_exist_on_agv(const std::string &name, const geometry_msgs::Pose &part_pose, agvInfo &agv);
     void flipPart();
     bool move2start ( float x, float y );
     float move2trg ( float x, float y);
@@ -87,6 +88,7 @@ class GantryControl {
     agv1 agv1_, agv1_drop, agv1_right_;
     agv2 agv2_, agv2_drop, agv2_right_;
     conveyor_up conveyor_up_;
+    struct agvInfo agv1_allParts, agv2_allParts;
  
     static const int num_preLoc = 20;
 
