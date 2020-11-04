@@ -77,7 +77,6 @@ void GantryControl::logicalCallback16(const nist_gear::LogicalCameraImage& msg) 
         tf2::doTransform(new_pose, new_pose, transformStamped);
         part_placed_pose_agv1 = new_pose.pose; 
         /*
-        
         ROS_INFO_STREAM("Incorrect part pose: " << part_placed_pose_agv1.position.x << std::endl
                                                 << part_placed_pose_agv1.position.y << std::endl
                                                 << part_placed_pose_agv1.position.z << std::endl
@@ -110,7 +109,6 @@ void GantryControl::logicalCallback17(const nist_gear::LogicalCameraImage& msg) 
         tf2::doTransform(new_pose, new_pose, transformStamped);
         part_placed_pose_agv2 = new_pose.pose; 
         /*
-        
         ROS_INFO_STREAM("Incorrect part pose: " << part_placed_pose_agv2.position.x << std::endl
                                                 << part_placed_pose_agv2.position.y << std::endl
                                                 << part_placed_pose_agv2.position.z << std::endl
@@ -223,6 +221,8 @@ void GantryControl::init() {
     agv2_right_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     agv2_right_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
+    //  [right_shoulder_pan_joint, right_shoulder_lift_joint, right_elbow_joint, 
+    //  right_wrist_1_joint,       right_wrist_2_joint,       right_wrist_3_joint]
     flipped_pulley_.gantry = {0, 0, 0};
     flipped_pulley_.left_arm = {-1.63, -0.25, 1.61, 6.28, 1.54, 0};
     flipped_pulley_.right_arm = {1.61, -3.20, -1.26, -3.59, 4.66, 0};
@@ -388,13 +388,17 @@ geometry_msgs::Pose GantryControl::getTargetWorldPose(geometry_msgs::Pose target
 void GantryControl::flipPart() {
     goToPresetLocation(flipped_pulley_preset);
     goToPresetLocation(flipped_pulley_);
+    activateGripper("right_arm");
+    auto state = getGripperState("right_arm");
+    while(!state.attached){
+        state = getGripperState("right_arm");
+        ROS_DEBUG_STREAM_THROTTLE(1,"Tring to activate right gripper " << state.attached << " " << state.enabled);
+    }
+    deactivateGripper("left_arm");
+    goToPresetLocation(flipped_pulley_preset);
+    goToPresetLocation(start_);
     return;
 }
-
-//bool GantryControl::conveyor(){
-//    activateGripper("Left_arm");
-//    activateGripper("Right_arm");
-//};
 
 bool GantryControl::pickPart(part part){
     //--Activate gripper

@@ -148,8 +148,6 @@ int main(int argc, char ** argv) {
         if (product.p.pose.orientation.x == 1 || product.p.pose.orientation.x == -1) {
             gantry.flipPart();
             arm = "right";
-            gantry.activateGripper("right_arm");
-            gantry.deactivateGripper("left_arm");
         }
 
         bool status = true;
