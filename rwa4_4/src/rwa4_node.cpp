@@ -148,6 +148,12 @@ int main(int argc, char ** argv) {
         if (product.pose.orientation.x == 1 || product.pose.orientation.x == -1) {
             gantry.flipPart();
             arm = "right";
+            product.p.rpy_init[0] = 0;
+            tf2::Quaternion q_part(product.p.rpy_init[2], product.p.rpy_init[1], product.p.rpy_init[0]);
+            product.p.pose.orientation.x = q_part.x();
+            product.p.pose.orientation.y = q_part.y();
+            product.p.pose.orientation.z = q_part.z();
+            product.p.pose.orientation.w = q_part.w();
         }
 
         bool status = true;
