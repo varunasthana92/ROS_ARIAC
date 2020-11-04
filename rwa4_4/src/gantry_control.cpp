@@ -49,7 +49,7 @@ void GantryControl::qualityCallback2(const nist_gear::LogicalCameraImage& msg) {
         geometry_msgs::PoseStamped new_pose;
         new_pose.header.seq = 1;
         new_pose.header.stamp = ros::Time(0);
-        new_pose.header.frame_id = "quality_control_sensor_1_frame";
+        new_pose.header.frame_id = "quality_control_sensor_2_frame";
         new_pose.pose = model_pose;
         tf2::doTransform(new_pose, new_pose, transformStamped);
         faulty_part_pose_agv1 = new_pose.pose;       
@@ -72,18 +72,19 @@ void GantryControl::logicalCallback16(const nist_gear::LogicalCameraImage& msg) 
         geometry_msgs::PoseStamped new_pose;
         new_pose.header.seq = 1;
         new_pose.header.stamp = ros::Time(0);
-        new_pose.header.frame_id = "logical_camera_17_frame";
+        new_pose.header.frame_id = "logical_camera_16_frame";
         new_pose.pose = model_pose;
         tf2::doTransform(new_pose, new_pose, transformStamped);
+        part_placed_pose_agv1 = new_pose.pose; 
         /*
-        part_placed_pose_incorrect = new_pose.pose; 
-        ROS_INFO_STREAM("Incorrect part pose: " << part_placed_pose_incorrect.position.x << std::endl
-                                                << part_placed_pose_incorrect.position.y << std::endl
-                                                << part_placed_pose_incorrect.position.z << std::endl
-                                                << part_placed_pose_incorrect.orientation.x << std::endl
-                                                << part_placed_pose_incorrect.orientation.y << std::endl
-                                                << part_placed_pose_incorrect.orientation.z << std::endl
-                                                << part_placed_pose_incorrect.orientation.w)
+        
+        ROS_INFO_STREAM("Incorrect part pose: " << part_placed_pose_agv1.position.x << std::endl
+                                                << part_placed_pose_agv1.position.y << std::endl
+                                                << part_placed_pose_agv1.position.z << std::endl
+                                                << part_placed_pose_agv1.orientation.x << std::endl
+                                                << part_placed_pose_agv1.orientation.y << std::endl
+                                                << part_placed_pose_agv1.orientation.z << std::endl
+                                                << part_placed_pose_agv1.orientation.w)
         */
     }
 }
@@ -107,19 +108,54 @@ void GantryControl::logicalCallback17(const nist_gear::LogicalCameraImage& msg) 
         new_pose.header.frame_id = "logical_camera_17_frame";
         new_pose.pose = model_pose;
         tf2::doTransform(new_pose, new_pose, transformStamped);
+        part_placed_pose_agv2 = new_pose.pose; 
         /*
-        part_placed_pose_incorrect = new_pose.pose; 
-        ROS_INFO_STREAM("Incorrect part pose: " << part_placed_pose_incorrect.position.x << std::endl
-                                                << part_placed_pose_incorrect.position.y << std::endl
-                                                << part_placed_pose_incorrect.position.z << std::endl
-                                                << part_placed_pose_incorrect.orientation.x << std::endl
-                                                << part_placed_pose_incorrect.orientation.y << std::endl
-                                                << part_placed_pose_incorrect.orientation.z << std::endl
-                                                << part_placed_pose_incorrect.orientation.w)
+        
+        ROS_INFO_STREAM("Incorrect part pose: " << part_placed_pose_agv2.position.x << std::endl
+                                                << part_placed_pose_agv2.position.y << std::endl
+                                                << part_placed_pose_agv2.position.z << std::endl
+                                                << part_placed_pose_agv2.orientation.x << std::endl
+                                                << part_placed_pose_agv2.orientation.y << std::endl
+                                                << part_placed_pose_agv2.orientation.z << std::endl
+                                                << part_placed_pose_agv2.orientation.w)
         */
     }
 }
 
+bool GantryControl::poseMatches(const geometry_msgs::Pose &pose1, 
+                                const geometry_msgs::Pose &pose2) {
+    ROS_INFO_STREAM("Pose 1:" << pose1.position.x << std::endl
+                              << pose1.position.y << std::endl
+                              << pose1.position.z << std::endl
+                              << pose1.orientation.x << std::endl
+                              << pose1.orientation.y << std::endl
+                              << pose1.orientation.w << std::endl
+                              << pose1.orientation.z);
+    ROS_INFO_STREAM("Pose 2:" << pose2.position.x << std::endl
+                              << pose2.position.y << std::endl
+                              << pose2.position.z << std::endl
+                              << pose2.orientation.x << std::endl
+                              << pose2.orientation.y << std::endl
+                              << pose2.orientation.w << std::endl
+                              << pose2.orientation.z);
+
+
+    std::vector<double> pose1_angles = quaternionToEuler(pose1);
+    std::vector<double> pose2_angles = quaternionToEuler(pose2);
+
+    ROS_INFO_STREAM("Yaw values:" << pose1_angles.at(2) << std::endl
+                                  << pose2_angles.at(2));
+
+    ROS_INFO_STREAM("Difference:" << std::abs(pose1.position.x - pose2.position.x) << std::endl
+                              << std::abs(pose1.position.y - pose2.position.y) << std::endl
+                              << std::abs(pose1_angles.at(2) - pose2_angles.at(2)));
+    if (std::abs(pose1.position.x - pose2.position.x) < 0.03 &&
+        std::abs(pose1.position.y - pose2.position.y) < 0.03
+        //std::abs(pose1_angles.at(2) - pose2_angles.at(2)) < 0.1
+        )
+        return true;
+    return false;
+}
 
 GantryControl::GantryControl(ros::NodeHandle & node):
         node_("/ariac/gantry"),
@@ -171,7 +207,7 @@ void GantryControl::init() {
     agv1_drop.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     agv1_drop.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    agv1_right_.gantry = {0.6, -6.9, PI};
+    agv1_right_.gantry = {0.6, -6.9, 0};
     agv1_right_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     agv1_right_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
@@ -188,8 +224,12 @@ void GantryControl::init() {
     agv2_right_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
     flipped_pulley_.gantry = {0, 0, 0};
-    flipped_pulley_.left_arm = {-1.29, -0.25, 1.63, 6.28, 1.63, 3.20};
-    flipped_pulley_.right_arm = {1.26, -3.14, -1.76, -0.13, 1.76, 0.88};
+    flipped_pulley_.left_arm = {-1.63, -0.25, 1.61, 6.28, 1.54, 0};
+    flipped_pulley_.right_arm = {1.61, -3.20, -1.26, -3.59, 4.66, 0};
+
+    flipped_pulley_preset.gantry = {0, 0, 0};
+    flipped_pulley_preset.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
+    flipped_pulley_preset.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
     conveyor_up_.gantry = {0, 1.2, 1.29};
     conveyor_up_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
@@ -346,6 +386,7 @@ geometry_msgs::Pose GantryControl::getTargetWorldPose(geometry_msgs::Pose target
 }
 
 void GantryControl::flipPart() {
+    goToPresetLocation(flipped_pulley_preset);
     goToPresetLocation(flipped_pulley_);
     return;
 }
@@ -363,6 +404,16 @@ bool GantryControl::pickPart(part part){
 
 //    left_arm_group_.setPoseReferenceFrame("world");
     geometry_msgs::Pose currentPose = left_arm_group_.getCurrentPose().pose;
+    // tf2::Quaternion q_robot( currentPose.orientation.x,
+    //                         currentPose.orientation.y,
+    //                         currentPose.orientation.z,
+    //                         currentPose.orientation.w);
+    // tf2::Matrix3x3 mrobot(q_robot);
+    // double roll_arm, pitch_arm, yaw_arm;
+    // mrobot.getRPY(roll_arm, pitch_arm, yaw_arm);
+    // part.yaw_correction = yaw_arm;
+
+    // ROS_WARN_STREAM("Robot arm YAW = " << yaw_arm);
 
 //    ROS_INFO_STREAM("[left_arm_group_]= " << currentPose.position.x << ", " << currentPose.position.y << "," << currentPose.position.z);
     if(part.type.size()==0) {
@@ -479,6 +530,8 @@ bool GantryControl::placePart(Product &product,
     
     Part part = product.p;
     auto target_pose_in_tray = getTargetWorldPose(part.pose, agv, arm);
+    
+    product.rpy_final = quaternionToEuler(target_pose_in_tray);
     ROS_INFO_STREAM("Settled tray pose:" << target_pose_in_tray.position.x << " " 
                                             << target_pose_in_tray.position.y << " "
                                             << target_pose_in_tray.position.z);
@@ -500,12 +553,34 @@ bool GantryControl::placePart(Product &product,
         agv_in_use_right = agv2_right_;
     }
     if (left_state.attached) {
-        goToPresetLocation(agv_in_use);
+        auto robot_rpy = quaternionToEuler(currentPose);
+        float roll_ = robot_rpy[0];
+        float pitch_ = robot_rpy[1];
+        float yaw_ = robot_rpy[2];
+
+        auto temp_present = agv_in_use;
+
+        yaw_ = product.rpy_final[2]- part.rpy_init[2];
+
+        temp_present.left_arm[5] = yaw_;
+
+        goToPresetLocation(temp_present);
         currentPose = left_arm_group_.getCurrentPose().pose;
+        
+        
+
+        // tf2::Quaternion q_robot_new(yaw_, pitch_, roll_);
+
+        // target_pose_in_tray.orientation.x = q_robot_new.x();
+        // target_pose_in_tray.orientation.y = q_robot_new.y();
+        // target_pose_in_tray.orientation.z = q_robot_new.z();
+        // target_pose_in_tray.orientation.w = q_robot_new.w();
+
         target_pose_in_tray.orientation.x = currentPose.orientation.x;
         target_pose_in_tray.orientation.y = currentPose.orientation.y;
         target_pose_in_tray.orientation.z = currentPose.orientation.z;
         target_pose_in_tray.orientation.w = currentPose.orientation.w;
+
         left_arm_group_.setPoseTarget(target_pose_in_tray);
         left_arm_group_.move();
 
@@ -521,8 +596,34 @@ bool GantryControl::placePart(Product &product,
         left_arm_group_.setPoseTarget(currentPose);
         left_arm_group_.move();
     } else if (right_state.attached){
+
+//        auto robot_rpy = quaternionToEuler(currentPose);
+//        float roll_ = robot_rpy[0];
+//        float pitch_ = robot_rpy[1];
+//        float yaw_ = robot_rpy[2];
+//        auto temp_present = agv_in_use_right;
+//
+//        yaw_ = product.rpy_final[2]- part.rpy_init[2];
+//
+//        temp_present.right_arm[5] = yaw_;
+
         goToPresetLocation(agv_in_use_right);
-        currentPose = right_arm_group_.getCurrentPose().pose;
+
+        currentPose = left_arm_group_.getCurrentPose().pose;
+        // auto robot_rpy = quaternionToEuler(currentPose);
+        // float roll_ = robot_rpy[0];
+        // float pitch_ = robot_rpy[1];
+        // float yaw_ = robot_rpy[2];
+
+        // yaw_ = product.rpy_final[2]- part.rpy_init[2];
+
+        // tf2::Quaternion q_robot_new(yaw_, pitch_, roll_);
+
+        // target_pose_in_tray.orientation.x = q_robot_new.x();
+        // target_pose_in_tray.orientation.y = q_robot_new.y();
+        // target_pose_in_tray.orientation.z = q_robot_new.z();
+        // target_pose_in_tray.orientation.w = q_robot_new.w();
+
         target_pose_in_tray.orientation.x = currentPose.orientation.x;
         target_pose_in_tray.orientation.y = currentPose.orientation.y;
         target_pose_in_tray.orientation.z = currentPose.orientation.z;
@@ -546,16 +647,21 @@ bool GantryControl::placePart(Product &product,
     
     //bool is_part_placed_correct = poseMatches(target_pose_in_tray, part_placed_pose_incorrect)
     bool *is_part_faulty;
+    geometry_msgs::Pose* part_placed_pose;
     geometry_msgs::Pose* faulty_part_pose;
+
     if(part.agv_id == "agv2"){
     	ROS_INFO_STREAM("------Setting to agv2");
     	is_part_faulty = &is_part_faulty_agv2;
     	faulty_part_pose = &faulty_part_pose_agv2;
+        part_placed_pose = &part_placed_pose_agv2;
     }else{
     	ROS_INFO_STREAM("------Setting to agv1");
     	is_part_faulty = &is_part_faulty_agv1;
     	faulty_part_pose = &faulty_part_pose_agv1;
+        part_placed_pose = &part_placed_pose_agv1;
     }
+
     ros::Duration(2).sleep();
     if (*is_part_faulty) {
         ROS_INFO_STREAM("-----------------Part faulty inside: " << *is_part_faulty);
@@ -567,18 +673,28 @@ bool GantryControl::placePart(Product &product,
         deactivateGripper("left_arm");
         return false;
     } 
-    /*
-    if (is_part_placed_correct) {
+    bool is_part_placed_correct = poseMatches(target_pose_in_tray, *part_placed_pose);
+    
+    if (!is_part_placed_correct) {
         ROS_INFO_STREAM("Part placed incorrectly: " << is_part_placed_correct);
-        part.pose = faulty_part_pose;
+        geometry_msgs::Pose original_part_pose = part.pose;
+        part.pose = *part_placed_pose;
+        ROS_INFO_STREAM("Incorrect part pose: " << part.pose.position.x << std::endl
+                                                << part.pose.position.y << std::endl
+                                                << part.pose.position.z << std::endl
+                                                << part.pose.orientation.x << std::endl
+                                                << part.pose.orientation.y << std::endl
+                                                << part.pose.orientation.z << std::endl
+                                                << part.pose.orientation.w);
         pickPart(part);
-        is_part_faulty = false;
-        goToPresetLocation(agv2_);
-        goToPresetLocation(start_);
-        deactivateGripper("left_arm");
-        return false;
+        // part.pose = original_part_pose;
+        // ROS_INFO_STREAM("Original part pose: " << part.pose.position.x << std::endl
+        //                                         << part.pose.orientation.x << std::endl
+        //                                         << part.pose.orientation.y << std::endl
+        //                                         << part.pose.orientation.z << std::endl
+        //                                         << part.pose.orientation.w);
+        bool placed = placePart(product, agv, arm, agv_data);
     }
-    */
     return true;
 }
 

@@ -67,8 +67,7 @@ class GantryControl {
     void logicalCallback16(const nist_gear::LogicalCameraImage& msg);
     void logicalCallback17(const nist_gear::LogicalCameraImage& msg);
     void pickFromConveyor(const Product &product, ConveyerParts &conveyerPartsObj);
-    // void gantryGo(PresetLocation location);
-    // void gantryCome(PresetLocation location);
+    bool poseMatches(const geometry_msgs::Pose &pose1, const geometry_msgs::Pose &pose2);
     void flipPart();
     bool move2start ( float x, float y );
     float move2trg ( float x, float y);
@@ -84,7 +83,7 @@ class GantryControl {
     //--preset locations;
     start start_;
     bin3 bin3_;
-    flipped_pulley flipped_pulley_;
+    flipped_pulley flipped_pulley_, flipped_pulley_preset;
     agv1 agv1_, agv1_drop, agv1_right_;
     agv2 agv2_, agv2_drop, agv2_right_;
     conveyor_up conveyor_up_;
@@ -110,8 +109,8 @@ class GantryControl {
     bool is_part_faulty_agv1 = false;
     bool is_part_faulty_agv2 = false;
     // Variable to hold faulty part pose
-    geometry_msgs::Pose faulty_part_pose_agv1;
-    geometry_msgs::Pose faulty_part_pose_agv2;
+    geometry_msgs::Pose faulty_part_pose_agv1, part_placed_pose_agv1;
+    geometry_msgs::Pose faulty_part_pose_agv2, part_placed_pose_agv2;
 
     double left_ee_roll_;
     double left_ee_pitch_;
