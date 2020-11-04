@@ -50,7 +50,7 @@ orders:
           # rpy: ['pi', 0, 0]
           # rpy: [0, 0, 0]
       part_1:
-        type: pulley_part_red
+        type: gasket_part_blue
         pose:
           xyz: [0.0, 0.0, 0]
           rpy: [0, 0, 0]
@@ -68,7 +68,7 @@ orders:
       part_0:
         type: pulley_part_red
         pose:
-          xyz: [-0.15, -0.2, 0]
+          xyz: [-0.12, -0.2, 0]
           rpy: [0, 0, 0]
       part_1:
         type: gasket_part_blue
@@ -78,7 +78,7 @@ orders:
       part_2:
         type: pulley_part_red
         pose:
-          xyz: [0.15, -0.2, 0]
+          xyz: [0.12, -0.2, 0]
           rpy: [0, 0, 0]
 
 models_over_bins:
