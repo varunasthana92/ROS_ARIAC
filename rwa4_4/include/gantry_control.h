@@ -70,6 +70,7 @@ class GantryControl {
     bool poseMatches(const geometry_msgs::Pose &pose1, const geometry_msgs::Pose &pose2);
     void flipPart();
     bool move2start ( float x, float y );
+    float move2trgC ( float x, float y, std::vector<double> rpy );
     float move2trg ( float x, float y);
 //    bool conveyor();
 

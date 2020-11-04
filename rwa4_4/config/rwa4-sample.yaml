@@ -50,15 +50,15 @@ orders:
           xyz: [-0.15, 0.2, 0]
           rpy: [0, 0, '-pi/4']
       part_2:
-        type: gasket_part_green
-        pose:
-          xyz: [0.0, 0.0, 0]
-          rpy: [0, 0, '-pi/4']
-      part_3:
         type: disk_part_green
         pose:
           xyz: [0.15, -0.2, 0]
           rpy: [0, 0, 0]
+      part_3:
+        type: gasket_part_green
+        pose:
+          xyz: [0.0, 0.0, 0]
+          rpy: [0, 0, '-pi/4']
   order_1:
     announcement_condition: unwanted_products
     announcement_condition_value: 1
@@ -75,7 +75,7 @@ orders:
         pose:
           xyz: [0.15, 0.2, 0]
           rpy: [0, 0, '-pi/4']
-
+          
 models_over_bins:
   bin13:
     models:
@@ -123,7 +123,7 @@ drops:
       destination:
         xyz: [0.2, 0.3, 0.05]
         rpy: [0, 0, 0.2]
-      product_type_to_drop: gasket_part_green
+      product_type_to_drop: disk_part_green
     shipping_box_1_impeding:
       frame: agv2::kit_tray_2
       min:
