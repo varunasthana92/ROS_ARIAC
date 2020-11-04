@@ -58,7 +58,8 @@ orders:
         type: gasket_part_green
         pose:
           xyz: [0.0, 0.0, 0]
-          rpy: [0, 0, '-pi/4']
+          # rpy: [0, 0, '-pi/4']
+          rpy: [0, 0, 0]
   order_1:
     announcement_condition: unwanted_products
     announcement_condition_value: 1
@@ -92,7 +93,8 @@ models_over_shelves:
       gasket_part_green:
         xyz_start: [1, 0.45, 0.0]
         xyz_end: [0., 0.45, 0.0]
-        rpy: [0, 0, 'pi/4']
+        # rpy: [0, 0, 'pi/4']
+        rpy: [0, 0, 0]
         num_models_x: 6
         num_models_y: 1
   shelf11:
@@ -112,28 +114,28 @@ belt_models:
         rpy: [0, 0, 'pi/2']
 
 #Faulty gripper
-drops:
-  drop_regions:
-    shipping_box_0_impeding:
-      frame: agv1::kit_tray_1
-      min:
-        xyz: [-0.3, -0.3, 0.0]
-      max:
-        xyz: [0.3, 0.3, 0.5]
-      destination:
-        xyz: [0.2, 0.3, 0.05]
-        rpy: [0, 0, 0.2]
-      product_type_to_drop: disk_part_green
-    shipping_box_1_impeding:
-      frame: agv2::kit_tray_2
-      min:
-        xyz: [-0.3, -0.3, 0.0]
-      max:
-        xyz: [0.3, 0.3, 0.5]
-      destination:
-        xyz: [0.15, 0.15, 0.05]
-        rpy: [0, 0, 0.2]
-      product_type_to_drop: disk_part_green
+# drops:
+#   drop_regions:
+#     shipping_box_0_impeding:
+#       frame: agv1::kit_tray_1
+#       min:
+#         xyz: [-0.3, -0.3, 0.0]
+#       max:
+#         xyz: [0.3, 0.3, 0.5]
+#       destination:
+#         xyz: [0.2, 0.3, 0.05]
+#         rpy: [0, 0, 0.2]
+#       product_type_to_drop: disk_part_green
+#     shipping_box_1_impeding:
+#       frame: agv2::kit_tray_2
+#       min:
+#         xyz: [-0.3, -0.3, 0.0]
+#       max:
+#         xyz: [0.3, 0.3, 0.5]
+#       destination:
+#         xyz: [0.15, 0.15, 0.05]
+#         rpy: [0, 0, 0.2]
+#       product_type_to_drop: disk_part_green
 
 #Faulty products
 faulty_products:

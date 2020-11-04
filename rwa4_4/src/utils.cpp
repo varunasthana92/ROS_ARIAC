@@ -27,7 +27,7 @@ std::vector<double> quaternionToEuler(geometry_msgs::Pose pose) {
                         pose.orientation.w);
     tf2::Matrix3x3 m(q);
     double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
+    m.getRPY(roll, pitch, yaw, 2);
     pose_angles = {roll, pitch, yaw};
     return pose_angles;
 }

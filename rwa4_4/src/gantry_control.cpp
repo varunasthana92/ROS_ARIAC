@@ -374,16 +374,25 @@ geometry_msgs::Pose GantryControl::getTargetWorldPose(geometry_msgs::Pose target
     }
 
     geometry_msgs::Pose world_target{target};
+    // world_target.position.x = world_target_tf.transform.translation.x;
+    // world_target.position.y = world_target_tf.transform.translation.y;
+    // world_target.position.z = world_target_tf.transform.translation.z;
+    // world_target.orientation.x = ee_target_tf.transform.rotation.x;
+    // world_target.orientation.y = ee_target_tf.transform.rotation.y;
+    // world_target.orientation.z = ee_target_tf.transform.rotation.z;
+    // world_target.orientation.w = ee_target_tf.transform.rotation.w;
+
     world_target.position.x = world_target_tf.transform.translation.x;
     world_target.position.y = world_target_tf.transform.translation.y;
     world_target.position.z = world_target_tf.transform.translation.z;
-    world_target.orientation.x = ee_target_tf.transform.rotation.x;
-    world_target.orientation.y = ee_target_tf.transform.rotation.y;
-    world_target.orientation.z = ee_target_tf.transform.rotation.z;
-    world_target.orientation.w = ee_target_tf.transform.rotation.w;
+    world_target.orientation.x = world_target_tf.transform.rotation.x;
+    world_target.orientation.y = world_target_tf.transform.rotation.y;
+    world_target.orientation.z = world_target_tf.transform.rotation.z;
+    world_target.orientation.w = world_target_tf.transform.rotation.w;
 
     return world_target;
 }
+
 
 void GantryControl::flipPart() {
     goToPresetLocation(flipped_pulley_preset);
@@ -405,10 +414,36 @@ bool GantryControl::pickPart(part part){
         return false;
     }
     part.pose.position.z = part.pose.position.z + model_height.at(part.type) + GRIPPER_HEIGHT - EPSILON;
+
+    ROS_WARN_STREAM("robot quat: "<< currentPose);
+
+    // auto orient_pose = getPose_EE(part.pose, "left");
+    // part.pose.orientation.x = orient_pose.orientation.x;
+    // part.pose.orientation.y = orient_pose.orientation.y;
+    // part.pose.orientation.z = orient_pose.orientation.z;
+    // part.pose.orientation.w = orient_pose.orientation.w;
+
+    // ROS_WARN_STREAM("Part gripprt quat: "<< part.pose);
+
     part.pose.orientation.x = currentPose.orientation.x;
     part.pose.orientation.y = currentPose.orientation.y;
     part.pose.orientation.z = currentPose.orientation.z;
     part.pose.orientation.w = currentPose.orientation.w;
+
+    // tf2::Quaternion q_rslt( 0, 0.7073883, 0, 0.7073883);
+
+    // tf2::Quaternion q_init_part(part.pose.orientation.x,
+    //                         part.pose.orientation.y,
+    //                         part.pose.orientation.z,
+    //                         part.pose.orientation.w);
+
+    // tf2::Quaternion q_rslt = q_init_part.inverse()*q_pitch;
+
+    // part.pose.orientation.x = q_rslt.x();
+    // part.pose.orientation.y = q_rslt.y();
+    // part.pose.orientation.z = q_rslt.z();
+    // part.pose.orientation.w = q_rslt.w();
+
 //    ROS_INFO_STREAM("["<< part.type<<"]= " << part.pose.position.x << ", " << part.pose.position.y << "," << part.pose.position.z << "," << part.pose.orientation.x << "," << part.pose.orientation.y << "," << part.pose.orientation.z << "," << part.pose.orientation.w);
     bool *is_part_faulty;
     geometry_msgs::Pose* faulty_part_pose;
@@ -446,7 +481,7 @@ bool GantryControl::pickPart(part part){
             // part.pose.position.z -= 0.2;
             left_arm_group_.setPoseTarget(currentPose);
             left_arm_group_.move();
-            // goToPresetLocation(start_);
+            // goToPresetLocation(starleft_arm_group_t_);
         }
         else {
             ROS_INFO_STREAM("[Gripper] = object not attached");
@@ -514,8 +549,27 @@ bool GantryControl::placePart(Product &product,
     
     Part part = product.p;
     auto target_pose_in_tray = getTargetWorldPose(part.pose, agv, arm);
+
+    tf2::Quaternion q_pitch( 0, 0.7073883, 0, 0.7073883);
+
+    tf2::Quaternion q_init_part(part.pose.orientation.x,
+                                part.pose.orientation.y,
+                                part.pose.orientation.z,
+                                part.pose.orientation.w);
+
+    tf2::Quaternion q_final_part(target_pose_in_tray.orientation.x,
+                                target_pose_in_tray.orientation.y,
+                                target_pose_in_tray.orientation.z,
+                                target_pose_in_tray.orientation.w);
+
+    tf2::Quaternion q_rslt = q_final_part*q_pitch;
+
+    target_pose_in_tray.orientation.x = q_rslt.x();
+    target_pose_in_tray.orientation.y = q_rslt.y();
+    target_pose_in_tray.orientation.z = q_rslt.z();
+    target_pose_in_tray.orientation.w = q_rslt.w();
     
-    product.rpy_final = quaternionToEuler(target_pose_in_tray);
+    // product.rpy_final = quaternionToEuler(target_pose_in_tray);
     ROS_INFO_STREAM("Settled tray pose:" << target_pose_in_tray.position.x << " " 
                                             << target_pose_in_tray.position.y << " "
                                             << target_pose_in_tray.position.z);
@@ -537,26 +591,9 @@ bool GantryControl::placePart(Product &product,
         agv_in_use_right = agv2_right_;
     }
     if (left_state.attached) {
-        // auto robot_rpy = quaternionToEuler(currentPose);
-        // float roll_ = robot_rpy[0];
-        // float pitch_ = robot_rpy[1];
-        // float yaw_ = robot_rpy[2];
-        // ROS_INFO_STREAM("Robot arm Yaw = " << yaw_ );
-        auto temp_present = agv_in_use;
-
-        // yaw_ += product.rpy_final[2]- part.rpy_init[2];
-        // ROS_INFO_STREAM("Part initial Yaw = " << part.rpy_init[2] );
-        // ROS_INFO_STREAM("Part Fianl Yaw = " << product.rpy_final[2]);
-        // ROS_INFO_STREAM("Arm Fianl Yaw = " << yaw_);
-        // temp_present.left_arm[5] = yaw_;
-
-        goToPresetLocation(temp_present);
+        goToPresetLocation(agv_in_use);
+        
         currentPose = left_arm_group_.getCurrentPose().pose;
-
-        // target_pose_in_tray.orientation.x = currentPose.orientation.x;
-        // target_pose_in_tray.orientation.y = currentPose.orientation.y;
-        // target_pose_in_tray.orientation.z = currentPose.orientation.z;
-        // target_pose_in_tray.orientation.w = currentPose.orientation.w;
 
         left_arm_group_.setPoseTarget(target_pose_in_tray);
         left_arm_group_.move();
@@ -574,17 +611,17 @@ bool GantryControl::placePart(Product &product,
         left_arm_group_.move();
     } else if (right_state.attached){
 
-        auto robot_rpy = quaternionToEuler(currentPose);
-        float roll_ = robot_rpy[0];
-        float pitch_ = robot_rpy[1];
-        float yaw_ = robot_rpy[2];
-        auto temp_present = agv_in_use_right;
+        // auto robot_rpy = quaternionToEuler(currentPose);
+        // float roll_ = robot_rpy[0];
+        // float pitch_ = robot_rpy[1];
+        // float yaw_ = robot_rpy[2];
+        // auto temp_present = agv_in_use_right;
 
-        yaw_ = product.rpy_final[2]- part.rpy_init[2];
+        // yaw_ = product.rpy_final[2]- part.rpy_init[2];
 
-        temp_present.right_arm[5] = yaw_;
+        // temp_present.right_arm[5] = yaw_;
 
-        goToPresetLocation(temp_present);
+        goToPresetLocation(agv_in_use_right);
 
         currentPose = right_arm_group_.getCurrentPose().pose;
         // auto robot_rpy = quaternionToEuler(currentPose);
@@ -601,10 +638,10 @@ bool GantryControl::placePart(Product &product,
         // target_pose_in_tray.orientation.z = q_robot_new.z();
         // target_pose_in_tray.orientation.w = q_robot_new.w();
 
-        target_pose_in_tray.orientation.x = currentPose.orientation.x;
-        target_pose_in_tray.orientation.y = currentPose.orientation.y;
-        target_pose_in_tray.orientation.z = currentPose.orientation.z;
-        target_pose_in_tray.orientation.w = currentPose.orientation.w;
+        // target_pose_in_tray.orientation.x = currentPose.orientation.x;
+        // target_pose_in_tray.orientation.y = currentPose.orientation.y;
+        // target_pose_in_tray.orientation.z = currentPose.orientation.z;
+        // target_pose_in_tray.orientation.w = currentPose.orientation.w;
 
         right_arm_group_.setPoseTarget(target_pose_in_tray);
         right_arm_group_.move();
@@ -653,7 +690,7 @@ bool GantryControl::placePart(Product &product,
     bool is_part_placed_correct = poseMatches(target_pose_in_tray, *part_placed_pose);
     
     if (!is_part_placed_correct) {
-        ROS_INFO_STREAM("Part placed incorrectly: " << is_part_placed_correct);
+        ROS_INFO_STREAM("Part placed incorrectly: ");
         geometry_msgs::Pose original_part_pose = part.pose;
         part.pose = *part_placed_pose;
         ROS_INFO_STREAM("Incorrect part pose: " << part.pose.position.x << std::endl
@@ -725,7 +762,7 @@ bool GantryControl::move2start ( float x, float y ) {
         else if( y <= 3.05 && y > 1.5025){
             move.gantry[0] = x;
             move.gantry[1] -= offset_y;
-            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
+            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
 
             ROS_INFO_STREAM("Position of trg in move2start y:" << move.gantry[1]);
             ROS_INFO_STREAM("Position of trg  str_3");
@@ -734,7 +771,7 @@ bool GantryControl::move2start ( float x, float y ) {
 
             move.gantry[0] = 0;
             move.gantry[1] -= offset_y;
-            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
+            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
             goToPresetLocation(move);
 //            goToPresetLocation(start_);
             return true;
@@ -753,7 +790,7 @@ bool GantryControl::move2start ( float x, float y ) {
         else if( y <= 0 && y > -1.5025){
             move.gantry[0] = x;
             move.gantry[1] -= offset_y;
-            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
+            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
 
             ROS_INFO_STREAM("Position of trg in move2start y:" << move.gantry[1]);
             ROS_INFO_STREAM("Position of trg  str_5");
@@ -762,7 +799,7 @@ bool GantryControl::move2start ( float x, float y ) {
 
             move.gantry[0] = 0;
             move.gantry[1] -= offset_y;
-            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
+            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
             goToPresetLocation(move);
 //            goToPresetLocation(start_);
             return true;
@@ -781,7 +818,7 @@ bool GantryControl::move2start ( float x, float y ) {
         else if( y <= -3.05 && y > -6.6){
             move.gantry[0] = x;
             move.gantry[1] -= offset_y;
-            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
+            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
             ROS_INFO_STREAM("Position of trg in move2start x:" << move.gantry[0]);
             ROS_INFO_STREAM("Position of trg in move2start y:" << move.gantry[1]);
             ROS_INFO_STREAM("Position of trg  str_7");
@@ -790,7 +827,7 @@ bool GantryControl::move2start ( float x, float y ) {
 
             move.gantry[0] = 0;
             move.gantry[1] -= offset_y;
-            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
+            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
             goToPresetLocation(move);
 //            goToPresetLocation(start_);
             return true;
@@ -936,7 +973,7 @@ float GantryControl::move2trg  ( float x, float y ) {
         else if( y <= 3.05 && y > 1.5025){
             move.gantry[0] = 0;
             move.gantry[1] -= offset_y;
-            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
+            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
             ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
             ROS_INFO_STREAM("Position of trg  trg_3");
 
@@ -944,7 +981,7 @@ float GantryControl::move2trg  ( float x, float y ) {
             
             move_trg.gantry[0] -= offset_final_x;
             move_trg.gantry[1] -= offset_final_y - 0.3;
-            move_trg.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
+            move_trg.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
             goToPresetLocation(move_trg);
             return -move_trg.gantry[1];
         }
@@ -965,7 +1002,7 @@ float GantryControl::move2trg  ( float x, float y ) {
         else if( y <= 0 && y > -1.5025){
             move.gantry[0] = 0;
             move.gantry[1] -= offset_y;
-            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
+            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
             ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
             ROS_INFO_STREAM("Position of trg  trg_5");
 
@@ -973,7 +1010,7 @@ float GantryControl::move2trg  ( float x, float y ) {
             
             move_trg.gantry[0] -= offset_final_x;
             move_trg.gantry[1] -= offset_final_y - 0.3;
-            move_trg.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
+            move_trg.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
             goToPresetLocation(move_trg);
             return -move_trg.gantry[1];
         }
@@ -994,7 +1031,7 @@ float GantryControl::move2trg  ( float x, float y ) {
         else if( y <= -3.05 && y > -6.6){
             move.gantry[0] = 0;
             move.gantry[1] -= offset_y;
-            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
+            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
             ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
             ROS_INFO_STREAM("Position of trg  trg_7");
 
@@ -1002,7 +1039,7 @@ float GantryControl::move2trg  ( float x, float y ) {
             
             move_trg.gantry[0] -= offset_final_x;
             move_trg.gantry[1] -= offset_final_y;
-            move_trg.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
+            move_trg.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
             goToPresetLocation(move_trg);
             return -move_trg.gantry[1];
         }
@@ -1114,248 +1151,6 @@ float GantryControl::move2trg  ( float x, float y ) {
         return 0;
     }
 }
-
-float GantryControl::move2trgC ( float x, float y, std::vector<double> rpy ) {
-
-    // geometry_msgs::Pose robot_pose = getRobotPose();
-    // float x = trg_pose.position.x;
-    // float y = trg_pose.position.y;
-
-    float offset_final_y = 1.1;
-    float offset_y = offset_final_y + 0.2;
-    float offset_final_x = 0.4;
-
-    // offset_y *= -1;
-    // offset_final_y *= -1;
-
-    ROS_INFO_STREAM("Part initial yaw:" << rpy[2]);
-
-    PresetLocation move, move_trg;
-
-    move.gantry = {0,y,0};
-    move.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    move.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
-    goToPresetLocation(move);
-
-    move.gantry = {x,y,0};
-    move.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, -rpy[2]};
-    move.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
-
-    move_trg = move;
-
-    if(x < 0){
-        if( y > 6.3){
-            move.gantry[0] = 0;
-            move.gantry[1] -= offset_y;
-            
-            ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  trg_1");
-
-            goToPresetLocation(move);
-            
-            move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] -= offset_final_y;
-            goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
-        }
-        else  if( y <= 6.3 && y > 3.05){
-            move.gantry[0] = 0;
-            move.gantry[1] += offset_y;
-
-            ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  trg_2");
-
-            goToPresetLocation(move);
-
-            move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] += offset_final_y;
-            goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
-        }
-        else if( y <= 3.05 && y > 1.5025){
-            move.gantry[0] = 0;
-            move.gantry[1] -= offset_y;
-            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
-            ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  trg_3");
-
-            goToPresetLocation(move);
-            
-            move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] -= offset_final_y - 0.3;
-            move_trg.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
-            goToPresetLocation(move_trg);
-
-            return -move_trg.gantry[1];
-        }
-        else if( y <= 1.5025 && y > 0){
-            move.gantry[0] = 0;
-            move.gantry[1] += offset_y;
-
-            ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  trg_4");
-
-            goToPresetLocation(move);
-            
-            move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] += offset_final_y;
-            goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
-        }
-        else if( y <= 0 && y > -1.5025){
-            move.gantry[0] = 0;
-            move.gantry[1] -= offset_y;
-            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
-            ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  trg_5");
-
-            goToPresetLocation(move);
-            
-            move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] -= offset_final_y - 0.3;
-            move_trg.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
-            goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
-        }
-        else if( y <= -1.5025 && y > -3.05){
-            move.gantry[0] = 0;
-            move.gantry[1] += offset_y;
-
-            ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  trg_6");
-
-            goToPresetLocation(move);
-            
-            move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] += offset_final_y;
-            goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
-        }
-        else if( y <= -3.05 && y > -6.6){
-            move.gantry[0] = 0;
-            move.gantry[1] -= offset_y;
-            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
-            ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  trg_7");
-
-            goToPresetLocation(move);
-            
-            move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] -= offset_final_y;
-            move_trg.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
-            goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
-        }
-        else if( y <= -6.6){
-            move.gantry[0] = 0;
-            move.gantry[1] += offset_y;
-
-            ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  trg_8");
-
-            goToPresetLocation(move);
-            
-            move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] += offset_final_y;
-            goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
-        }
-        return 0;
-
-    }else{ // towards bin s
-        if( y > 6.3){
-            move.gantry[0] = 0;
-            move.gantry[1] -= offset_y;
-
-            ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  trg_9");
-
-            goToPresetLocation(move);
-            
-            move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] -= offset_final_y;
-            goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
-        }
-        else  if( y <= 6.3 && y > 3.6){
-            move.gantry[0] = 0;
-            move.gantry[1] += offset_y;
-
-            ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  trg_10");
-
-            goToPresetLocation(move);
-            
-            move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] += offset_final_y;
-            goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
-        }
-        else  if( y <= 3.6 && y > 0){
-            offset_y = 0.6;
-            offset_final_x = 0.85;
-            move.gantry[0] = 0;
-            ROS_INFO_STREAM("Position of trg in move2trg y (0):" << move.gantry[1]);
-//            move.gantry[1] -= offset_y;
-
-            ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  trg_11");
-            ROS_INFO_STREAM("Position of value of offset_y :" << offset_y);
-
-            goToPresetLocation(move);
-            
-            move_trg.gantry[0] -= offset_final_x;
-//            move_trg.gantry[1] -= offset_y;
-            goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
-        }
-        else  if( y <= 0 && y > -3.6){
-            move.gantry[0] = 0;
-            move.gantry[1] += offset_y;
-
-            ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  trg_12");
-
-            goToPresetLocation(move);
-            
-            move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] += offset_final_y;
-            goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
-        }
-        else  if( y <= -3.6 && y > -6.6){
-            move.gantry[0] = 0;
-            move.gantry[1] -= offset_y;
-
-            ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  trg_13");
-
-            goToPresetLocation(move);
-            
-            move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] -= offset_final_y;
-            goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
-        }
-        else  if( y <= -6.6 ){
-            move.gantry[0] = 0;
-            move.gantry[1] += offset_y;
-
-            ROS_INFO_STREAM("Position of trg in move2trg y:" << move.gantry[1]);
-            ROS_INFO_STREAM("Position of trg  trg_14");
-
-            goToPresetLocation(move);
-            
-            move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] += offset_final_y;
-            goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
-        }
-        return 0;
-    }
-}
-
-
 
 
 void GantryControl::pickFromConveyor(const Product &product, ConveyerParts &conveyerPartsObj) {

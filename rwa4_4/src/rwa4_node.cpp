@@ -139,7 +139,7 @@ int main(int argc, char ** argv) {
             product.p.rpy_init = quaternionToEuler(product.estimated_conveyor_pose);
         } else {
             ROS_DEBUG_STREAM("Not picking from conveyor!!!!!!!!!!!!");
-            float Y_pose = gantry.move2trgC(product.p.pose.position.x, -product.p.pose.position.y, product.p.rpy_init );
+            float Y_pose = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y);
             gantry.pickPart(product.p);
             gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose);
         }
