@@ -59,8 +59,8 @@ typedef struct PresetLocation {
 
 typedef struct Part {
   std::string type; // model type
-  geometry_msgs::Pose pose; // model pose (in frame)
-  geometry_msgs::Pose save_pose;
+  geometry_msgs::Pose pose; // world pose of the part
+  geometry_msgs::Pose save_pose; // pose of part in relative term
   std::string frame; // model frame (e.g., "logical_camera_1_frame")
   int camFrame;
   ros::Time time_stamp;

@@ -144,8 +144,8 @@ int main(int argc, char ** argv) {
             gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose);
         }
         
-        product.p.pose = product.pose;
-        if (product.p.pose.orientation.x == 1 || product.p.pose.orientation.x == -1) {
+        // product.p.pose = product.pose;
+        if (product.pose.orientation.x == 1 || product.pose.orientation.x == -1) {
             gantry.flipPart();
             arm = "right";
             gantry.activateGripper("right_arm");
