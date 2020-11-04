@@ -66,7 +66,7 @@ class GantryControl {
     void deactivateGripper(std::string gripper_id);
     void logicalCallback16(const nist_gear::LogicalCameraImage& msg);
     void logicalCallback17(const nist_gear::LogicalCameraImage& msg);
-    void pickFromConveyor(const Product &product);
+    void pickFromConveyor(const Product &product, ConveyerParts &conveyerPartsObj);
     // void gantryGo(PresetLocation location);
     // void gantryCome(PresetLocation location);
     void flipPart();

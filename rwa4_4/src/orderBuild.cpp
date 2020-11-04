@@ -180,7 +180,6 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
         st_temp->next = NULL;
         ROS_INFO_STREAM("Static Part " << st_temp->prod.type);
         return st_temp;
-
     }else if(mv_order_shipment_num_top != -1){
         mv_temp = mv_order;
         curr_build_shipment_num = mv_temp->ship_num;
