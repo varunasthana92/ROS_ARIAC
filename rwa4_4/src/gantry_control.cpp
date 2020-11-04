@@ -666,6 +666,7 @@ bool GantryControl::placePart(Product &product,
         ROS_INFO_STREAM("Part placed incorrectly: " << is_part_placed_correct);
         geometry_msgs::Pose original_part_pose = part.pose;
         part.pose = *part_placed_pose;
+        product.p.pose = *part_placed_pose;
         ROS_INFO_STREAM("Incorrect part pose: " << part.pose.position.x << std::endl
                                                 << part.pose.position.y << std::endl
                                                 << part.pose.position.z << std::endl
