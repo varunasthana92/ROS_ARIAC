@@ -110,7 +110,7 @@ void GantryControl::logicalCallback17(const nist_gear::LogicalCameraImage& msg) 
         geometry_msgs::Pose world_pose;
         tf2::doTransform(model_pose, world_pose, transformStamped);
 
-        if(not check_exist_on_agv(model_name, world_pose, agv1_allParts)){
+        if(not check_exist_on_agv(model_name, world_pose, agv2_allParts)){
             part_placed_pose_agv2 = world_pose;
             return;
         }
@@ -119,7 +119,7 @@ void GantryControl::logicalCallback17(const nist_gear::LogicalCameraImage& msg) 
 
 float getDis(const geometry_msgs::Pose &p1, const geometry_msgs::Pose &p2){
 
-    if(std::abs(p1.position.z - p2.position.z) > 0.004){
+    if(std::abs(p1.position.z - p2.position.z) > 0.01){
         return -1;
     }
     float dis = std::pow((p1.position.x - p2.position.x),2) + std::pow((p1.position.y - p2.position.y),2);
@@ -557,12 +557,6 @@ bool GantryControl::placePart(Product &product,
     
     product.rpy_final = quaternionToEuler(target_pose_in_tray);
 
-    // double yaw_ = product.rpy_final[2]- part.rpy_init[2];
-    // double pitch_ = 0;
-    // double roll_ = 0;
-    // tf2::Quaternion q_final_part(yaw_, pitch_, roll_);
-
-
     tf2::Quaternion q_pitch( 0, 0.7073883, 0, 0.7073883);
     tf2::Quaternion q_pi( 0, 0, 0.9999997, 0.0007963);
 
@@ -619,36 +613,9 @@ bool GantryControl::placePart(Product &product,
         left_arm_group_.move();
     } else if (right_state.attached){
 
-//        auto robot_rpy = quaternionToEuler(currentPose);
-//        float roll_ = robot_rpy[0];
-//        float pitch_ = robot_rpy[1];
-//        float yaw_ = robot_rpy[2];
-//        auto temp_present = agv_in_use_right;
-//
-//        yaw_ = product.rpy_final[2]- part.rpy_init[2];
-//
-//        temp_present.right_arm[5] = yaw_;
-
         goToPresetLocation(agv_in_use_right);
-        currentPose = left_arm_group_.getCurrentPose().pose;
-        // auto robot_rpy = quaternionToEuler(currentPose);
-        // float roll_ = robot_rpy[0];
-        // float pitch_ = robot_rpy[1];
-        // float yaw_ = robot_rpy[2];
-
-        // yaw_ = product.rpy_final[2]- part.rpy_init[2];
-
-        // tf2::Quaternion q_robot_new(yaw_, pitch_, roll_);
-
-        // target_pose_in_tray.orientation.x = q_robot_new.x();
-        // target_pose_in_tray.orientation.y = q_robot_new.y();
-        // target_pose_in_tray.orientation.z = q_robot_new.z();
-        // target_pose_in_tray.orientation.w = q_robot_new.w();
-
-        target_pose_in_tray.orientation.x = currentPose.orientation.x;
-        target_pose_in_tray.orientation.y = currentPose.orientation.y;
-        target_pose_in_tray.orientation.z = currentPose.orientation.z;
-        target_pose_in_tray.orientation.w = currentPose.orientation.w;
+        
+        currentPose = right_arm_group_.getCurrentPose().pose;
 
         right_arm_group_.setPoseTarget(target_pose_in_tray);
         right_arm_group_.move();
