@@ -44,6 +44,7 @@ private:
     std::vector<struct all_Order*> ship_top_prod_static;
     std::vector<struct all_Order*> ship_top_prod_moving;
     bool callBackOnce[16];   // for 16 logical cameras, not including onveyor belt camera cam_id = 1
+    int camCount=0;
 public:
     struct agvInfo agv1, agv2;
     std::vector<Order> allOrders;
@@ -58,6 +59,7 @@ public:
     void orderCallback(const nist_gear::Order& ordermsg);
     void setList(Product &product_received, int num_shipment, std::string shipment_type);
     struct all_Order* getList(ConveyerParts &conveyerPartsObj);
+    void pushList(struct all_Order* prod);   
     // struct all_Order* getList();
     int queryPart(Product &prod);    // pass by reference
     void logical_camera_callback(const nist_gear::LogicalCameraImage::ConstPtr & msg, int cam_id);
