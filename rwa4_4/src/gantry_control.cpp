@@ -12,7 +12,7 @@ void GantryControl::qualityCallback1(const nist_gear::LogicalCameraImage& msg) {
     if (msg.models.size() != 0) {
         // ROS_INFO_STREAM("Detected faulty part on agv2 : " << (msg.models[0]).type);
         is_part_faulty_agv2 = true;
-        geometry_msgs::Pose model_pose = (msg.models[0]).pose;
+        geometry_msgs::Pose model_pose = (msg.models[msg.models.size()-1]).pose;
         geometry_msgs::TransformStamped transformStamped;
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
@@ -36,7 +36,7 @@ void GantryControl::qualityCallback2(const nist_gear::LogicalCameraImage& msg) {
     if (msg.models.size() != 0) {
         // ROS_INFO_STREAM("Detected faulty part n agv1 : " << (msg.models[0]).type);
         is_part_faulty_agv1 = true;
-        geometry_msgs::Pose model_pose = (msg.models[0]).pose;
+        geometry_msgs::Pose model_pose = (msg.models[msg.models.size()-1]).pose;
         geometry_msgs::TransformStamped transformStamped;
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
@@ -59,7 +59,7 @@ void GantryControl::qualityCallback2(const nist_gear::LogicalCameraImage& msg) {
 void GantryControl::logicalCallback16(const nist_gear::LogicalCameraImage& msg) {
     if (msg.models.size() != 0) {
         // ROS_INFO_STREAM("Detected part from logical camera 16 on agv1: " << (msg.models[0]).type);
-        geometry_msgs::Pose model_pose = (msg.models[0]).pose;
+        geometry_msgs::Pose model_pose = (msg.models[msg.models.size()-1]).pose;
         geometry_msgs::TransformStamped transformStamped;
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
@@ -92,7 +92,7 @@ void GantryControl::logicalCallback16(const nist_gear::LogicalCameraImage& msg) 
 void GantryControl::logicalCallback17(const nist_gear::LogicalCameraImage& msg) {
     if (msg.models.size() != 0) {
         // ROS_INFO_STREAM("Detected part from logical camera: " << (msg.models[0]).type);
-        geometry_msgs::Pose model_pose = (msg.models[0]).pose;
+        geometry_msgs::Pose model_pose = (msg.models[msg.models.size()-1]).pose;
         geometry_msgs::TransformStamped transformStamped;
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
@@ -527,29 +527,30 @@ bool GantryControl::placePart(Product &product,
                               agvInfo &agv_data){
     
     Part part = product.p;
-    auto target_pose_in_tray = getTargetWorldPose(part.pose, agv, arm);
+    auto target_pose_in_tray = getTargetWorldPose(product.pose, agv, arm);
     
     product.rpy_final = quaternionToEuler(target_pose_in_tray);
 
-    double yaw_ = product.rpy_final[2]- part.rpy_init[2];
-    double pitch_ = 0;
-    double roll_ = 0;
-    tf2::Quaternion q_final_part(yaw_, pitch_, roll_);
+    // double yaw_ = product.rpy_final[2]- part.rpy_init[2];
+    // double pitch_ = 0;
+    // double roll_ = 0;
+    // tf2::Quaternion q_final_part(yaw_, pitch_, roll_);
 
 
     tf2::Quaternion q_pitch( 0, 0.7073883, 0, 0.7073883);
+    tf2::Quaternion q_pi( 0, 0, 0.9999997, 0.0007963);
 
     tf2::Quaternion q_init_part(part.pose.orientation.x,
                                 part.pose.orientation.y,
                                 part.pose.orientation.z,
                                 part.pose.orientation.w);
 
-    // tf2::Quaternion q_final_part(target_pose_in_tray.orientation.x,
-    //                             target_pose_in_tray.orientation.y,
-    //                             target_pose_in_tray.orientation.z,
-    //                             target_pose_in_tray.orientation.w);
+    tf2::Quaternion q_final_part(target_pose_in_tray.orientation.x,
+                                target_pose_in_tray.orientation.y,
+                                target_pose_in_tray.orientation.z,
+                                target_pose_in_tray.orientation.w);
 
-    tf2::Quaternion q_rslt = q_final_part*q_pitch;
+    tf2::Quaternion q_rslt = q_init_part.inverse()*q_final_part*q_pi*q_pitch;
 
     target_pose_in_tray.orientation.x = q_rslt.x();
     target_pose_in_tray.orientation.y = q_rslt.y();
