@@ -23,13 +23,14 @@ double round (double x) {
 }
 
 void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCameraImage& msg) {
+	try {
 	updateCurrentPoses();
 	checkBoundaries();
 	checkCurrentPartSet();
 	// checkForPick();
 	// ROS_WARN_STREAM("Check consistency*************************");
 	// No part
-	if(msg.models.size()!=1 && current_detection.type.size()==0) {
+	if(msg.models.size()==0 && current_detection.type.size()==0) {
 		// ROS_DEBUG_STREAM_THROTTLE(2,"No parts detected on conveyer belt camera");
 		return;
 	}
@@ -66,6 +67,10 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 		current_detection.part_set = true;
 		allConveyerParts.push_back(current_detection);
 		return;
+	}
+	}
+	catch(...){
+		ROS_WARN("Problem");
 	}
 }
 
