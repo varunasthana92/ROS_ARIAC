@@ -128,7 +128,7 @@ float getDis(const geometry_msgs::Pose &p1, const geometry_msgs::Pose &p2){
 
 bool GantryControl::check_exist_on_agv(const std::string &name, const geometry_msgs::Pose &part_pose, agvInfo &agv){
     if(agv.prod_on_tray.find(name) != agv.prod_on_tray.end()){
-        for(Product prod: agv.prod_on_tray[name]){
+        for(Product &prod: agv.prod_on_tray[name]){
             float dis = getDis(part_pose, prod.agv_world_pose);
             if(dis < 0){
                 return false;
