@@ -26,7 +26,7 @@ const int MAX_NUMBER_OF_CAMERAS = 17;
 
 
 const int MAX_PICKING_ATTEMPTS = 3; // for pickup
-const double ABOVE_TARGET = 0.2; // above target z pos when picking/placing part
+const double ABOVE_TARGET = 0.1; // above target z pos when picking/placing part
 const double PICK_TIMEOUT = 4.0;
 const double RETRIEVE_TIMEOUT = 2.0;
 

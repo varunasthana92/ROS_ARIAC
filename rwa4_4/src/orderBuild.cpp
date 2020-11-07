@@ -36,7 +36,7 @@ void allStaticParts::setPart(similarParts* data){
 void BuildClass::setList(Product &product_received, int num_shipment, std::string shipment_type){
     ROS_DEBUG_STREAM("Setting part  " << product_received.type);
     if(queryPart(product_received)){
-        ROS_INFO_STREAM("in static lsit part  " << product_received.type);
+        ROS_INFO_STREAM("Setting in static list part  " << product_received.type);
         if(st_order){
             struct all_Order *temp = new(all_Order);
             temp->prod = st_order->prod;
@@ -63,7 +63,7 @@ void BuildClass::setList(Product &product_received, int num_shipment, std::strin
         }
         
     }else{
-        ROS_INFO_STREAM("in moving lsit part  " << product_received.type);
+        ROS_INFO_STREAM("Setting in moving list part  " << product_received.type);
         product_received.mv_prod = true;
         if(mv_order){
             struct all_Order *temp = new(all_Order);
@@ -130,12 +130,10 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
     int st_order_shipment_num_top = -1;
     int mv_order_shipment_num_top = -1;
     if(mv_order){
-        ROS_DEBUG_STREAM("For moving lsit  " << mv_order->prod.type);
         mv_order_shipment_num_top = mv_order->ship_num;
     }
     
     if(st_order){
-        ROS_DEBUG_STREAM("For static list  " << st_order->prod.type);
         st_order_shipment_num_top = st_order->ship_num;
     }
 
@@ -155,11 +153,11 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
                 bool status = conveyerPartsObj.giveClosestPart(mv_temp->prod.type, mv_temp->prod.estimated_conveyor_pose);
                 // bool status = false;
                 if(status){
-                    ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
+                    ROS_INFO_STREAM("Assigning MOVING Part " << mv_temp->prod.type);
                     mv_temp_prev->next = mv_temp->next;
                     mv_order = mv_dummy_head->next;
                     delete(mv_dummy_head);
-                    ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
+                    // ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
                     mv_temp->prod.p.type = mv_temp->prod.type;
                     mv_temp->prod.p.camFrame = 1;
                     return mv_temp;
@@ -167,11 +165,12 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
                 mv_temp_prev = mv_temp;
                 mv_temp = mv_temp->next;
             }while(mv_temp && mv_temp->ship_num == curr_build_shipment_num);
+            delete(mv_dummy_head);
         }
         curr_build_shipment_num = st_temp->ship_num;
         st_order = st_order->next;
         st_temp->next = NULL;
-        ROS_INFO_STREAM("Static Part " << st_temp->prod.type);
+        ROS_INFO_STREAM("Assigning STATIC Part " << st_temp->prod.type);
         return st_temp;
 
     }else if(st_order_shipment_num_top != -1){
@@ -179,7 +178,7 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
         curr_build_shipment_num = st_temp->ship_num;
         st_order = st_order->next;
         st_temp->next = NULL;
-        ROS_INFO_STREAM("Static Part " << st_temp->prod.type);
+        ROS_INFO_STREAM("Assigning STATIC Part " << st_temp->prod.type);
         return st_temp;
     }else if(mv_order_shipment_num_top != -1){
         mv_temp = mv_order;
@@ -194,11 +193,11 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
         while(!status){
             status = conveyerPartsObj.giveClosestPart(mv_temp->prod.type, mv_temp->prod.estimated_conveyor_pose);
             if(status){
-                ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
+                ROS_INFO_STREAM("Assigning MOVING Part " << mv_temp->prod.type);
                 mv_temp_prev->next = mv_temp->next;
                 mv_order = mv_dummy_head->next;
                 delete(mv_dummy_head);
-                ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
+                // ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
                 mv_temp->prod.p.type = mv_temp->prod.type;
                 mv_temp->prod.p.camFrame = 1;
                 return mv_temp;
@@ -210,6 +209,7 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
                 mv_temp = mv_order;
             }
         }
+        delete(mv_dummy_head);
     }
 
     return NULL;

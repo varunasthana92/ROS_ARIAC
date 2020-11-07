@@ -94,11 +94,11 @@ int main(int argc, char ** argv) {
     
     ConveyerParts conveyerPartsObj(node);
     GantryControl gantry(node);
-    ros::Subscriber quality_sensor_1_sub = node.subscribe("/ariac/quality_control_sensor_1", 1000, &GantryControl::qualityCallback1, &gantry);
-    ros::Subscriber logical_camera_17_sub = node.subscribe("/ariac/logical_camera_17", 1000, &GantryControl::logicalCallback17, &gantry);
+    ros::Subscriber quality_sensor_1_sub = node.subscribe("/ariac/quality_control_sensor_1", 1, &GantryControl::qualityCallback2, &gantry);
+    ros::Subscriber logical_camera_17_sub = node.subscribe("/ariac/logical_camera_17", 1, &GantryControl::logicalCallback17, &gantry);
     
-    ros::Subscriber quality_sensor_2_sub = node.subscribe("/ariac/quality_control_sensor_2", 1000, &GantryControl::qualityCallback2, &gantry);
-    ros::Subscriber logical_camera_16_sub = node.subscribe("/ariac/logical_camera_16", 1000, &GantryControl::logicalCallback16, &gantry);
+    ros::Subscriber quality_sensor_2_sub = node.subscribe("/ariac/quality_control_sensor_2", 1, &GantryControl::qualityCallback1, &gantry);
+    ros::Subscriber logical_camera_16_sub = node.subscribe("/ariac/logical_camera_16", 1, &GantryControl::logicalCallback16, &gantry);
     
     gantry.init();
     gantry.goToPresetLocation(gantry.start_);
@@ -111,7 +111,8 @@ int main(int argc, char ** argv) {
 
     while(buildObj.st_order || buildObj.mv_order){
         curr_prod = buildObj.getList(conveyerPartsObj);
-        ROS_DEBUG_STREAM("For shipement " << curr_prod->ship_num);
+        ROS_DEBUG_STREAM("For shipement " << curr_prod->shipment_type);
+        ROS_DEBUG_STREAM("On agv " << curr_prod->prod.agv_id);
         if(curr_build_shipment_num == -1){
             curr_build_shipment_num = curr_prod->ship_num;
             curr_agv = curr_prod->prod.agv_id;
@@ -126,19 +127,15 @@ int main(int argc, char ** argv) {
             curr_agv = curr_prod->prod.agv_id;
             curr_shipment_type = curr_prod->shipment_type;
         }
-
-        ROS_INFO_STREAM("For shipement " << curr_prod->ship_num);
         arm = "left";
         
         Product product = curr_prod->prod;
-        ROS_INFO_STREAM("For product " << product.type << " cam " << product.p.camFrame);
-        ROS_INFO_STREAM("For part " << product.p.type << " cam " << product.p.camFrame);
+        ROS_INFO_STREAM("To pick " << product.type << " cam " << product.p.camFrame);
 
         if (product.mv_prod) {
             gantry.pickFromConveyor(product, conveyerPartsObj);
             product.p.rpy_init = quaternionToEuler(product.estimated_conveyor_pose);
         } else {
-            ROS_DEBUG_STREAM("Not picking from conveyor!!!!!!!!!!!!");
             float Y_pose = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y );
             gantry.pickPart(product.p);
             gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose);
