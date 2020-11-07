@@ -87,7 +87,7 @@ void Competition::shipAgv(std::string agv, std::string ship_type) {
   nist_gear::AGVControl srv;
   srv.request.shipment_type = ship_type;
   
-  ROS_INFO_STREAM("For " << agv << " Shipment type " << ship_type);
+  ROS_INFO_STREAM("Shipping " << agv << " with Shipment type " << ship_type);
   if(agv == "agv2"){
     if (!agv2_client.exists()) {
       agv2_client.waitForExistence();
