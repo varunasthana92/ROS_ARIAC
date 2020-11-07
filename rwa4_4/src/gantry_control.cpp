@@ -17,7 +17,7 @@ void GantryControl::qualityCallback2(const nist_gear::LogicalCameraImage& msg) {
         geometry_msgs::TransformStamped transformStamped;
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
-        ros::Duration timeout(5.0);
+        ros::Duration timeout(1.0);
         // bool transform_exists = tfBuffer.canTransform("world", "quality_control_sensor_1_frame", ros::Time(0), timeout);
         // if (transform_exists)
         transformStamped = tfBuffer.lookupTransform("world", "quality_control_sensor_1_frame", ros::Time(0), timeout);
@@ -37,7 +37,7 @@ void GantryControl::qualityCallback1(const nist_gear::LogicalCameraImage& msg) {
         geometry_msgs::TransformStamped transformStamped;
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
-        ros::Duration timeout(5.0);
+        ros::Duration timeout(1.0);
         // bool transform_exists = tfBuffer.canTransform("world", "quality_control_sensor_2_frame", ros::Time(0), timeout);
         // if (transform_exists)
         transformStamped = tfBuffer.lookupTransform("world", "quality_control_sensor_2_frame", ros::Time(0), timeout);
@@ -58,7 +58,7 @@ void GantryControl::logicalCallback16(const nist_gear::LogicalCameraImage& msg) 
         geometry_msgs::TransformStamped transformStamped;
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
-        ros::Duration timeout(5.0);
+        ros::Duration timeout(1.0);
         bool transform_exists = tfBuffer.canTransform("world", "logical_camera_16_frame", ros::Time(0), timeout);
         if (transform_exists)
             transformStamped = tfBuffer.lookupTransform("world", "logical_camera_16_frame", ros::Time(0));
@@ -69,8 +69,9 @@ void GantryControl::logicalCallback16(const nist_gear::LogicalCameraImage& msg) 
         geometry_msgs::Pose world_pose;
         tf2::doTransform(model_pose, world_pose, transformStamped);
 
-        if(world_pose.position.z < 0.8 && not check_exist_on_agv(model_name, world_pose, agv1_allParts)){
-            ROS_WARN_STREAM("New agv1: " << model_name << " x = " << world_pose.position.x);
+
+        if(world_pose.position.z < 0.89 && not check_exist_on_agv(model_name, world_pose, agv1_allParts)){
+//            ROS_WARN_STREAM("New agv1: " << model_name << " x = " << world_pose.position.x);
             part_placed_pose_agv1 = world_pose;
             return;
         }
@@ -88,30 +89,31 @@ void GantryControl::logicalCallback17(const nist_gear::LogicalCameraImage& msg) 
         bool found=false;
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
-        ros::Duration timeout(5.0);
-        // bool transform_exists = tfBuffer.canTransform("world", "logical_camera_17_frame", ros::Time(0), timeout);
-        // if (transform_exists)
-        //     transformStamped = tfBuffer.lookupTransform("world", "logical_camera_17_frame", ros::Time(0), timeout);
-        // else{
-        //     ROS_FATAL_STREAM("Cannot transform from logical_camera_17_frame to world");
-        //     return;
-        // }
-        while(!found) {
-            try {
-                transformStamped = tfBuffer.lookupTransform("world", "logical_camera_17_frame", ros::Time(0), timeout);
-            }
-            catch (tf2::TransformException &ex) {
-                ROS_FATAL_STREAM( "Not able to find the agv2 camera frame -- " << ex.what());
-                ros::Duration(1.0).sleep();
-            }
-            if(transformStamped.child_frame_id.size()>0) found=true; 
-        }
+        ros::Duration timeout(1.0);
+         bool transform_exists = tfBuffer.canTransform("world", "logical_camera_17_frame", ros::Time(0), timeout);
+         if (transform_exists)
+             transformStamped = tfBuffer.lookupTransform("world", "logical_camera_17_frame", ros::Time(0), timeout);
+         else{
+             ROS_FATAL_STREAM("Cannot transform from logical_camera_17_frame to world");
+             return;
+         }
+//        while(!found) {
+//            try {
+//                transformStamped = tfBuffer.lookupTransform("world", "logical_camera_17_frame", ros::Time(0), timeout);
+//            }
+//            catch (tf2::TransformException &ex) {
+//                ROS_FATAL_STREAM( "Not able to find the agv2 camera frame -- " << ex.what());
+//                ros::Duration(1.0).sleep();
+//            }
+//            if(transformStamped.child_frame_id.size()>0) found=true;
+//        }
         geometry_msgs::Pose world_pose;
         tf2::doTransform(model_pose, world_pose, transformStamped);
+//        ROS_INFO_STREAM("Current Part name detected by camera: " << model_name );
 
-        if(world_pose.position.z < 0.8 && not check_exist_on_agv(model_name, world_pose, agv2_allParts)){
+        if(world_pose.position.z < 0.89 && not check_exist_on_agv(model_name, world_pose, agv2_allParts)){
             // ROS_WARN_STREAM("New local agv2: " << model_name << " x = " << model_pose.position.z);
-            ROS_WARN_STREAM("New agv2: " << model_name << " x = " << world_pose.position.x);
+//            ROS_WARN_STREAM("New agv2: " << model_name << " x = " << world_pose.position.x);
             part_placed_pose_agv2 = world_pose;
             return;
         }
@@ -355,7 +357,7 @@ geometry_msgs::Pose GantryControl::getTargetWorldPose(geometry_msgs::Pose target
     tf2_ros::Buffer tfBuffer;
     tf2_ros::TransformListener tfListener(tfBuffer);
     ros::Rate rate(10);
-    ros::Duration timeout(5.0);
+    ros::Duration timeout(1.0);
 
 
     geometry_msgs::TransformStamped world_target_tf;
@@ -610,6 +612,7 @@ bool GantryControl::placePart(Product &product,
     if (left_state.attached) {
         agv_in_use.gantry[0] = target_pose_in_tray.position.x + offset_x;
         goToPresetLocation(agv_in_use);
+
         left_state = getGripperState("left_arm");
         if (left_state.attached){
             currentPose = left_arm_group_.getCurrentPose().pose;
@@ -695,7 +698,7 @@ bool GantryControl::placePart(Product &product,
             part.pose.orientation.z = q_res.z();
             part.pose.orientation.w = q_res.w();
         }
-        product.p.pose.position = part.pose.position;
+        product.p.pose = part.pose;
         // ROS_INFO_STREAM("Incorrect part pose: " << part.pose.position.x << std::endl
         //                                         << part.pose.position.y << std::endl
         //                                         << part.pose.position.z << std::endl
@@ -703,6 +706,9 @@ bool GantryControl::placePart(Product &product,
         //                                         << part.pose.orientation.y << std::endl
         //                                         << part.pose.orientation.z << std::endl
         //                                         << part.pose.orientation.w);
+//        goToPresetLocation(agv_in_use_drop);
+        agv_in_use.gantry[0] = target_pose_in_tray.position.x + offset_x;
+        goToPresetLocation(agv_in_use);
         pickPart(part);
         // part.pose = original_part_pose;
         // ROS_INFO_STREAM("Original part pose: " << part.pose.position.x << std::endl

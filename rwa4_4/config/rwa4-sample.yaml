@@ -45,20 +45,21 @@ orders:
           xyz: [0.12, 0.2, 0]
           rpy: ['pi', 0, 0]
       part_1:
-        type: gasket_part_green
+        type: disk_part_green
         pose:
-          xyz: [0.0, 0.0, 0]
-          rpy: [0, 0, '-pi/4']
+          xyz: [0.15, -0.2, 0]
+          rpy: [0, 0, 0]
       part_2:
         type: gasket_part_blue
         pose:
           xyz: [-0.15, 0.2, 0]
           rpy: [0, 0, '-pi/4']
       part_3:
-        type: disk_part_green
+        type: gasket_part_green
         pose:
-          xyz: [0.15, -0.2, 0]
-          rpy: [0, 0, 0]
+          xyz: [0.0, 0.0, 0]
+          rpy: [0, 0, '-pi/4']
+
   order_1:
     announcement_condition: unwanted_products
     announcement_condition_value: 1
@@ -66,15 +67,16 @@ orders:
     destinations: [agv2]
     products:
       part_0:
-        type: disk_part_green
-        pose:
-          xyz: [-0.15, -0.2, 0]
-          rpy: [0, 0, 0]
-      part_1:
         type: gasket_part_blue
         pose:
           xyz: [0.15, 0.2, 0]
           rpy: [0, 0, '-pi/4']
+      part_1:
+        type: disk_part_green
+        pose:
+          xyz: [-0.15, -0.2, 0]
+          rpy: [0, 0, 0]
+
 
 models_over_bins:
   bin13:
@@ -121,9 +123,9 @@ drops:
       max:
         xyz: [0.3, 0.3, 0.5]
       destination:
-        xyz: [-0.15, -0.2, 0.05]
+        xyz: [0.2, 0.3, 0.05]
         rpy: [0, 0, 0.2]
-      product_type_to_drop: gasket_part_blue
+      product_type_to_drop: gasket_part_green
     shipping_box_1_impeding:
       frame: agv2::kit_tray_2
       min:
@@ -133,7 +135,7 @@ drops:
       destination:
         xyz: [0.15, 0.15, 0.05]
         rpy: [0, 0, 0.2]
-      product_type_to_drop: gasket_part_blue
+      product_type_to_drop: disk_part_green
 
 #Faulty products
 faulty_products:
@@ -142,4 +144,4 @@ faulty_products:
   - gasket_part_blue_3
   - gasket_part_blue_1
   - gasket_part_green_1
-  - gasket_part_green_5
+  - gasket_part_green_6

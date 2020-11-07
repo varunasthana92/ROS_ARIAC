@@ -95,10 +95,10 @@ int main(int argc, char ** argv) {
     ConveyerParts conveyerPartsObj(node);
     GantryControl gantry(node);
     ros::Subscriber quality_sensor_1_sub = node.subscribe("/ariac/quality_control_sensor_1", 1, &GantryControl::qualityCallback2, &gantry);
-    ros::Subscriber logical_camera_17_sub = node.subscribe("/ariac/logical_camera_17", 1000, &GantryControl::logicalCallback17, &gantry);
+    ros::Subscriber logical_camera_17_sub = node.subscribe("/ariac/logical_camera_17", 1, &GantryControl::logicalCallback17, &gantry);
     
     ros::Subscriber quality_sensor_2_sub = node.subscribe("/ariac/quality_control_sensor_2", 1, &GantryControl::qualityCallback1, &gantry);
-    ros::Subscriber logical_camera_16_sub = node.subscribe("/ariac/logical_camera_16", 1000, &GantryControl::logicalCallback16, &gantry);
+    ros::Subscriber logical_camera_16_sub = node.subscribe("/ariac/logical_camera_16", 1, &GantryControl::logicalCallback16, &gantry);
     
     gantry.init();
     gantry.goToPresetLocation(gantry.start_);
