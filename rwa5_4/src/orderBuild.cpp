@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include "conveyer.h"
 #include "utils.h"
+#include <utility>
 
 int allStaticParts::getPart(Product &prod){
     std::string name = prod.type;
@@ -221,6 +222,7 @@ void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {
     Shipment shipment_recieved;
     Order order_recieved;
     order_recieved.order_id = ordermsg.order_id;
+
     for(const auto &ship: ordermsg.shipments) {
         num_shipment++;
         curr_build_shipment_num = num_shipment;
@@ -243,6 +245,90 @@ void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {
 
 int BuildClass::queryPart(Product &prod){
     return non_moving_part_data.getPart(prod);
+}
+
+float shelfDis(const std::string &name1, const std::string & name2, float& leg_x){
+    tf2_ros::Buffer tfBuffer;
+    ros::Duration timeout(5.0);
+    tf2_ros::TransformListener tfListener(tfBuffer);
+    geometry_msgs::TransformStamped shelfpose1, shelfpose2;
+    try {
+        shelfpose1 = tfBuffer.lookupTransform("world", name1, ros::Time(0), timeout);
+        shelfpose2 = tfBuffer.lookupTransform("world", name2, ros::Time(0), timeout);
+        leg_x = shelfpose2.transform.translation.x;
+        return std::fabs(shelfpose1.transform.translation.x - shelfpose2.transform.translation.x);
+    }
+    catch(...){
+        return 2000;
+    }
+}
+
+float shelfDisCorner(const std::string &name1, float corner_x){
+    tf2_ros::Buffer tfBuffer;
+    ros::Duration timeout(5.0);
+    tf2_ros::TransformListener tfListener(tfBuffer);
+    geometry_msgs::TransformStamped shelfpose1;
+    float dis;
+    try {
+        shelfpose1 = tfBuffer.lookupTransform("world", name1, ros::Time(0), timeout);
+        dis = (shelfpose1.transform.translation.x - corner_x);
+        return std::abs(dis);
+    }
+    catch(...){
+        return 2000;
+    }
+}
+
+void BuildClass::shelf_distance(){ //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    std::string shelf[9];
+    for(int i=3; i<=11; i++){
+        shelf[i-3] = "shelf" + std::to_string(i) + "_frame";
+    }
+    float corner1 = -2.093;
+    float corner2 = -16.7;
+    std::vector<float> y_val = {3.0, 0,-3.0 };
+    float gap_width_x = 2.176/2, gap_width_y = 1.2282/2 ;
+    std::vector< std::pair<float , float> > gaps(3);
+    for(int i =0; i < 3; ++i){
+        float disCorner = 0;
+        do{
+            disCorner = shelfDisCorner(shelf[i*3], corner1);
+        }while(disCorner == 2000);
+        if(disCorner > 0.2 && disCorner <= 2 * gap_width_x + 0.2){
+            gaps[i] = {corner1 - gap_width_x, y_val[i]};
+            continue;
+        }
+
+        disCorner = 0;
+        do{
+            disCorner = shelfDisCorner(shelf[i*3 + 2], corner2);
+        }while(disCorner == 2000);
+
+        if(disCorner >= 4.5 && disCorner <= 4.12 + 2 * gap_width_x + 0.2){
+            gaps[i] = {corner2 + gap_width_x, y_val[i]};
+            continue;
+        }
+
+
+        for(int sh=0; sh < 2; sh++){
+            float dis = 0;
+            float leg_x = 0;
+            do{
+                dis = shelfDis(shelf[i*3 + sh], shelf[i*3 + sh + 1], leg_x);
+            }while(dis == 2000);
+
+            if(dis > 4.2){
+                gaps[i] = {leg_x + gap_width_x, y_val[i]};
+                break;
+            }
+        }
+    }
+
+    for(auto val : gaps){
+        std::cout<<" val (x,y) " << val.first << " , " << val.second<<std::endl;
+    }
+    positiongap = gaps;
+    return;
 }
 
 void BuildClass::logical_camera_callback(const nist_gear::LogicalCameraImage::ConstPtr & msg, int cam_id){

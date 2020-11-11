@@ -78,6 +78,7 @@ int main(int argc, char ** argv) {
 
     BuildClass buildObj;
     logical_cam_subscribers.resize(logical_camera_topics.size());
+    buildObj.shelf_distance();
     for(int i=0; i<logical_camera_topics.size(); i++) {
     logical_cam_subscribers[i] = node.subscribe<nist_gear::LogicalCameraImage>( logical_camera_topics[i], 10, 
                                                                           boost::bind(&BuildClass::logical_camera_callback,
@@ -94,6 +95,7 @@ int main(int argc, char ** argv) {
     
     ConveyerParts conveyerPartsObj(node);
     GantryControl gantry(node);
+
     ros::Subscriber quality_sensor_1_sub = node.subscribe("/ariac/quality_control_sensor_1", 1, &GantryControl::qualityCallback2, &gantry);
     ros::Subscriber logical_camera_17_sub = node.subscribe("/ariac/logical_camera_17", 1, &GantryControl::logicalCallback17, &gantry);
     
