@@ -6,6 +6,7 @@
 #include <nist_gear/Order.h>
 #include "utils.h"
 #include "conveyer.h"
+#include <utility>
 
 struct all_Order{
     Product prod;
@@ -56,6 +57,7 @@ public:
             callBackOnce[i] = true;
         }
     }
+    std::vector< std::pair<float , float> > positiongap;
     void orderCallback(const nist_gear::Order& ordermsg);
     void setList(Product &product_received, int num_shipment, std::string shipment_type);
     struct all_Order* getList(ConveyerParts &conveyerPartsObj);
@@ -63,6 +65,7 @@ public:
     // struct all_Order* getList();
     int queryPart(Product &prod);    // pass by reference
     void logical_camera_callback(const nist_gear::LogicalCameraImage::ConstPtr & msg, int cam_id);
+    void shelf_distance();
 };
 
 #endif
