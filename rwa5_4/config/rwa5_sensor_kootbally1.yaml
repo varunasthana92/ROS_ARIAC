@@ -1,150 +1,124 @@
 sensors:
 
-  breakbeam_10:
+  breakbeam_0a:
     type: break_beam
     pose:
-      xyz: [-1.7, 3.73, 0.29448]
+      xyz: [-1.7, -0.72, 0.14]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_0b:
+    type: break_beam
+    pose:
+      xyz: [-6.01, -0.72, 0.14]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_0c:
+    type: break_beam
+    pose:
+      xyz: [-10.15, -0.72, 0.14]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_0d:
+    type: break_beam
+    pose:
+      xyz: [-14.3, -0.72, 0.14]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_0e:
+    type: break_beam
+    pose:
+      xyz: [-16.5, -0.72, 0.14]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_1a:
+    type: break_beam
+    pose:
+      xyz: [-1.7, 2.377, 0.14]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_1b:
+    type: break_beam
+    pose:
+      xyz: [-6.01, 2.377, 0.14]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_1c:
+    type: break_beam
+    pose:
+      xyz: [-10.15, 2.377, 0.14]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_1d:
+    type: break_beam
+    pose:
+      xyz: [-14.3, 2.377, 0.14]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_1e:
+    type: break_beam
+    pose:
+      xyz: [-16.45, 2.377, 0.14]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_2a:
+    type: break_beam
+    pose:
+      xyz: [-1.7, -3.7, 0.14]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_2b:
+    type: break_beam
+    pose:
+      xyz: [-6.01, -3.7, 0.14]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_2c:
+    type: break_beam
+    pose:
+      xyz: [-10.15, -3.7, 0.14]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_2d:
+    type: break_beam
+    pose:
+      xyz: [-14.3, -3.7, 0.14]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_2e:
+    type: break_beam
+    pose:
+      xyz: [-16.45, -3.7, 0.14]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_3a:
+    type: break_beam
+    pose:
+      xyz: [-1.7, 3.73, 0.14]
       rpy: [0, 0, 1.557900]
 
-  breakbeam_11:
+  breakbeam_3b:
     type: break_beam
     pose:
-      xyz: [-3.2, 3.73, 0.29448]
+      xyz: [-6.01, 3.73, 0.14]
       rpy: [0, 0, 1.557900]
 
-  breakbeam_12:
+  breakbeam_3c:
     type: break_beam
     pose:
-      xyz: [-7.17, 3.73, 0.29448]
+      xyz: [-10.15, 3.73, 0.14]
       rpy: [0, 0, 1.557900]
 
-  breakbeam_13:
+  breakbeam_3d:
     type: break_beam
     pose:
-      xyz: [-11.3, 3.73, 0.29448]
+      xyz: [-14.3, 3.73, 0.14]
       rpy: [0, 0, 1.557900]
 
-  breakbeam_14:
+  breakbeam_3e:
     type: break_beam
     pose:
-      xyz: [-14.95, 3.73, 0.29448]
+      xyz: [-16.45, 3.73, 0.14]
       rpy: [0, 0, 1.557900]
-
-  breakbeam_15:
-    type: break_beam
-    pose:
-      xyz: [-16.48, 3.73, 0.29448]
-      rpy: [0, 0, 1.557900]
-
-  breakbeam_20:
-    type: break_beam
-    pose:
-      xyz: [-1.7, 2.377, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_21:
-    type: break_beam
-    pose:
-      xyz: [-3.2, 2.377, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_22:
-    type: break_beam
-    pose:
-      xyz: [-7.17, 2.377, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_23:
-    type: break_beam
-    pose:
-      xyz: [-11.3, 2.377, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_24:
-    type: break_beam
-    pose:
-      xyz: [-14.95, 2.377, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_25:
-    type: break_beam
-    pose:
-      xyz: [-16.48, 2.377, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_30:
-    type: break_beam
-    pose:
-      xyz: [-1.7, -0.72, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_31:
-    type: break_beam
-    pose:
-      xyz: [-3.2, -0.72, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_32:
-    type: break_beam
-    pose:
-      xyz: [-7.17, -0.72, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_33:
-    type: break_beam
-    pose:
-      xyz: [-11.3, -0.72, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_34:
-    type: break_beam
-    pose:
-      xyz: [-14.95, -0.72, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_35:
-    type: break_beam
-    pose:
-      xyz: [-16.61, -0.72, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_40:
-    type: break_beam
-    pose:
-      xyz: [-1.7, -3.7, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_41:
-    type: break_beam
-    pose:
-      xyz: [-3.2, -3.7, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_42:
-    type: break_beam
-    pose:
-      xyz: [-7.17, -3.7, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_43:
-    type: break_beam
-    pose:
-      xyz: [-11.3, -3.7, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_44:
-    type: break_beam
-    pose:
-      xyz: [-14.95, -3.7, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-  breakbeam_45:
-    type: break_beam
-    pose:
-      xyz: [-16.48, -3.7, 0.29448]
-      rpy: [0, 0, -1.557900]
-
-
 
   logical_camera_1: # over conveyor belt
     type: logical_camera

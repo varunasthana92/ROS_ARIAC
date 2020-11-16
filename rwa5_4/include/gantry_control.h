@@ -38,6 +38,7 @@
 
 #include "utils.h"
 #include "conveyer.h"
+#include "obstacles.h"
 #include <nist_gear/LogicalCameraImage.h>
 
 
@@ -70,8 +71,9 @@ class GantryControl {
     bool poseMatches(const geometry_msgs::Pose &pose1, const geometry_msgs::Pose &pose2);
     bool check_exist_on_agv(const std::string &name, const geometry_msgs::Pose &part_pose, agvInfo &agv);
     void flipPart();
-    bool move2start ( float x, float y );
-    float move2trg ( float x, float y);
+    bool move2start ( float x, float y, float gantryX);
+    float move2trg ( float x, float y, float gantryX);
+    bool move2closestGap(struct Part &part, std::vector< std::pair<float , float> > &shelfGaps, const std::vector<int> &gapNum, bool actPart, float &gantryX, float &gantryY, ObstaclesInAisle &obj);
 //    bool conveyor();
 
     geometry_msgs::Pose getRobotPose(){

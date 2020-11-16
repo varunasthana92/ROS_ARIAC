@@ -161,6 +161,7 @@ add_executable(rwa5_node
         src/gantry_control.cpp
         src/utils.cpp
         src/orderBuild.cpp
+        src/obstacles.cpp
         src/conveyer.cpp
         )
 

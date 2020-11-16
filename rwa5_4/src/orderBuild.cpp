@@ -279,7 +279,7 @@ float shelfDisCorner(const std::string &name1, float corner_x){
     }
 }
 
-void BuildClass::shelf_distance(){ //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+void BuildClass::shelf_distance(){
     std::string shelf[9];
     for(int i=3; i<=11; i++){
         shelf[i-3] = "shelf" + std::to_string(i) + "_frame";
@@ -288,14 +288,16 @@ void BuildClass::shelf_distance(){ //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     float corner2 = -16.7;
     std::vector<float> y_val = {3.0, 0,-3.0 };
     float gap_width_x = 2.176/2, gap_width_y = 1.2282/2 ;
-    std::vector< std::pair<float , float> > gaps(3);
+    std::vector< std::pair<float , float> > gaps(5, {0,0});
+    std::vector<int> gapNum_(5, 0);
     for(int i =0; i < 3; ++i){
         float disCorner = 0;
         do{
             disCorner = shelfDisCorner(shelf[i*3], corner1);
         }while(disCorner == 2000);
         if(disCorner > 0.2 && disCorner <= 2 * gap_width_x + 0.2){
-            gaps[i] = {corner1 - gap_width_x, y_val[i]};
+            gaps[i+1] = {corner1 - gap_width_x, y_val[i]};
+            gapNum_[i+1] = 1;
             continue;
         }
 
@@ -305,7 +307,8 @@ void BuildClass::shelf_distance(){ //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         }while(disCorner == 2000);
 
         if(disCorner >= 4.5 && disCorner <= 4.12 + 2 * gap_width_x + 0.2){
-            gaps[i] = {corner2 + gap_width_x, y_val[i]};
+            gaps[i+1] = {corner2 + gap_width_x, y_val[i]};
+            gapNum_[i+1] = 4;
             continue;
         }
 
@@ -318,7 +321,8 @@ void BuildClass::shelf_distance(){ //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             }while(dis == 2000);
 
             if(dis > 4.2){
-                gaps[i] = {leg_x + gap_width_x, y_val[i]};
+                gaps[i+1] = {leg_x + gap_width_x, y_val[i]};
+                gapNum_[i+1] = (std::abs(leg_x) / 4.2) + 1;
                 break;
             }
         }
@@ -327,7 +331,8 @@ void BuildClass::shelf_distance(){ //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     for(auto val : gaps){
         std::cout<<" val (x,y) " << val.first << " , " << val.second<<std::endl;
     }
-    positiongap = gaps;
+    positionGap = gaps;
+    gapNum = gapNum_;
     return;
 }
 
@@ -361,21 +366,24 @@ void BuildClass::logical_camera_callback(const nist_gear::LogicalCameraImage::Co
             geometry_msgs::TransformStamped transformStamped;
             try{
                 
-                transformStamped = tfBuffer.lookupTransform("world", frame_name, ros::Time(0), timeout);
-                // tf2::Quaternion q(  transformStamped.transform.rotation.x,
-                //                     transformStamped.transform.rotation.y,
-                //                     transformStamped.transform.rotation.z,
-                //                     transformStamped.transform.rotation.w);
-                // tf2::Matrix3x3 m(q);
-                // double roll, pitch, yaw;
-                // m.getRPY(roll, pitch, yaw);
-
-                
+                transformStamped = tfBuffer.lookupTransform("world", frame_name, ros::Time(0), timeout);                
                 detected_part->time_stamp = ros::Time(0);
                 detected_part->pose.position.x = transformStamped.transform.translation.x;
                 detected_part->pose.position.y = transformStamped.transform.translation.y;
                 detected_part->pose.position.z = transformStamped.transform.translation.z;
                 detected_part->pose.orientation = transformStamped.transform.rotation;
+
+                if(detected_part->pose.position.x < 0){
+                    if(detected_part->pose.position.y >= 3.05 )
+                        detected_part->aisle_num = 1;
+                    if(detected_part->pose.position.y >= 0 && detected_part->pose.position.y < 3.05)
+                        detected_part->aisle_num = 2;
+                    if(detected_part->pose.position.y >= -3.05 && detected_part->pose.position.y < 0)
+                        detected_part->aisle_num = 3;
+                    if(detected_part->pose.position.y < -3.05 )
+                        detected_part->aisle_num = 4;
+                }
+
                 detected_part->rpy_init = quaternionToEuler(detected_part->pose);
 
                 similarParts* data = new(similarParts);
