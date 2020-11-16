@@ -144,10 +144,11 @@ int main(int argc, char ** argv) {
             bool ready2pick = obstObj.isAisleClear(product.p.aisle_num);
             float gantryX = 0;
             float gantryY = 0;
+            int currGap = -1;
             while(! ready2pick){
                 // std::vector< std::pair<float , float> > positiongap;
                 ROS_DEBUG_STREAM("Aisle number for part " << product.p.aisle_num);
-                gantry.move2closestGap(product.p, buildObj.positionGap, buildObj.gapNum, 1, gantryX, gantryY, obstObj);
+                gantry.move2closestGap(product.p, buildObj.positionGap, buildObj.gapNum, 1, gantryX, gantryY, obstObj, currGap);
                 exit(0);
                 // ready2pick = obstacleCleared(product.p);
             }

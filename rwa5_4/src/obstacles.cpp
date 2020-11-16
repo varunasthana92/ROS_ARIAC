@@ -71,16 +71,17 @@ void ObstaclesInAisle::breakbeam_callback(const nist_gear::Proximity::ConstPtr &
 	if(msg->object_detected){
 		aisle_clear[aisle_num] = false;
 		(*aisle)[sensor_num] = !(*aisle)[sensor_num];
-		if(sensor_num !=0 && sensor_num !=5){
-			(*aisle_dir).second = sensor_num > (*aisle_dir).first ? 0 : 1;  // 0 = moving from conveyor to edge
-																			// 1 = moving from edge to conveyor
+		if(sensor_num !=0 && sensor_num !=5 && id !=(*aisle_dir).first ){
+			(*aisle_dir).second = id > (*aisle_dir).first ? 0 : 1;  // 0 = moving from conveyor to edge
+																	// 1 = moving from edge to conveyor
 		}
-		(*aisle_dir).first = sensor_num;
+		(*aisle_dir).first = id;
 	}
+
 	return;
 }
 
-bool ObstaclesInAisle::moveBot(geometry_msgs::Pose pose, int gapNum, int aisle_num){
+bool ObstaclesInAisle::moveBot(geometry_msgs::Pose pose, int gapNum, int aisle_num, float currX, int currGap){
 	std::pair<int, int>* aisle_dir = NULL;
 	switch(aisle_num){
 		case 1: aisle_dir = &aisle_1_dir;
@@ -92,8 +93,28 @@ bool ObstaclesInAisle::moveBot(geometry_msgs::Pose pose, int gapNum, int aisle_n
 		case 4: aisle_dir = &aisle_4_dir;
 	}
 
-	if((*aisle_dir).first == aisle_num && (*aisle_dir).second == 1){
+	// 0 = moving from conveyor to edge
+	// 1 = moving from edge to conveyor
+	int direction = 0;
+	int negate = 1;
+	if(pose.position.x > currX){
+		direction = 1;
+		negate = -1;
+	}
+	ROS_WARN_STREAM("Desired direction = " << direction);
+	// if((*aisle_dir).first %10 ==0 || (*aisle_dir).first %10 ==5){
+	// 	return false;
+	// }
+	if((*aisle_dir).first * negate >= negate*(aisle_num*10 + gapNum) && (*aisle_dir).second == direction){
+		ROS_FATAL_STREAM("Found True");
+		ROS_WARN_STREAM("Gap num = " << (*aisle_dir).first);
+		ROS_WARN_STREAM("Motion= " << (*aisle_dir).second);
 		return true;
+	}else if((*aisle_dir).first * negate *(-1) >= negate*(-1)*(aisle_num*10 + currGap) && (*aisle_dir).second != direction){
+		ROS_FATAL_STREAM("Else True");
+		ROS_WARN_STREAM("Gap num = " << (*aisle_dir).first);
+		ROS_WARN_STREAM("Motion= " << (*aisle_dir).second);
+		return true; 
 	}
 	return false;
 }
@@ -124,8 +145,7 @@ void ObstaclesInAisle::Init() {
     																		boost::bind(&ObstaclesInAisle::breakbeam_callback, this, _1, i+40));
     }
 	
-	ROS_FATAL_STREAM("all Clear");
-	ros::Duration(10.0).sleep();
+	ros::Duration(5.0).sleep();
 
 	for(int i = 0; i< aisle_clear.size(); ++i){
 		std::cout << "\nAisle " << i << " : " << aisle_clear[i];

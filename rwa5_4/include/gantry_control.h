@@ -73,7 +73,9 @@ class GantryControl {
     void flipPart();
     bool move2start ( float x, float y, float gantryX);
     float move2trg ( float x, float y, float gantryX);
-    bool move2closestGap(struct Part &part, std::vector< std::pair<float , float> > &shelfGaps, const std::vector<int> &gapNum, bool actPart, float &gantryX, float &gantryY, ObstaclesInAisle &obj);
+    bool move2closestGap(struct Part &part, std::vector< std::pair<float , float> > &shelfGaps,
+                        const std::vector<int> &gapNum, bool actPart, float &gantryX, float &gantryY,
+                        ObstaclesInAisle &obj, int &newGap);
 //    bool conveyor();
 
     geometry_msgs::Pose getRobotPose(){

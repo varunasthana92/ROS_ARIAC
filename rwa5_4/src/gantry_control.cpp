@@ -1335,7 +1335,9 @@ void GantryControl::goToPresetLocation(PresetLocation location) {
 }
 
 
-bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<float , float> > &shelfGaps, const std::vector<int> &gapNum, bool actPart, float &gantryX, float &gantryY, ObstaclesInAisle &obstObj){
+bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<float , float> > &shelfGaps,
+                                    const std::vector<int> &gapNum, bool actPart, float &gantryX, float &gantryY,
+                                    ObstaclesInAisle &obstObj, int &newGap){
     int aisle_num = part.aisle_num;
     int gap1, gap2;
     shelfGaps[0].first = part.pose.position.x;
@@ -1407,7 +1409,10 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
         goToPresetLocation(temp);
         gantryX = temp.gantry[0];
         gantryY = -temp.gantry[1];
-        part.aisle_num = nearestGap;
+        if(nearestGap == 0)
+            part.aisle_num = nearestGap + 1;
+        else
+            part.aisle_num = nearestGap - 1;
         return true;
     }
 
@@ -1422,6 +1427,8 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
         
         temp.gantry[0] = shelfGaps[nearestGap].first;
         temp.gantry[1] = -(shelfGaps[nearestGap].second + gap_offset_y);
+        temp.left_arm = { 0, 0, 0, 0, 0, 0};
+        temp.right_arm = { PI, 0, 0, 0, 0, 0};
         goToPresetLocation(temp);
 
         temp.gantry[0] = shelfGaps[nearestGap].first;
@@ -1430,7 +1437,8 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
         gantryX = temp.gantry[0];
         gantryY = -temp.gantry[1];
 
-        part.aisle_num = nearestGap;
+        part.aisle_num = nearestGap + 1;
+        newGap = gapNum[nearestGap];
         return true;
     }
 
@@ -1444,6 +1452,8 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
         
         temp.gantry[0] = shelfGaps[nearestGap].first;
         temp.gantry[1] = -(shelfGaps[nearestGap].second + gap_offset_y);
+        temp.left_arm = { 0, 0, 0, 0, 0, 0};
+        temp.right_arm = { PI, 0, 0, 0, 0, 0};
         goToPresetLocation(temp);
 
         temp.gantry[0] = shelfGaps[nearestGap].first;
@@ -1453,6 +1463,7 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
         gantryX = temp.gantry[0];
         gantryY = -temp.gantry[1];
         part.aisle_num = nearestGap;
+        newGap = gapNum[nearestGap];
         return true;
     }
 
@@ -1461,14 +1472,15 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
     fakePart.pose.position.x = shelfGaps[nearestGap].first;
     fakePart.pose.position.y = shelfGaps[nearestGap].second;
     fakePart.aisle_num = nearestGap;
+    int newGap_ = -1;
 
-    move2closestGap(fakePart, shelfGaps, gapNum, 0, gantryX, gantryY, obstObj);
+    move2closestGap(fakePart, shelfGaps, gapNum, 0, gantryX, gantryY, obstObj, newGap_);
 
     bool move = false;
     ROS_WARN_STREAM("Going in while: " << gapNum[nearestGap]);
     ROS_WARN_STREAM("Sensor checked in aisle: " << fakePart.aisle_num);
     do{
-        move = obstObj.moveBot(fakePart.pose, gapNum[nearestGap], fakePart.aisle_num);
+        move = obstObj.moveBot(fakePart.pose, gapNum[nearestGap], fakePart.aisle_num, gantryX, newGap_);
 
     }while(!move);
 
@@ -1476,6 +1488,11 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
 
     temp.gantry[0] = gantryX;
     temp.gantry[1] = -(fakePart.pose.position.y + gantryY)/2;
+    temp.left_arm = { 0, 0, 0, 0, 0, 0};
+    temp.right_arm = { PI, 0, 0, 0, 0, 0};
+
+    // start_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // start_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
     goToPresetLocation(temp);
     
     temp.gantry[0] = fakePart.pose.position.x;
@@ -1485,6 +1502,7 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
     // temp.gantry[0] = fakePart.pose.position.x;
     temp.gantry[1] = -fakePart.pose.position.y;
     goToPresetLocation(temp);
+
     gantryX = temp.gantry[0];
     gantryY = -temp.gantry[1];
 

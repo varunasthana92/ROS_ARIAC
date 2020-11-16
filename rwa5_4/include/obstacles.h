@@ -57,11 +57,6 @@ class ObstaclesInAisle {
       "/ariac/breakbeam_45"
       };
   public:
-    // ros::Subscriber breakbeam_subscriber_1;
-    // ros::Subscriber breakbeam_subscriber_2;
-    // ros::Subscriber breakbeam_subscriber_3;
-    // ros::Subscriber breakbeam_subscriber_4;
-
     std::vector<int> aisle_1_sensor_data;
     std::vector<int> aisle_2_sensor_data;
     std::vector<int> aisle_3_sensor_data;
@@ -77,7 +72,7 @@ class ObstaclesInAisle {
     ros::NodeHandle node_;
     // std::unordered_map<int, double> last_seen_time;
     void breakbeam_callback(const nist_gear::Proximity::ConstPtr &msg, int id);
-    bool moveBot(geometry_msgs::Pose pose, int gapNum, int aisle_num);
+    bool moveBot(geometry_msgs::Pose pose, int gapNum, int aisle_num, float currX, int currGap);
     ObstaclesInAisle(ros::NodeHandle& node); // Constructor
     bool isAisleClear(int aisle_num);
     void Init();
