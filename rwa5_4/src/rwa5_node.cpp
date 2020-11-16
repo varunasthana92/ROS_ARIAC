@@ -38,6 +38,7 @@
 #include "utils.h"
 #include "gantry_control.h"
 #include "conveyer.h"
+#include "obstacles.h"
 
 #include <tf2/LinearMath/Quaternion.h>
 
@@ -70,7 +71,7 @@ int main(int argc, char ** argv) {
       "/ariac/logical_camera_12",
       "/ariac/logical_camera_13",
       "/ariac/logical_camera_14",
-      "/ariac/logical_camera_15",
+      "/ariac/logical_camera_15"
       // "/ariac/logical_camera_16",
       // "/ariac/logical_camera_17"
       };
@@ -80,10 +81,12 @@ int main(int argc, char ** argv) {
     logical_cam_subscribers.resize(logical_camera_topics.size());
     buildObj.shelf_distance();
     for(int i=0; i<logical_camera_topics.size(); i++) {
-    logical_cam_subscribers[i] = node.subscribe<nist_gear::LogicalCameraImage>( logical_camera_topics[i], 10, 
+        logical_cam_subscribers[i] = node.subscribe<nist_gear::LogicalCameraImage>( logical_camera_topics[i], 10, 
                                                                           boost::bind(&BuildClass::logical_camera_callback,
                                                                                       &buildObj, _1, i+1));
     }
+
+    ObstaclesInAisle obstObj(node);
 
     Competition comp(node);
     comp.init();
@@ -138,9 +141,20 @@ int main(int argc, char ** argv) {
             gantry.pickFromConveyor(product, conveyerPartsObj);
             product.p.rpy_init = quaternionToEuler(product.estimated_conveyor_pose);
         } else {
-            float Y_pose = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y );
+            bool ready2pick = obstObj.isAisleClear(product.p.aisle_num);
+            float gantryX = 0;
+            float gantryY = 0;
+            int currGap = -1;
+            while(! ready2pick){
+                // std::vector< std::pair<float , float> > positiongap;
+                ROS_DEBUG_STREAM("Aisle number for part " << product.p.aisle_num);
+                gantry.move2closestGap(product.p, buildObj.positionGap, buildObj.gapNum, 1, gantryX, gantryY, obstObj, currGap);
+                exit(0);
+                // ready2pick = obstacleCleared(product.p);
+            }
+            float Y_pose = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX );
             gantry.pickPart(product.p);
-            gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose);
+            gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose, gantryX);
         }
         
         // product.p.pose = product.pose;

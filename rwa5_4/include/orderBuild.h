@@ -57,7 +57,8 @@ public:
             callBackOnce[i] = true;
         }
     }
-    std::vector< std::pair<float , float> > positiongap;
+    std::vector< std::pair<float , float> > positionGap;
+    std::vector<int> gapNum;
     void orderCallback(const nist_gear::Order& ordermsg);
     void setList(Product &product_received, int num_shipment, std::string shipment_type);
     struct all_Order* getList(ConveyerParts &conveyerPartsObj);

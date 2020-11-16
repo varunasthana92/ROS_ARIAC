@@ -49,6 +49,7 @@ enum PartStates {FREE, BOOKED, UNREACHABLE, ON_TRAY, GRIPPED, GOING_HOME,
   REMOVE_FROM_TRAY, LOST};
 
 std::vector<double> quaternionToEuler(geometry_msgs::Pose pose);
+bool isAisleClear(int aisle_num);
 
 typedef struct PresetLocation {
     std::vector<double> gantry;
@@ -60,6 +61,7 @@ typedef struct PresetLocation {
 typedef struct Part {
   std::string type; // model type
   geometry_msgs::Pose pose; // world pose of the part
+  int aisle_num = -1; //-1 if on the "bins SIDE", otherwise 1,2,3,4 (agv1 side =1, agv2 side =4)
   geometry_msgs::Pose save_pose; // pose of part in relative term
   std::string frame; // model frame (e.g., "logical_camera_1_frame")
   int camFrame;
