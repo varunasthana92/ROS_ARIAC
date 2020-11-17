@@ -72,7 +72,7 @@ void GantryControl::logicalCallback16(const nist_gear::LogicalCameraImage& msg) 
 
 
         if(world_pose.position.z < 0.89 && not check_exist_on_agv(model_name, world_pose, agv1_allParts)){
-//            ROS_WARN_STREAM("New agv1: " << model_name << " x = " << world_pose.position.x);
+           ROS_WARN_STREAM("New apart on gv1: " << model_name << " x = " << world_pose.position.x);
             part_placed_pose_agv1 = world_pose;
             return;
         }
@@ -115,7 +115,7 @@ void GantryControl::logicalCallback17(const nist_gear::LogicalCameraImage& msg) 
 
         if(world_pose.position.z < 0.89 && not check_exist_on_agv(model_name, world_pose, agv2_allParts)){
             // ROS_WARN_STREAM("New local agv2: " << model_name << " x = " << model_pose.position.z);
-//            ROS_WARN_STREAM("New agv2: " << model_name << " x = " << world_pose.position.x);
+            ROS_WARN_STREAM("New part on agv2: " << model_name << " x = " << world_pose.position.x);
             part_placed_pose_agv2 = world_pose;
             return;
         }
@@ -124,7 +124,7 @@ void GantryControl::logicalCallback17(const nist_gear::LogicalCameraImage& msg) 
 
 float getDis(const geometry_msgs::Pose &p1, const geometry_msgs::Pose &p2){
 
-    if(std::abs(p1.position.z - p2.position.z) > 0.01){
+    if(std::abs(p1.position.z - p2.position.z) > 0.09){
         return -1;
     }
     float dis = std::pow((p1.position.x - p2.position.x),2) + std::pow((p1.position.y - p2.position.y),2);
