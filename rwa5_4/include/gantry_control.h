@@ -71,11 +71,15 @@ class GantryControl {
     bool poseMatches(const geometry_msgs::Pose &pose1, const geometry_msgs::Pose &pose2);
     bool check_exist_on_agv(const std::string &name, const geometry_msgs::Pose &part_pose, agvInfo &agv);
     void flipPart();
-    bool move2start ( float x, float y, float gantryX);
-    float move2trg ( float x, float y, float gantryX);
+    bool move2start ( float x, float y);
+    std::vector<double> move2trg ( float x, float y, float &gantryX, float &gantryY, int currGap);
     bool move2closestGap(struct Part &part, std::vector< std::pair<float , float> > &shelfGaps,
                         const std::vector<int> &gapNum, bool actPart, float &gantryX, float &gantryY,
                         ObstaclesInAisle &obj, int &newGap);
+    int getNearestGap(float destX, int aisle_num, bool actPart, ObstaclesInAisle &obstObj,
+                                const std::vector< std::pair<float , float> > &shelfGaps);
+    bool escape(int &aisle_num, std::vector< std::pair<float , float> > &shelfGaps, const std::vector<int> &gapNum,
+                bool actPart, float &gantryX, float &gantryY, ObstaclesInAisle &obstObj, int &newGap, std::vector<double> &left_arm);
 //    bool conveyor();
 
     geometry_msgs::Pose getRobotPose(){

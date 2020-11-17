@@ -72,7 +72,7 @@ class ObstaclesInAisle {
     ros::NodeHandle node_;
     // std::unordered_map<int, double> last_seen_time;
     void breakbeam_callback(const nist_gear::Proximity::ConstPtr &msg, int id);
-    bool moveBot(geometry_msgs::Pose pose, int gapNum, int aisle_num, float currX, int currGap);
+    bool moveBot(float destX, int gapNum, int aisle_num, float currX, int currGap);
     ObstaclesInAisle(ros::NodeHandle& node); // Constructor
     bool isAisleClear(int aisle_num);
     void Init();

@@ -81,7 +81,7 @@ void ObstaclesInAisle::breakbeam_callback(const nist_gear::Proximity::ConstPtr &
 	return;
 }
 
-bool ObstaclesInAisle::moveBot(geometry_msgs::Pose pose, int gapNum, int aisle_num, float currX, int currGap){
+bool ObstaclesInAisle::moveBot(float destX, int destGapNum, int aisle_num, float currX, int currGap){
 	std::pair<int, int>* aisle_dir = NULL;
 	switch(aisle_num){
 		case 1: aisle_dir = &aisle_1_dir;
@@ -93,27 +93,36 @@ bool ObstaclesInAisle::moveBot(geometry_msgs::Pose pose, int gapNum, int aisle_n
 		case 4: aisle_dir = &aisle_4_dir;
 	}
 
+	if(destGapNum < 0 && currGap !=- 1){
+		// need motion 1 at sensor currGap
+		if((*aisle_dir).first == (aisle_num*10 + currGap) && (*aisle_dir).second == 1){
+			return true;
+		}
+		return false;
+	}else if(destGapNum < 0 && currGap ==- 1){
+		// need motion 1 at sensor 3
+		if((*aisle_dir).first == (aisle_num*10 + 3) && (*aisle_dir).second == 1){
+			return true;
+		}
+		return false;
+	}
+
 	// 0 = moving from conveyor to edge
 	// 1 = moving from edge to conveyor
 	int direction = 0;
 	int negate = 1;
-	if(pose.position.x > currX){
+	int dis = std::abs(destX - currX);
+	if(destX >= currX){
 		direction = 1;
 		negate = -1;
 	}
-	ROS_WARN_STREAM("Desired direction = " << direction);
-	// if((*aisle_dir).first %10 ==0 || (*aisle_dir).first %10 ==5){
-	// 	return false;
-	// }
-	if((*aisle_dir).first * negate >= negate*(aisle_num*10 + gapNum) && (*aisle_dir).second == direction){
-		ROS_FATAL_STREAM("Found True");
-		ROS_WARN_STREAM("Gap num = " << (*aisle_dir).first);
-		ROS_WARN_STREAM("Motion= " << (*aisle_dir).second);
+	// ROS_WARN_STREAM("Desired direction = " << direction);
+	if((*aisle_dir).first %10 ==0 || (*aisle_dir).first %10 ==5){
+		return false;
+	}
+	if(dis <= 6 && (*aisle_dir).first * negate >= negate*(aisle_num*10 + destGapNum) && (*aisle_dir).second == direction){
 		return true;
-	}else if((*aisle_dir).first * negate *(-1) >= negate*(-1)*(aisle_num*10 + currGap) && (*aisle_dir).second != direction){
-		ROS_FATAL_STREAM("Else True");
-		ROS_WARN_STREAM("Gap num = " << (*aisle_dir).first);
-		ROS_WARN_STREAM("Motion= " << (*aisle_dir).second);
+	}else if( (*aisle_dir).first * negate *(-1) >= negate*(-1)*(aisle_num*10 + currGap) && (*aisle_dir).second != direction){
 		return true; 
 	}
 	return false;

@@ -289,7 +289,7 @@ void BuildClass::shelf_distance(){
     std::vector<float> y_val = {3.0, 0,-3.0 };
     float gap_width_x = 2.176/2, gap_width_y = 1.2282/2 ;
     std::vector< std::pair<float , float> > gaps(5, {0,0});
-    std::vector<int> gapNum_(5, 0);
+    std::vector<int> gapNum_(5, -1);
     for(int i =0; i < 3; ++i){
         float disCorner = 0;
         do{

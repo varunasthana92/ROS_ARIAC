@@ -15,7 +15,7 @@ options:
 shelf_layout:
   row_1: ['base',0,'collar','base'] #shelves: 3, 4, 5
   row_2: ['pipe','base',0,'base']   #shelves: 6, 7, 8
-  row_3: [0,'base','pipe','collar'] #shelves: 9, 10, 11
+  row_3: ['base',0,'pipe','collar'] #shelves: 9, 10, 11
 
 aisle_layout:
   person_1:
@@ -39,7 +39,7 @@ orders:
       product_0:
         type: pulley_part_blue
         pose:
-          xyz: [0.0, 0.15, 0]
+          xyz: [0.0, 0.12, 0]
           rpy: ['pi', 0, 0]
       product_1:
         type: gasket_part_green
@@ -47,9 +47,9 @@ orders:
           xyz: [-0.1, -0.2, 0]
           rpy: [0, 0, '-pi/4']
       product_2:
-        type: piston_rod_part_red
+        type: pulley_part_blue
         pose:
-          xyz: [0.15, -0.2, 0]
+          xyz: [0.12, -0.2, 0]
           rpy: [0, 0, 'pi/4']
 
 belt_models:

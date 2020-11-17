@@ -72,7 +72,7 @@ void GantryControl::logicalCallback16(const nist_gear::LogicalCameraImage& msg) 
 
 
         if(world_pose.position.z < 0.89 && not check_exist_on_agv(model_name, world_pose, agv1_allParts)){
-//            ROS_WARN_STREAM("New agv1: " << model_name << " x = " << world_pose.position.x);
+           ROS_WARN_STREAM("New apart on gv1: " << model_name << " x = " << world_pose.position.x);
             part_placed_pose_agv1 = world_pose;
             return;
         }
@@ -115,7 +115,7 @@ void GantryControl::logicalCallback17(const nist_gear::LogicalCameraImage& msg) 
 
         if(world_pose.position.z < 0.89 && not check_exist_on_agv(model_name, world_pose, agv2_allParts)){
             // ROS_WARN_STREAM("New local agv2: " << model_name << " x = " << model_pose.position.z);
-//            ROS_WARN_STREAM("New agv2: " << model_name << " x = " << world_pose.position.x);
+            ROS_WARN_STREAM("New part on agv2: " << model_name << " x = " << world_pose.position.x);
             part_placed_pose_agv2 = world_pose;
             return;
         }
@@ -124,7 +124,7 @@ void GantryControl::logicalCallback17(const nist_gear::LogicalCameraImage& msg) 
 
 float getDis(const geometry_msgs::Pose &p1, const geometry_msgs::Pose &p2){
 
-    if(std::abs(p1.position.z - p2.position.z) > 0.01){
+    if(std::abs(p1.position.z - p2.position.z) > 0.09){
         return -1;
     }
     float dis = std::pow((p1.position.x - p2.position.x),2) + std::pow((p1.position.y - p2.position.y),2);
@@ -465,41 +465,41 @@ bool GantryControl::pickPart(part part){
     if (state.enabled) {
         ROS_INFO_STREAM("[Gripper] = enabled");
         //--Move arm to part
-        part.pose.position.z += 0.2;
-        left_arm_group_.setPoseTarget(part.pose);
-        left_arm_group_.move();
-        part.pose.position.z -= 0.2;
+        if(*is_part_faulty){
+            part.pose.position.z += 0.2;
+            left_arm_group_.setPoseTarget(part.pose);
+            left_arm_group_.move();
+            part.pose.position.z -= 0.2;
+        }
         left_arm_group_.setPoseTarget(part.pose);
         left_arm_group_.move();
         auto state = getGripperState("left_arm");
         if (state.attached) {
             ROS_INFO_STREAM("[Gripper] = object attached");
             //--Move arm to previous position
+            part.pose.position.y = currentPose.position.y;
             part.pose.position.z += 0.2;
             left_arm_group_.setPoseTarget(part.pose);
             left_arm_group_.move();
 
             return true;
-            // part.pose.position.z -= 0.2;
-            left_arm_group_.setPoseTarget(currentPose);
-            left_arm_group_.move();
-            // goToPresetLocation(start_);
         }
         else {
             ROS_INFO_STREAM("[Gripper] = object not attached");
-            if (*is_part_faulty){
-                part.pose = *faulty_part_pose;
-                ROS_INFO_STREAM("Z in Pick faulty"<< part.pose.position.z);
-                part.pose.position.z = part.pose.position.z + model_height.at(part.type) + GRIPPER_HEIGHT - EPSILON - 0.0516;
-                part.pose.orientation.x = currentPose.orientation.x;
-                part.pose.orientation.y = currentPose.orientation.y;
-                part.pose.orientation.z = currentPose.orientation.z;
-                part.pose.orientation.w = currentPose.orientation.w;
-            }
+            // if (*is_part_faulty){
+            //     part.pose = *faulty_part_pose;
+            //     ROS_INFO_STREAM("Z in Pick faulty"<< part.pose.position.z);
+            //     part.pose.position.z = part.pose.position.z + model_height.at(part.type) + GRIPPER_HEIGHT - EPSILON - 0.0516;
+            //     part.pose.orientation.x = currentPose.orientation.x;
+            //     part.pose.orientation.y = currentPose.orientation.y;
+            //     part.pose.orientation.z = currentPose.orientation.z;
+            //     part.pose.orientation.w = currentPose.orientation.w;
+            // }
 
             int max_attempts{5};
             int current_attempt{0};
             while(!state.attached) {
+                // part.pose.position.y = currentPose.position.y;
                 part.pose.position.z += 0.2;
                 left_arm_group_.setPoseTarget(part.pose);
                 left_arm_group_.move();
@@ -599,8 +599,8 @@ bool GantryControl::placePart(Product &product,
     PresetLocation agv_in_use_right;
     struct agvInfo* agv_data;
 
-    float offset_x = 0.75;
-    float offset_y = 0.45;
+    float offset_x = 0.4;
+    float offset_y = 0.35;
 
     if(agv == "agv1"){
         agv_in_use = agv1_;
@@ -675,7 +675,7 @@ bool GantryControl::placePart(Product &product,
         part_placed_pose = &part_placed_pose_agv1;
     }
 
-    ros::Duration(2).sleep();
+    // ros::Duration(2).sleep();
     if (*is_part_faulty) {
         ROS_INFO_STREAM("-----------------Part faulty inside: " << *is_part_faulty);
         part.pose = *faulty_part_pose;
@@ -691,7 +691,7 @@ bool GantryControl::placePart(Product &product,
         return false;
     }
     ROS_INFO_STREAM("-----------------Matching Pose for : " << part.type);
-    ros::Duration(1).sleep();
+    // ros::Duration(1).sleep();
     bool is_part_placed_correct = poseMatches(target_pose_in_tray, *part_placed_pose);
     if(is_part_placed_correct){
         product.agv_world_pose = *part_placed_pose;
@@ -744,7 +744,7 @@ bool GantryControl::placePart(Product &product,
     return true;
 }
 
-bool GantryControl::move2start ( float x, float y, float gantryX) {
+bool GantryControl::move2start ( float x, float y) {
     float offset_y = 0.2;
     float offset_x = 0.2;
 
@@ -975,7 +975,7 @@ bool GantryControl::move2start ( float x, float y, float gantryX) {
     }
 }
 
-float GantryControl::move2trg  ( float x, float y, float gantryX ) {
+std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX, float &gantryY , int currGap) {
 
     float offset_final_y = 1.1;
     float offset_y = offset_final_y + 0.2;
@@ -987,6 +987,10 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
     move.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
     move_trg = move;
+    if(currGap != -1){
+        move.left_arm = { 0, 0, 0, 0, 0, 0};
+        move.right_arm = { PI, 0, 0, 0, 0, 0};
+    }
 
     if(x < 0){
         if( y > 6.3){
@@ -1000,13 +1004,16 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
             move_trg.gantry[0] -= offset_final_x;
             move_trg.gantry[1] -= offset_final_y;
             goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
+
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
         }
         else  if( y <= 6.3 && y > 3.05){
             offset_y -= 0.3;
             move.gantry[0] = gantryX;
             move.gantry[1] += offset_y;
-            move.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
+            // move.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
 
             ROS_INFO_STREAM("Position of trg  trg_2");
 
@@ -1016,12 +1023,14 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
             move_trg.gantry[1] += offset_final_y;
             move_trg.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
             goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
         }
         else if( y <= 3.05 && y > 1.5025){
             move.gantry[0] = gantryX;
             move.gantry[1] -= offset_y;
-            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
+            // move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
 
             ROS_INFO_STREAM("Position of trg  trg_3");
 
@@ -1031,14 +1040,16 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
             move_trg.gantry[1] -= offset_final_y - 0.3;
             move_trg.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
             goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
         }
         else if( y <= 1.5025 && y > 0){
             offset_y -= 0.3;
             offset_final_y -= 0.3;
             move.gantry[0] = gantryX;
             move.gantry[1] += offset_y;
-            move.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
+            // move.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
 
             ROS_INFO_STREAM("Position of trg  trg_4");
 
@@ -1048,12 +1059,14 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
             move_trg.gantry[1] += offset_final_y;
             move_trg.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
             goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
         }
         else if( y <= 0 && y > -1.5025){
             move.gantry[0] = gantryX;
             move.gantry[1] -= offset_y;
-            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
+            // move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
 
             ROS_INFO_STREAM("Position of trg  trg_5");
 
@@ -1063,14 +1076,16 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
             move_trg.gantry[1] -= offset_final_y - 0.3;
             move_trg.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
             goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
         }
         else if( y <= -1.5025 && y > -3.05){
             offset_y -= 0.3;
             offset_final_y -= 0.3;
             move.gantry[0] = gantryX;
             move.gantry[1] += offset_y;
-            move.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
+            // move.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
 
             ROS_INFO_STREAM("Position of trg  trg_6");
 
@@ -1080,12 +1095,14 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
             move_trg.gantry[1] += offset_final_y;
             move_trg.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
             goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
         }
         else if( y <= -3.05 && y > -6.6){
             move.gantry[0] = gantryX;
             move.gantry[1] -= offset_y;
-            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
+            // move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
 
             ROS_INFO_STREAM("Position of trg  trg_7");
 
@@ -1095,7 +1112,9 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
             move_trg.gantry[1] -= offset_final_y-0.3;
             move_trg.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
             goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
         }
         else if( y <= -6.6){
             move.gantry[0] = gantryX;
@@ -1108,9 +1127,11 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
             move_trg.gantry[0] -= offset_final_x;
             move_trg.gantry[1] += offset_final_y;
             goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
         }
-        return 0;
+        return move_trg.left_arm;;
 
     }else{ // towards bin s
         if( y > 6.3){
@@ -1124,12 +1145,14 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
             move_trg.gantry[0] -= offset_final_x;
             move_trg.gantry[1] -= offset_final_y;
             goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
         }
         else  if( y <= 6.3 && y > 3.6){
             move.gantry[0] = gantryX;
             move.gantry[1] += offset_y;
-            move.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
+            // move.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
 
             ROS_INFO_STREAM("Position of trg  trg_10");
 
@@ -1139,12 +1162,14 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
             move_trg.gantry[1] += offset_final_y;
             move_trg.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
             goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
         }
         else  if( y <= 3.6 && y > 2.45) {
             move.gantry[0] = gantryX;
             move.gantry[1] -= offset_y;
-            move.left_arm = {-PI / 2, -PI / 2, PI / 2 + PI / 4, -PI / 4, 0, 0};
+            // move.left_arm = {-PI / 2, -PI / 2, PI / 2 + PI / 4, -PI / 4, 0, 0};
 
             ROS_INFO_STREAM("Position of trg  trg_11");
 
@@ -1154,7 +1179,9 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
             move_trg.gantry[1] -= offset_final_y - 0.3;
             move_trg.left_arm = {-PI / 2, -PI / 2, PI / 2 + PI / 4, -PI / 4, 0, 0};
             goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
         }
         else  if( y <= 2.45 && y > 0) {
             offset_y = 0.6;
@@ -1168,13 +1195,15 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
             move_trg.gantry[0] -= offset_final_x;
 //            move_trg.gantry[1] -= offset_y;
             goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
         }
 
         else  if( y <= -2.45 && y > -3.6){
             move.gantry[0] = gantryX;
             move.gantry[1] += offset_y;
-            move.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
+            // move.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
 
             ROS_INFO_STREAM("Position of trg  trg_12");
 
@@ -1184,7 +1213,9 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
             move_trg.gantry[1] += offset_final_y;
             move_trg.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
             goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
         }
         else  if( y <= 0 && y > -2.45){
             offset_y = 0.6;
@@ -1198,12 +1229,14 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
             move_trg.gantry[0] -= offset_final_x;
 //            move_trg.gantry[1] -= offset_y;
             goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
         }
         else  if( y <= -3.6 && y > -6.6){
             move.gantry[0] = gantryX;
             move.gantry[1] -= offset_y;
-            move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
+            // move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
 
             ROS_INFO_STREAM("Position of trg  trg_13");
 
@@ -1213,7 +1246,9 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
             move_trg.gantry[1] -= offset_final_y-0.3;
             move_trg.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
             goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
         }
         else  if( y <= -6.6 ){
             move.gantry[0] = gantryX;
@@ -1226,9 +1261,11 @@ float GantryControl::move2trg  ( float x, float y, float gantryX ) {
             move_trg.gantry[0] -= offset_final_x;
             move_trg.gantry[1] += offset_final_y;
             goToPresetLocation(move_trg);
-            return -move_trg.gantry[1];
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
         }
-        return 0;
+        return move_trg.left_arm;;
     }
 }
 
@@ -1335,17 +1372,9 @@ void GantryControl::goToPresetLocation(PresetLocation location) {
 }
 
 
-bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<float , float> > &shelfGaps,
-                                    const std::vector<int> &gapNum, bool actPart, float &gantryX, float &gantryY,
-                                    ObstaclesInAisle &obstObj, int &newGap){
-    int aisle_num = part.aisle_num;
+int GantryControl::getNearestGap(float destX, int aisle_num, bool actPart, ObstaclesInAisle &obstObj,
+                                const std::vector< std::pair<float , float> > &shelfGaps){
     int gap1, gap2;
-    shelfGaps[0].first = part.pose.position.x;
-    shelfGaps[4].first = part.pose.position.x;
-    shelfGaps[0].second = 6.5;
-    shelfGaps[4].second = -6.5;
-
-    ROS_DEBUG_STREAM("ActPart = " << actPart << " for the aisle: " << aisle_num);
     switch(aisle_num){
         case 1: gap1 = 0;
                 gap2 = 1;
@@ -1367,9 +1396,9 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
     }
 
     int nearestGap = -1;
-    if(std::abs(shelfGaps[gap1].first - part.pose.position.x) < std::abs(shelfGaps[gap2].first - part.pose.position.x) ){
+    if(std::abs(shelfGaps[gap1].first - destX) < std::abs(shelfGaps[gap2].first - destX) ){
         nearestGap = gap1;
-    }else if(std::abs(shelfGaps[gap1].first - part.pose.position.x) == std::abs(shelfGaps[gap2].first - part.pose.position.x)){
+    }else if(std::abs(shelfGaps[gap1].first - destX) == std::abs(shelfGaps[gap2].first - destX)){
         if(obstObj.isAisleClear(gap1)){
             nearestGap = gap1;
         }else if(obstObj.isAisleClear(gap1 + 1)){
@@ -1380,13 +1409,179 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
     }else{
         nearestGap = gap2;
     }
-    ROS_WARN_STREAM("Gap1 = " << gap1 << " Gap2: " << gap2);
+    return nearestGap;
+}
+
+bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float> > &shelfGaps, const std::vector<int> &gapNum,
+                            bool actPart, float &gantryX, float &gantryY, ObstaclesInAisle &obstObj, int &newGap, std::vector<double> &left_arm){
+    shelfGaps[0].first = 0;
+    shelfGaps[4].first = 0;
+    shelfGaps[0].second = 6;
+    shelfGaps[4].second = -6;
+
+    // get the nearest gap from the end, as parts are at the end helf only
+    int nearestGap = getNearestGap(-18, aisle_num, actPart, obstObj, shelfGaps);
+    PresetLocation temp = start_;
+    temp.left_arm = left_arm;
+    if(temp.left_arm[2] > 0){
+        temp.left_arm[1] = -PI - PI/4;
+    }else{
+        temp.left_arm[1] = PI/4;
+    }
+
+    float offset_y = 0.5;
+
+    if(gantryY < 0){
+        offset_y *= -1;
+    }
+
+    if(actPart == 1){
+        temp.gantry[0] = shelfGaps[nearestGap].first;
+        temp.gantry[1] = -(gantryY + offset_y);
+        // temp.gantry[2] = -PI;
+        
+        // temp.left_arm = { 0, 0, 0, 0, 0, 0};
+        temp.right_arm = { PI, 0, 0, 0, 0, 0};
+        goToPresetLocation(temp);
+        
+        temp.gantry[0] = shelfGaps[nearestGap].first;
+        temp.gantry[1] = -shelfGaps[nearestGap].second;
+        // temp.gantry[2] = 0;
+        // temp.left_arm = { 0, 0, 0, 0, 0, 0};
+        // temp.right_arm = { PI, 0, 0, 0, 0, 0};
+        goToPresetLocation(temp);
+
+        gantryX = temp.gantry[0];
+        gantryY = -temp.gantry[1];
+        newGap = gapNum[nearestGap];
+        aisle_num = nearestGap;
+    }
+
+    if(nearestGap == 0 || nearestGap == 4){
+        temp.gantry[0] = 0;
+        temp.gantry[1] = -gantryY;
+        temp.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+        temp.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+        goToPresetLocation(temp);
+
+        gantryX = temp.gantry[0];
+        gantryY = -temp.gantry[1];
+        return true;
+    }
+
+    if(obstObj.isAisleClear(aisle_num)){
+        // if(nearestGap >= 3){
+        //     gap_offset_y *= -1;
+        // }
+        temp.gantry[0] = gantryX;
+        temp.gantry[1] = -(shelfGaps[aisle_num-1].second + shelfGaps[aisle_num].second)/2;
+        // temp.left_arm = { 0, 0, 0, 0, 0, 0};
+        temp.right_arm = { PI, 0, 0, 0, 0, 0};
+        goToPresetLocation(temp);
+        
+        temp.gantry[0] = 0;
+        temp.gantry[1] = -(shelfGaps[aisle_num-1].second + shelfGaps[aisle_num].second)/2;
+        temp.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+        temp.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+        goToPresetLocation(temp);
+
+        gantryX = temp.gantry[0];
+        gantryY = -temp.gantry[1];        
+        return true;
+    }
+
+    if(obstObj.isAisleClear(aisle_num + 1)){
+        // if(nearestGap + 1 >= 3){
+        //     gap_offset_y *= -1;
+        // }
+        temp.gantry[0] = gantryX;
+        temp.gantry[1] = -(shelfGaps[aisle_num].second + shelfGaps[aisle_num + 1].second)/2;
+        // temp.left_arm = { 0, 0, 0, 0, 0, 0};
+        temp.right_arm = { PI, 0, 0, 0, 0, 0};
+        goToPresetLocation(temp);
+        
+        temp.gantry[0] = 0;
+        temp.gantry[1] = -(shelfGaps[aisle_num].second + shelfGaps[aisle_num + 1].second)/2;
+        temp.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+        temp.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+        goToPresetLocation(temp);
+
+        gantryX = temp.gantry[0];
+        gantryY = -temp.gantry[1];
+        aisle_num += 1;     
+        return true;
+    }
+
+
+    // escape(aisle_nun, shelfGaps, gapNum, 0, gantryX, gantryY, obstObj, newGap);
+
+    nearestGap = getNearestGap(-18, aisle_num, 0, obstObj, shelfGaps);
+
+    int new_aisle = aisle_num;
+    if(nearestGap > new_aisle){
+        new_aisle = nearestGap;
+    }
+
+    bool move = false;
+    do{
+        move = obstObj.moveBot(shelfGaps[nearestGap].first, gapNum[nearestGap], new_aisle, gantryX, newGap);
+
+    }while(!move);
+
+    if(nearestGap == 0 || nearestGap == 4){
+        temp.gantry[1] = -shelfGaps[nearestGap].second;
+    }else {
+        temp.gantry[1] = -(shelfGaps[aisle_num].second + shelfGaps[nearestGap].second)/2;
+    }
+    temp.gantry[0] = gantryX;
+    // temp.left_arm = { 0, 0, 0, 0, 0, 0};
+    temp.right_arm = { PI, 0, 0, 0, 0, 0};
+    goToPresetLocation(temp);
+    if(nearestGap > aisle_num){
+        aisle_num = nearestGap + 1;
+    }else{
+        aisle_num = nearestGap;
+    }
+    newGap = gapNum[nearestGap];
+    temp.gantry[0] = shelfGaps[nearestGap].first;
+    if(temp.gantry[0]  == 0){
+        temp.left_arm = { 0, -PI/4, PI/2, -PI/4, PI/2, 0};
+        temp.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+        goToPresetLocation(temp);
+        gantryX = temp.gantry[0];
+        gantryY = -temp.gantry[1];
+        return true;
+    }
+    // temp.gantry[1] = -(fakePart.pose.position.y + part.pose.position.y)/2;
+    
+    goToPresetLocation(temp);
+
+    // temp.gantry[0] = fakePart.pose.position.x;
+    temp.gantry[1] = -shelfGaps[nearestGap].second;
+    goToPresetLocation(temp);
+
+    gantryX = temp.gantry[0];
+    gantryY = -temp.gantry[1];
+    return true;
+}
+
+bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<float , float> > &shelfGaps,
+                                    const std::vector<int> &gapNum, bool actPart, float &gantryX, float &gantryY,
+                                    ObstaclesInAisle &obstObj, int &newGap){
+    int aisle_num = part.aisle_num;
+    shelfGaps[0].first = part.pose.position.x;
+    shelfGaps[4].first = part.pose.position.x;
+    shelfGaps[0].second = 6;
+    shelfGaps[4].second = -6;
+
+    int nearestGap = getNearestGap(part.pose.position.x, aisle_num, actPart, obstObj, shelfGaps);
+
     ROS_WARN_STREAM("Nearest Gap = " << nearestGap);
     float offset_y = 1.1;
     float offset_x = 0;
 
     if(actPart == 0){
-        offset_y += 0.2; // when the y is of the intermediate gap, and not of part
+        offset_y += 0.3; // when the y is of the intermediate gap, and not of part
                          // need to consider the offset of shelf center upto part center displacement
         offset_x = 0;
     }
@@ -1404,9 +1599,6 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
         temp.gantry[1] = -shelfGaps[nearestGap].second;
         goToPresetLocation(temp);
 
-        temp.gantry[0] = shelfGaps[nearestGap].first - offset_x;
-        temp.gantry[1] = -(shelfGaps[nearestGap].second);
-        goToPresetLocation(temp);
         gantryX = temp.gantry[0];
         gantryY = -temp.gantry[1];
         if(nearestGap == 0)
@@ -1467,7 +1659,6 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
         return true;
     }
 
-    // ROS_WARN_STREAM("Executing intermediate gap with current gap" << nearestGap);
     Part fakePart;
     fakePart.pose.position.x = shelfGaps[nearestGap].first;
     fakePart.pose.position.y = shelfGaps[nearestGap].second;
@@ -1477,34 +1668,28 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
     move2closestGap(fakePart, shelfGaps, gapNum, 0, gantryX, gantryY, obstObj, newGap_);
 
     bool move = false;
-    ROS_WARN_STREAM("Going in while: " << gapNum[nearestGap]);
-    ROS_WARN_STREAM("Sensor checked in aisle: " << fakePart.aisle_num);
+    // ROS_WARN_STREAM("Sensor checked in aisle: " << fakePart.aisle_num);
     do{
-        move = obstObj.moveBot(fakePart.pose, gapNum[nearestGap], fakePart.aisle_num, gantryX, newGap_);
+        move = obstObj.moveBot(fakePart.pose.position.x, gapNum[nearestGap], fakePart.aisle_num, gantryX, newGap_);
 
     }while(!move);
 
-    ROS_DEBUG_STREAM("Done while: " << move);
 
     temp.gantry[0] = gantryX;
     temp.gantry[1] = -(fakePart.pose.position.y + gantryY)/2;
     temp.left_arm = { 0, 0, 0, 0, 0, 0};
     temp.right_arm = { PI, 0, 0, 0, 0, 0};
-
-    // start_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    // start_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
     goToPresetLocation(temp);
     
     temp.gantry[0] = fakePart.pose.position.x;
-    // temp.gantry[1] = -(fakePart.pose.position.y + part.pose.position.y)/2;
     goToPresetLocation(temp);
 
-    // temp.gantry[0] = fakePart.pose.position.x;
     temp.gantry[1] = -fakePart.pose.position.y;
     goToPresetLocation(temp);
 
     gantryX = temp.gantry[0];
     gantryY = -temp.gantry[1];
+    newGap = gapNum[nearestGap];
 
     return true;
 }
