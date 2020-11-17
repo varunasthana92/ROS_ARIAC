@@ -145,16 +145,76 @@ int main(int argc, char ** argv) {
             float gantryX = 0;
             float gantryY = 0;
             int currGap = -1;
-            while(! ready2pick){
-                // std::vector< std::pair<float , float> > positiongap;
+            if(! ready2pick){
                 ROS_DEBUG_STREAM("Aisle number for part " << product.p.aisle_num);
-                gantry.move2closestGap(product.p, buildObj.positionGap, buildObj.gapNum, 1, gantryX, gantryY, obstObj, currGap);
-                exit(0);
-                // ready2pick = obstacleCleared(product.p);
+                gantry.move2closestGap(product.p, buildObj.positionGap, buildObj.gapNum, 1, gantryX,
+                                                    gantryY, obstObj, currGap);
+                ROS_WARN_STREAM("Curr Gap in main: " << currGap);
             }
-            float Y_pose = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX );
+            while(! ready2pick){
+                // trigger to pick part
+                ready2pick = obstObj.moveBot(product.p.pose.position.x, -3, product.p.aisle_num, gantryX, currGap);
+            }
+            ROS_WARN_STREAM("OK to pick part now: ");
+            std::vector<double> left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY);
             gantry.pickPart(product.p);
-            gantry.move2start(product.p.pose.position.x - 0.4, -Y_pose, gantryX);
+            //escape plan
+            ready2pick = obstObj.isAisleClear(product.p.aisle_num);
+            if(! ready2pick){
+                gantry.escape(product.p.aisle_num, buildObj.positionGap, buildObj.gapNum, 1, gantryX, gantryY, obstObj, currGap, left_arm   );
+                ready2pick = obstObj.isAisleClear(product.p.aisle_num);
+                PresetLocation temp = gantry.start_;
+                if(gantryX != 0 && ready2pick){
+                    if(product.p.aisle_num == 1){
+                        temp.gantry[1] = -buildObj.positionGap[0].second;
+                    }else {
+                        temp.gantry[1] = -buildObj.positionGap[4].second;
+                    }
+                    temp.gantry[0] = gantryX;
+                    temp.left_arm = { 0, 0, 0, 0, 0, 0};
+                    temp.right_arm = { PI, 0, 0, 0, 0, 0};
+                    gantry.goToPresetLocation(temp);
+                    gantryX = temp.gantry[0];
+                    gantryY = -temp.gantry[1];
+
+                    // temp.gantry[0] = 0;
+                    // temp.gantry[1] = -gantryY;
+                    // temp.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+                    // temp.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+                    // gantry.goToPresetLocation(temp);
+
+                    // gantryX = temp.gantry[0];
+                    // gantryY = -temp.gantry[1];
+
+                }else if(gantryX != 0 && !ready2pick){
+                    bool move = false;
+                    do{
+                        move = obstObj.moveBot(0, -3, product.p.aisle_num, gantryX, currGap);
+
+                    }while(!move);
+
+                    if(product.p.aisle_num == 1){
+                        temp.gantry[1] = -buildObj.positionGap[0].second;
+                    }else {
+                        temp.gantry[1] = -buildObj.positionGap[4].second;
+                    }
+                    temp.gantry[0] = gantryX;
+                    temp.left_arm = { 0, 0, 0, 0, 0, 0};
+                    temp.right_arm = { PI, 0, 0, 0, 0, 0};
+                    gantry.goToPresetLocation(temp);
+                    gantryX = temp.gantry[0];
+                    gantryY = -temp.gantry[1];
+                }
+
+            }
+            gantry.move2start(gantryX, -gantryY);
+            
+            // while(! ready2pick){
+            //     // trigger to pick part
+            //     ready2pick = obstObj.moveBot(product.p.pose, -3, product.p.aisle_num, gantryX, currGap);
+            // }
+            // escape function needed
+            
         }
         
         // product.p.pose = product.pose;
