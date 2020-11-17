@@ -19,6 +19,7 @@
 class Detection {
   public:
     bool part_set = false;
+    bool picked_up = false;
     double first_look_time=-1;
     double second_look_time=-1;
     double speed=-1;

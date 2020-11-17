@@ -1251,7 +1251,7 @@ void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
 
 	pickup_pose.position.x = estimated_conveyor_pose.position.x;
 	pickup_pose.position.y = estimated_conveyor_pose.position.y;
-	pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height.at(product.type) + GRIPPER_HEIGHT;
+	pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height.at(product.type) + GRIPPER_HEIGHT - EPSILON;
 
 	auto currentPose = left_arm_group_.getCurrentPose().pose;
 	pickup_pose.orientation.x = currentPose.orientation.x;
@@ -1260,7 +1260,7 @@ void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
 	pickup_pose.orientation.w = currentPose.orientation.w;
 
     pre_pickup_pose = pickup_pose;
-    pre_pickup_pose.position.z += 0.03; 
+    pre_pickup_pose.position.z += 0.02; 
 
     left_arm_group_.setPoseTarget(pre_pickup_pose);
     left_arm_group_.move();  // Move to the pre pick up location

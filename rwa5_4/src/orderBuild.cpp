@@ -141,47 +141,40 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
     struct all_Order* mv_temp = NULL;
     struct all_Order* st_temp = NULL;
 
-    if(st_order_shipment_num_top != -1 && mv_order_shipment_num_top != -1){
-        st_temp = st_order;
-        mv_temp = mv_order;
-        if(mv_temp->ship_num >= st_temp->ship_num){
-            curr_build_shipment_num = mv_temp->ship_num;
-            struct all_Order* mv_dummy_head = new(all_Order);
-            mv_dummy_head->ship_num = -2;
-            mv_dummy_head->next = mv_order;
-            struct all_Order* mv_temp_prev = mv_dummy_head;
-            do{
-                bool status = conveyerPartsObj.giveClosestPart(mv_temp->prod.type, mv_temp->prod.estimated_conveyor_pose);
-                // bool status = false;
-                if(status){
-                    ROS_INFO_STREAM("Assigning MOVING Part " << mv_temp->prod.type);
-                    mv_temp_prev->next = mv_temp->next;
-                    mv_order = mv_dummy_head->next;
-                    delete(mv_dummy_head);
-                    // ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
-                    mv_temp->prod.p.type = mv_temp->prod.type;
-                    mv_temp->prod.p.camFrame = 1;
-                    return mv_temp;
-                }
-                mv_temp_prev = mv_temp;
-                mv_temp = mv_temp->next;
-            }while(mv_temp && mv_temp->ship_num == curr_build_shipment_num);
-            delete(mv_dummy_head);
-        }
-        curr_build_shipment_num = st_temp->ship_num;
-        st_order = st_order->next;
-        st_temp->next = NULL;
-        ROS_INFO_STREAM("Assigning STATIC Part " << st_temp->prod.type);
-        return st_temp;
+    // if(st_order_shipment_num_top != -1 && mv_order_shipment_num_top != -1){
+    //     st_temp = st_order;
+    //     mv_temp = mv_order;
+    //     if(mv_temp->ship_num >= st_temp->ship_num){
+    //         curr_build_shipment_num = mv_temp->ship_num;
+    //         struct all_Order* mv_dummy_head = new(all_Order);
+    //         mv_dummy_head->ship_num = -2;
+    //         mv_dummy_head->next = mv_order;
+    //         struct all_Order* mv_temp_prev = mv_dummy_head;
+    //         do{
+    //             bool status = conveyerPartsObj.giveClosestPart(mv_temp->prod.type, mv_temp->prod.estimated_conveyor_pose);
+    //             // bool status = false;
+    //             if(status){
+    //                 ROS_INFO_STREAM("Assigning MOVING Part " << mv_temp->prod.type);
+    //                 mv_temp_prev->next = mv_temp->next;
+    //                 mv_order = mv_dummy_head->next;
+    //                 delete(mv_dummy_head);
+    //                 // ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
+    //                 mv_temp->prod.p.type = mv_temp->prod.type;
+    //                 mv_temp->prod.p.camFrame = 1;
+    //                 return mv_temp;
+    //             }
+    //             mv_temp_prev = mv_temp;
+    //             mv_temp = mv_temp->next;
+    //         }while(mv_temp && mv_temp->ship_num == curr_build_shipment_num);
+    //         delete(mv_dummy_head);
+    //     }
+    //     curr_build_shipment_num = st_temp->ship_num;
+    //     st_order = st_order->next;
+    //     st_temp->next = NULL;
+    //     ROS_INFO_STREAM("Assigning STATIC Part " << st_temp->prod.type);
+    //     return st_temp;
 
-    }else if(st_order_shipment_num_top != -1){
-        st_temp = st_order;
-        curr_build_shipment_num = st_temp->ship_num;
-        st_order = st_order->next;
-        st_temp->next = NULL;
-        ROS_INFO_STREAM("Assigning STATIC Part " << st_temp->prod.type);
-        return st_temp;
-    }else if(mv_order_shipment_num_top != -1){
+    if(mv_order_shipment_num_top != -1){
         mv_temp = mv_order;
         curr_build_shipment_num = mv_temp->ship_num;
 
@@ -211,6 +204,14 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
             }
         }
         delete(mv_dummy_head);
+    } 
+    else if(st_order_shipment_num_top != -1){
+        st_temp = st_order;
+        curr_build_shipment_num = st_temp->ship_num;
+        st_order = st_order->next;
+        st_temp->next = NULL;
+        ROS_INFO_STREAM("Assigning STATIC Part " << st_temp->prod.type);
+        return st_temp;
     }
 
     return NULL;
