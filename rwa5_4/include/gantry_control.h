@@ -59,6 +59,11 @@ class GantryControl {
     bool pickPart(part part);
     bool placePart(product &product, std::string agv, std::string arm);
     
+    // CODE TO BE COPIED 
+    void breakbeam_sensor_callback(const nist_gear::Proximity::ConstPtr &msg, 
+                                   int cam_id);
+    void checkSensorBlackout();
+    // CODE TO BE COPIED
     /// Send command message to robot controller
     bool send_command(trajectory_msgs::JointTrajectory command_msg);
     void goToPresetLocation(PresetLocation location);
@@ -122,6 +127,13 @@ class GantryControl {
     geometry_msgs::Pose faulty_part_pose_agv1, part_placed_pose_agv1;
     geometry_msgs::Pose faulty_part_pose_agv2, part_placed_pose_agv2;
 
+    // CODE TO BE COPIED
+    // Stores last breakbeam data recieved time
+    ros::Time last_recieved_time;
+    // Vector to store breakbeam sensor states
+    std::vector<int> breakbeam_sensor_states;
+    // CODE TO BE COPIED
+    
     double left_ee_roll_;
     double left_ee_pitch_;
     double left_ee_yaw_;

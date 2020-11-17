@@ -75,9 +75,20 @@ int main(int argc, char ** argv) {
       // "/ariac/logical_camera_16",
       // "/ariac/logical_camera_17"
       };
+
+    // CODE TO BE COPIED
+    std::vector<std::string> breakbeam_sensor_topics {
+      "/ariac/breakbeam_20",
+      };
+      // CODE TO BE COPIED
     std::vector<ros::Subscriber> logical_cam_subscribers;
 
     BuildClass buildObj;
+
+    // CODE TO BE COPIED
+    GantryControl gantry(node);
+    // CODE TO BE COPIED
+
     logical_cam_subscribers.resize(logical_camera_topics.size());
     buildObj.shelf_distance();
     for(int i=0; i<logical_camera_topics.size(); i++) {
@@ -85,6 +96,16 @@ int main(int argc, char ** argv) {
                                                                           boost::bind(&BuildClass::logical_camera_callback,
                                                                                       &buildObj, _1, i+1));
     }
+
+    // CODE TO BE COPIED
+    std::vector<ros::Subscriber> breakbeam_sensor_subscribers;
+    breakbeam_sensor_subscribers.resize(breakbeam_sensor_topics.size());
+    for(int i=0; i<breakbeam_sensor_topics.size(); i++) {
+        breakbeam_sensor_subscribers[i] = node.subscribe<nist_gear::Proximity>(breakbeam_sensor_topics[i], 10, 
+                                                                          boost::bind(&GantryControl::breakbeam_sensor_callback,
+                                                                                      &gantry, _1, i+1));
+    }
+    // CODE TO BE COPIED
 
     ObstaclesInAisle obstObj(node);
 
@@ -97,7 +118,7 @@ int main(int argc, char ** argv) {
     ros::Subscriber order_sub = node.subscribe("/ariac/orders", 1000, &BuildClass::orderCallback, &buildObj);
     
     ConveyerParts conveyerPartsObj(node);
-    GantryControl gantry(node);
+    
 
     ros::Subscriber quality_sensor_1_sub = node.subscribe("/ariac/quality_control_sensor_1", 1, &GantryControl::qualityCallback2, &gantry);
     ros::Subscriber logical_camera_17_sub = node.subscribe("/ariac/logical_camera_17", 1, &GantryControl::logicalCallback17, &gantry);

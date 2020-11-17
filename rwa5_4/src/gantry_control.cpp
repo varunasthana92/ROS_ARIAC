@@ -147,6 +147,29 @@ bool GantryControl::check_exist_on_agv(const std::string &name, const geometry_m
     return false;
 }
 
+//CODE TO BE COPIED
+void GantryControl::breakbeam_sensor_callback(const nist_gear::Proximity::ConstPtr &msg, 
+                                              int cam_id) {
+    breakbeam_sensor_states.at(cam_id-1) =  msg->object_detected;
+    last_recieved_time = ros::Time::now();
+}
+
+void GantryControl::checkSensorBlackout() {
+    ros::Duration(1).sleep(); // sleep for half a second
+    ros::Time current_time = ros::Time::now();
+    ROS_DEBUG_STREAM("Last_recieved_time: " << last_recieved_time <<  
+                     "current_time: " << current_time);
+    if (last_recieved_time != current_time) {
+        ROS_INFO_STREAM("Waiting for sensor blackout to end ...");
+        while (last_recieved_time != current_time) {
+            ROS_DEBUG_STREAM("Last_recieved_time: " << last_recieved_time <<  
+                            "current_time: " << current_time);
+            current_time = ros::Time::now();
+        }
+        ROS_INFO_STREAM("Sensor blackout ended ... robot will resume operation");
+    }
+}
+//CODE TO BE COPIED
 
 bool GantryControl::poseMatches(const geometry_msgs::Pose &pose1, 
                                 const geometry_msgs::Pose &pose2) {
@@ -177,6 +200,7 @@ bool GantryControl::poseMatches(const geometry_msgs::Pose &pose1,
 
 GantryControl::GantryControl(ros::NodeHandle & node):
         node_("/ariac/gantry"),
+        breakbeam_sensor_states(1, 0),
         planning_group_ ("/ariac/gantry/robot_description"),
         full_robot_options_("Full_Robot",planning_group_,node_),
         left_arm_options_("Left_Arm",planning_group_,node_),
@@ -694,6 +718,11 @@ bool GantryControl::placePart(Product &product,
         return false;
     }
     ROS_INFO_STREAM("-----------------Matching Pose for : " << part.type);
+
+    // CODE TO BE COPIED
+    checkSensorBlackout();
+    // CODE TO BE COPIED
+
     ros::Duration(1).sleep();
     bool is_part_placed_correct = poseMatches(target_pose_in_tray, *part_placed_pose);
     if(is_part_placed_correct){
