@@ -39,7 +39,7 @@ orders:
       product_0:
         type: pulley_part_blue
         pose:
-          xyz: [0.0, 0.15, 0]
+          xyz: [0.0, 0.12, 0]
           rpy: ['pi', 0, 0]
       product_1:
         type: gasket_part_green
@@ -47,9 +47,9 @@ orders:
           xyz: [-0.1, -0.2, 0]
           rpy: [0, 0, '-pi/4']
       product_2:
-        type: gasket_part_green
+        type: pulley_part_blue
         pose:
-          xyz: [0.15, -0.2, 0]
+          xyz: [0.12, -0.2, 0]
           rpy: [0, 0, 'pi/4']
 
 belt_models:
@@ -80,7 +80,7 @@ models_over_shelves:
 #   duration: 50
 
 faulty_products:
-  # - pulley_part_blue_3
+  - pulley_part_blue_3
   - piston_rod_part_red_2
   - piston_rod_part_red_6
   - gasket_part_green_4

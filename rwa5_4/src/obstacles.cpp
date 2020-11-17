@@ -96,18 +96,12 @@ bool ObstaclesInAisle::moveBot(float destX, int destGapNum, int aisle_num, float
 	if(destGapNum < 0 && currGap !=- 1){
 		// need motion 1 at sensor currGap
 		if((*aisle_dir).first == (aisle_num*10 + currGap) && (*aisle_dir).second == 1){
-			ROS_FATAL_STREAM("Part pick from gap");
-			ROS_WARN_STREAM("Gap num = " << (*aisle_dir).first);
-			ROS_WARN_STREAM("Motion= " << (*aisle_dir).second);
 			return true;
 		}
 		return false;
 	}else if(destGapNum < 0 && currGap ==- 1){
 		// need motion 1 at sensor 3
 		if((*aisle_dir).first == (aisle_num*10 + 3) && (*aisle_dir).second == 1){
-			ROS_FATAL_STREAM("Part pick at extreme shelf");
-			ROS_WARN_STREAM("Gap num = " << (*aisle_dir).first);
-			ROS_WARN_STREAM("Motion= " << (*aisle_dir).second);
 			return true;
 		}
 		return false;
@@ -127,14 +121,8 @@ bool ObstaclesInAisle::moveBot(float destX, int destGapNum, int aisle_num, float
 		return false;
 	}
 	if(dis <= 6 && (*aisle_dir).first * negate >= negate*(aisle_num*10 + destGapNum) && (*aisle_dir).second == direction){
-		ROS_FATAL_STREAM("Found True");
-		ROS_WARN_STREAM("Gap num = " << (*aisle_dir).first);
-		ROS_WARN_STREAM("Motion= " << (*aisle_dir).second);
 		return true;
 	}else if( (*aisle_dir).first * negate *(-1) >= negate*(-1)*(aisle_num*10 + currGap) && (*aisle_dir).second != direction){
-		ROS_FATAL_STREAM("Else True");
-		ROS_WARN_STREAM("Gap num = " << (*aisle_dir).first);
-		ROS_WARN_STREAM("Motion= " << (*aisle_dir).second);
 		return true; 
 	}
 	return false;

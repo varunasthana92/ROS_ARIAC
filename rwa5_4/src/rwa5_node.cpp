@@ -117,6 +117,7 @@ int main(int argc, char ** argv) {
     while(buildObj.st_order || buildObj.mv_order){
         curr_prod = buildObj.getList(conveyerPartsObj);
         ROS_DEBUG_STREAM("For shipement " << curr_prod->shipment_type);
+        ROS_DEBUG_STREAM("For shipement num " << curr_prod->ship_num);
         ROS_DEBUG_STREAM("On agv " << curr_prod->prod.agv_id);
         if(curr_build_shipment_num == -1){
             curr_build_shipment_num = curr_prod->ship_num;
@@ -156,7 +157,7 @@ int main(int argc, char ** argv) {
                 ready2pick = obstObj.moveBot(product.p.pose.position.x, -3, product.p.aisle_num, gantryX, currGap);
             }
             ROS_WARN_STREAM("OK to pick part now: ");
-            std::vector<double> left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY);
+            std::vector<double> left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap);
             gantry.pickPart(product.p);
             //escape plan
             ready2pick = obstObj.isAisleClear(product.p.aisle_num);
