@@ -34,7 +34,7 @@ public:
 class BuildClass{
 private:
     std::string pick;
-    int num_shipment = 0;
+    int num_shipment = -1;
     int curr_build_shipment_num;
     Part *conveyor_Part = NULL;
     allStaticParts non_moving_part_data;
@@ -49,6 +49,8 @@ private:
 public:
     // struct agvInfo agv1, agv2;
     std::vector<Order> allOrders;
+    std::vector<int> num_prod_in_ship;
+    std::unordered_map<int, int> ship_build_count;
     struct all_Order *st_order = NULL;
     struct all_Order *mv_order = NULL;
 public:

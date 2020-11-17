@@ -79,7 +79,8 @@ class GantryControl {
     int getNearestGap(float destX, int aisle_num, bool actPart, ObstaclesInAisle &obstObj,
                                 const std::vector< std::pair<float , float> > &shelfGaps);
     bool escape(int &aisle_num, std::vector< std::pair<float , float> > &shelfGaps, const std::vector<int> &gapNum,
-                bool actPart, float &gantryX, float &gantryY, ObstaclesInAisle &obstObj, int &newGap, std::vector<double> &left_arm);
+                bool actPart, float &gantryX, float &gantryY, ObstaclesInAisle &obstObj, int &newGap,
+                std::vector<double> &left_arm, bool pickStatus);
 //    bool conveyor();
 
     geometry_msgs::Pose getRobotPose(){

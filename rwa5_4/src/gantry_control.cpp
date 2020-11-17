@@ -486,6 +486,9 @@ bool GantryControl::pickPart(part part){
         }
         else {
             ROS_INFO_STREAM("[Gripper] = object not attached");
+            if(part.obstacle_free == false){
+                return false;
+            }
             // if (*is_part_faulty){
             //     part.pose = *faulty_part_pose;
             //     ROS_INFO_STREAM("Z in Pick faulty"<< part.pose.position.z);
@@ -1413,7 +1416,8 @@ int GantryControl::getNearestGap(float destX, int aisle_num, bool actPart, Obsta
 }
 
 bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float> > &shelfGaps, const std::vector<int> &gapNum,
-                            bool actPart, float &gantryX, float &gantryY, ObstaclesInAisle &obstObj, int &newGap, std::vector<double> &left_arm){
+                            bool actPart, float &gantryX, float &gantryY, ObstaclesInAisle &obstObj, int &newGap,
+                            std::vector<double> &left_arm, bool pickStatus){
     shelfGaps[0].first = 0;
     shelfGaps[4].first = 0;
     shelfGaps[0].second = 6;
@@ -1455,6 +1459,9 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
         gantryY = -temp.gantry[1];
         newGap = gapNum[nearestGap];
         aisle_num = nearestGap;
+        if(pickStatus == false){
+            return false;
+        }
     }
 
     if(nearestGap == 0 || nearestGap == 4){

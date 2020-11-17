@@ -68,6 +68,7 @@ typedef struct Part {
   ros::Time time_stamp;
   std::string agv_id, id;
   std::vector<double> rpy_init;
+  bool obstacle_free = false;
   PartStates state; // model state (enum PartStates)
   float yaw_correction= 0;
 } part;
