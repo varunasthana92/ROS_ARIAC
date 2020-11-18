@@ -44,9 +44,9 @@ class ConveyerParts {
     bool checkForPick();
   private:
     double part_read_limit=3.0;
-    double max_y_limit=0;
+    double max_y_limit = 0;
     double conveyer_end_y=-2;
-    double offset=2.0;
+    double offset = 2.0;
     geometry_msgs::Pose pick_pose;
     Detection pick_part;
     bool ready_for_pick=false;

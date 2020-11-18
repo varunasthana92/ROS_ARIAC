@@ -72,14 +72,17 @@ class GantryControl {
     bool check_exist_on_agv(const std::string &name, const geometry_msgs::Pose &part_pose, agvInfo &agv);
     void flipPart();
     bool move2start ( float x, float y);
-    std::vector<double> move2trg ( float x, float y, float &gantryX, float &gantryY, int currGap);
+    std::vector<double> move2trg ( float x, float y, float &gantryX, float &gantryY, int currGap, std::vector<double> left_arm);
     bool move2closestGap(struct Part &part, std::vector< std::pair<float , float> > &shelfGaps,
                         const std::vector<int> &gapNum, bool actPart, float &gantryX, float &gantryY,
                         ObstaclesInAisle &obj, int &newGap);
     int getNearestGap(float destX, int aisle_num, bool actPart, ObstaclesInAisle &obstObj,
                                 const std::vector< std::pair<float , float> > &shelfGaps);
     bool escape(int &aisle_num, std::vector< std::pair<float , float> > &shelfGaps, const std::vector<int> &gapNum,
-                bool actPart, float &gantryX, float &gantryY, ObstaclesInAisle &obstObj, int &newGap, std::vector<double> &left_arm);
+                bool actPart, float &gantryX, float &gantryY, ObstaclesInAisle &obstObj, int &newGap,
+                std::vector<double> &left_arm, bool pickStatus);
+    void escape2conveyor(int &aisle_num, float &gantryX, float &gantryY, int currGap,
+                        const std::vector< std::pair<float , float> > &shelfGaps, ObstaclesInAisle & obstObj);
 //    bool conveyor();
 
     geometry_msgs::Pose getRobotPose(){
@@ -90,6 +93,7 @@ class GantryControl {
     nist_gear::VacuumGripperState getGripperState(std::string arm_name);
     geometry_msgs::Pose getTargetWorldPose(geometry_msgs::Pose target, std::string agv, std::string arm);
     //--preset locations;
+    int quality_call_count =0;
     start start_;
     bin3 bin3_;
     flipped_pulley flipped_pulley_, flipped_pulley_preset;

@@ -49,6 +49,8 @@ private:
 public:
     // struct agvInfo agv1, agv2;
     std::vector<Order> allOrders;
+    std::vector<int> num_prod_in_ship;
+    std::unordered_map<int, int> ship_build_count;
     struct all_Order *st_order = NULL;
     struct all_Order *mv_order = NULL;
 public:

@@ -119,20 +119,11 @@ int main(int argc, char ** argv) {
         ROS_DEBUG_STREAM("For shipement " << curr_prod->shipment_type);
         ROS_DEBUG_STREAM("For shipement num " << curr_prod->ship_num);
         ROS_DEBUG_STREAM("On agv " << curr_prod->prod.agv_id);
-        if(curr_build_shipment_num == -1){
-            curr_build_shipment_num = curr_prod->ship_num;
-            curr_agv = curr_prod->prod.agv_id;
-            curr_shipment_type = curr_prod->shipment_type;
 
-        }else if(curr_build_shipment_num != curr_prod->ship_num){
-            if(curr_build_shipment_num > curr_prod->ship_num){
-                gantry.goToPresetLocation(gantry.start_);
-                comp.shipAgv(curr_agv, curr_shipment_type);
-            }
-            curr_build_shipment_num = curr_prod->ship_num;
-            curr_agv = curr_prod->prod.agv_id;
-            curr_shipment_type = curr_prod->shipment_type;
-        }
+        curr_build_shipment_num = curr_prod->ship_num;
+        curr_agv = curr_prod->prod.agv_id;
+        curr_shipment_type = curr_prod->shipment_type;
+
         arm = "left";
         
         Product product = curr_prod->prod;
@@ -142,99 +133,75 @@ int main(int argc, char ** argv) {
             gantry.pickFromConveyor(product, conveyerPartsObj);
             product.p.rpy_init = quaternionToEuler(product.estimated_conveyor_pose);
         } else {
-            bool ready2pick = obstObj.isAisleClear(product.p.aisle_num);
             float gantryX = 0;
             float gantryY = 0;
             int currGap = -1;
+            std::vector<double> left_arm = { 0, 0, 0, 0, 0, 0};
+            bool pickstatus = false;
+            bool ready2pick = obstObj.isAisleClear(product.p.aisle_num);
+            product.p.obstacle_free = ready2pick;
+            ROS_WARN_STREAM("Main() Obstacle Free? : "<< ready2pick);
             if(! ready2pick){
-                ROS_DEBUG_STREAM("Aisle number for part " << product.p.aisle_num);
                 gantry.move2closestGap(product.p, buildObj.positionGap, buildObj.gapNum, 1, gantryX,
-                                                    gantryY, obstObj, currGap);
-                ROS_WARN_STREAM("Curr Gap in main: " << currGap);
-            }
-            while(! ready2pick){
-                // trigger to pick part
-                ready2pick = obstObj.moveBot(product.p.pose.position.x, -3, product.p.aisle_num, gantryX, currGap);
-            }
-            ROS_WARN_STREAM("OK to pick part now: ");
-            std::vector<double> left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap);
-            gantry.pickPart(product.p);
-            //escape plan
-            ready2pick = obstObj.isAisleClear(product.p.aisle_num);
-            if(! ready2pick){
-                gantry.escape(product.p.aisle_num, buildObj.positionGap, buildObj.gapNum, 1, gantryX, gantryY, obstObj, currGap, left_arm   );
-                ready2pick = obstObj.isAisleClear(product.p.aisle_num);
-                PresetLocation temp = gantry.start_;
-                if(gantryX != 0 && ready2pick){
-                    if(product.p.aisle_num == 1){
-                        temp.gantry[1] = -buildObj.positionGap[0].second;
-                    }else {
-                        temp.gantry[1] = -buildObj.positionGap[4].second;
-                    }
-                    temp.gantry[0] = gantryX;
-                    temp.left_arm = { 0, 0, 0, 0, 0, 0};
-                    temp.right_arm = { PI, 0, 0, 0, 0, 0};
-                    gantry.goToPresetLocation(temp);
-                    gantryX = temp.gantry[0];
-                    gantryY = -temp.gantry[1];
-
-                    // temp.gantry[0] = 0;
-                    // temp.gantry[1] = -gantryY;
-                    // temp.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-                    // temp.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
-                    // gantry.goToPresetLocation(temp);
-
-                    // gantryX = temp.gantry[0];
-                    // gantryY = -temp.gantry[1];
-
-                }else if(gantryX != 0 && !ready2pick){
-                    bool move = false;
+                                                        gantryY, obstObj, currGap);
+                ROS_WARN_STREAM("Main() Curr Aisle: "<< product.p.aisle_num <<" Gap: " << currGap);
+                while(!pickstatus){
+                    // for aisles with obstacles: trigger to pick part
                     do{
-                        move = obstObj.moveBot(0, -3, product.p.aisle_num, gantryX, currGap);
+                        ready2pick = obstObj.moveBot(product.p.pose.position.x, -3, product.p.aisle_num, gantryX, currGap);
+                    }while(! ready2pick);
 
-                    }while(!move);
-
-                    if(product.p.aisle_num == 1){
-                        temp.gantry[1] = -buildObj.positionGap[0].second;
-                    }else {
-                        temp.gantry[1] = -buildObj.positionGap[4].second;
+                    left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap, left_arm);
+                    pickstatus = gantry.pickPart(product.p);
+                    gantry.escape(product.p.aisle_num, buildObj.positionGap, buildObj.gapNum, 1, gantryX, gantryY,
+                                  obstObj, currGap, left_arm, pickstatus);
+                    if(pickstatus && gantryX != 0){
+                        gantry.escape2conveyor(product.p.aisle_num, gantryX, gantryY, currGap, buildObj.positionGap, obstObj);
                     }
-                    temp.gantry[0] = gantryX;
-                    temp.left_arm = { 0, 0, 0, 0, 0, 0};
-                    temp.right_arm = { PI, 0, 0, 0, 0, 0};
-                    gantry.goToPresetLocation(temp);
-                    gantryX = temp.gantry[0];
-                    gantryY = -temp.gantry[1];
                 }
-
+            }else{
+                left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap, left_arm);
+                pickstatus = gantry.pickPart(product.p);
             }
-            gantry.move2start(gantryX, -gantryY);
-            
-            // while(! ready2pick){
-            //     // trigger to pick part
-            //     ready2pick = obstObj.moveBot(product.p.pose, -3, product.p.aisle_num, gantryX, currGap);
-            // }
-            // escape function needed
-            
+            gantry.move2start(gantryX, -gantryY);            
         }
         
         // product.p.pose = product.pose;
         if (product.pose.orientation.x == 1 || product.pose.orientation.x == -1) {
             gantry.flipPart();
             arm = "right";
-            product.p.rpy_init[0] = 0;
-            tf2::Quaternion q_part(product.p.rpy_init[2], product.p.rpy_init[1], product.p.rpy_init[0]);
-            product.p.pose.orientation.x = q_part.x();
-            product.p.pose.orientation.y = q_part.y();
-            product.p.pose.orientation.z = q_part.z();
-            product.p.pose.orientation.w = q_part.w();
+            product.rpy_final = quaternionToEuler(product.pose);
+            product.rpy_final[0] = 0;
+            tf2::Quaternion q_deliver(product.rpy_final[2], product.rpy_final[1], product.rpy_final[0]);
+            product.pose.orientation.x = q_deliver.x();
+            product.pose.orientation.y = q_deliver.y();
+            product.pose.orientation.z = q_deliver.z();
+            product.pose.orientation.w = q_deliver.w();
+
+            tf2::Quaternion q_pi( 0, 0, 1, 0);
+            tf2::Quaternion q_init_part(product.p.pose.orientation.x,
+                                product.p.pose.orientation.y,
+                                product.p.pose.orientation.z,
+                                product.p.pose.orientation.w);
+            tf2::Quaternion q_rslt = q_init_part*q_pi;
+
+            product.p.pose.orientation.x = q_rslt.x();
+            product.p.pose.orientation.y = q_rslt.y();
+            product.p.pose.orientation.z = q_rslt.z();
+            product.p.pose.orientation.w = q_rslt.w();
         }
 
+        product.p.obstacle_free = true; //to try pick pick again and again if faulty
         bool status = true;
         status = gantry.placePart(product, product.agv_id, arm);
         if(!status){
             buildObj.pushList(curr_prod);
         }else{
+            buildObj.ship_build_count[curr_prod->ship_num]++;
+            if(buildObj.ship_build_count[curr_prod->ship_num] == buildObj.num_prod_in_ship[curr_prod->ship_num -1 ]){
+                gantry.goToPresetLocation(gantry.start_);
+                comp.shipAgv(curr_agv, curr_shipment_type);
+            }
             delete(curr_prod);
         }
     }

@@ -11,9 +11,10 @@ std::unordered_map<std::string, double> model_height = {
         {"gear_part_red", 0.012},
         {"gear_part_green", 0.012},
         {"gear_part_blue", 0.012},
-        {"gasket_part_red", 0.02},
-        {"gasket_part_green", 0.02},
-        {"gasket_part_blue", 0.02},
+        {"gasket_part_red", 0.04},
+        // {"gasket_part_green", 0.02},
+        {"gasket_part_green", 0.04},
+        {"gasket_part_blue", 0.04},
         {"disk_part_red", 0.023},
         {"disk_part_green", 0.023},
         {"disk_part_blue", 0.023}
