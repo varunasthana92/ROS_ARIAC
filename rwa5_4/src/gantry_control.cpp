@@ -12,7 +12,7 @@
 // Quality control sensor 1 callback
 void GantryControl::qualityCallback2(const nist_gear::LogicalCameraImage& msg) {
     if (msg.models.size() != 0) {
-        ROS_INFO_STREAM("Detected faulty part on agv2 : " << (msg.models[0]).type);
+        // ROS_INFO_STREAM("Detected faulty part on agv2 : " << (msg.models[0]).type);
         is_part_faulty_agv2 = true;
         geometry_msgs::Pose model_pose = (msg.models[msg.models.size()-1]).pose;
         geometry_msgs::TransformStamped transformStamped;
@@ -32,7 +32,7 @@ void GantryControl::qualityCallback2(const nist_gear::LogicalCameraImage& msg) {
 
 void GantryControl::qualityCallback1(const nist_gear::LogicalCameraImage& msg) {
     if (msg.models.size() != 0) {
-        ROS_INFO_STREAM("Detected faulty part n agv1 : " << (msg.models[0]).type);
+        // ROS_INFO_STREAM("Detected faulty part n agv1 : " << (msg.models[0]).type);
         is_part_faulty_agv1 = true;
         geometry_msgs::Pose model_pose = (msg.models[msg.models.size()-1]).pose;
         geometry_msgs::TransformStamped transformStamped;
@@ -688,20 +688,25 @@ bool GantryControl::placePart(Product &product,
     }
 
     ros::Duration(0.5).sleep();
-    if (*is_part_faulty) {
-        ROS_INFO_STREAM("-----------------Part faulty inside: " << *is_part_faulty);
-        part.pose = *faulty_part_pose;
-        agv_in_use.gantry[0] = target_pose_in_tray.position.x + offset_x;
-        agv_in_use.gantry[1] = -target_pose_in_tray.position.y - offset_y;
-        goToPresetLocation(agv_in_use);
-        // part.pose.position.z = target_z_org;
-        pickPart(part);
-        goToPresetLocation(agv_in_use);
-        goToPresetLocation(agv_in_use_drop);
-        deactivateGripper("left_arm");
-        *is_part_faulty = false;
-        return false;
+    if(part.type != "piston_rod_part_red" && part.type != "piston_rod_part_green" && part.type != "piston_rod_part_blue"){
+        if (*is_part_faulty) {
+            ROS_INFO_STREAM("-----------------Part faulty inside: " << *is_part_faulty);
+            part.pose = *faulty_part_pose;
+            agv_in_use.gantry[0] = target_pose_in_tray.position.x + offset_x;
+            agv_in_use.gantry[1] = -target_pose_in_tray.position.y - offset_y;
+            goToPresetLocation(agv_in_use);
+            // part.pose.position.z = target_z_org;
+            pickPart(part);
+            goToPresetLocation(agv_in_use);
+            goToPresetLocation(agv_in_use_drop);
+            deactivateGripper("left_arm");
+            *is_part_faulty = false;
+            return false;
+        }
+    }else{
+        *is_part_faulty =  false;
     }
+    
     ROS_INFO_STREAM("-----------------Matching Pose for : " << part.type);
     // ros::Duration(1).sleep();
     bool is_part_placed_correct = poseMatches(target_pose_in_tray, *part_placed_pose);
@@ -1317,8 +1322,6 @@ void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
     left_arm_group_.setPoseTarget(pre_pickup_pose);
     left_arm_group_.move();  // Move to the pre pick up location
     left_arm_group_.setPoseTarget(pickup_pose);
-
-
 
     bool missed = false;
     while (!left_gripper_status.attached) {
