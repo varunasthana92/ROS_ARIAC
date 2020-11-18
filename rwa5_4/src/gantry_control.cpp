@@ -1287,14 +1287,112 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
     }
 }
 
+void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPartsObj){
+    geometry_msgs::Pose estimated_conveyor_pose = product.estimated_conveyor_pose;
+    conveyor_up_.gantry = {estimated_conveyor_pose.position.x, -(estimated_conveyor_pose.position.y - 0.4) , 1.57};
+    goToPresetLocation(conveyor_up_);
+
+    activateGripper("left_arm");
+    auto left_gripper_status = getGripperState("left_arm");
+    
+    while(!left_gripper_status.enabled){
+        activateGripper("left_arm");
+        left_gripper_status = getGripperState("left_arm");
+    }
+
+    geometry_msgs::Pose pickup_pose, pre_pickup_pose;
+    auto currentPose = left_arm_group_.getCurrentPose().pose;
+
+    pickup_pose.position.x = estimated_conveyor_pose.position.x;
+    pickup_pose.position.y = estimated_conveyor_pose.position.y;
+    pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height[product.type] + GRIPPER_HEIGHT - EPSILON;
+    pickup_pose.orientation.x = currentPose.orientation.x;
+    pickup_pose.orientation.y = currentPose.orientation.y;
+    pickup_pose.orientation.z = currentPose.orientation.z;
+    pickup_pose.orientation.w = currentPose.orientation.w;
+
+    pre_pickup_pose = pickup_pose;
+    pre_pickup_pose.position.z += 0.02;
+
+    left_arm_group_.setPoseTarget(pre_pickup_pose);
+    left_arm_group_.move();  // Move to the pre pick up location
+    left_arm_group_.setPoseTarget(pickup_pose);
+
+
+
+    bool missed = false;
+    while (!left_gripper_status.attached) {
+        ROS_WARN_STREAM_THROTTLE(10, "Waiting for part to be picked");
+        if(conveyerPartsObj.checkForPick()) {
+            // ROS_DEBUG_STREAM("Trying to pick it up");
+            left_arm_group_.move();
+            left_arm_group_.setPoseTarget(pre_pickup_pose);
+            left_arm_group_.move();
+            // break;
+            left_gripper_status = getGripperState("left_arm");
+            if(!left_gripper_status.attached) {
+                missed = true;
+                bool status = false;
+                do{
+                    status = conveyerPartsObj.giveClosestPart(product.type, product.estimated_conveyor_pose);
+                }while(status != true); 
+            }
+        }
+
+        if(missed == true){
+            ROS_DEBUG_STREAM_THROTTLE(10, "----MISSED----");
+            estimated_conveyor_pose = product.estimated_conveyor_pose;
+            conveyor_up_.gantry = {estimated_conveyor_pose.position.x, -(estimated_conveyor_pose.position.y - 0.4) , 1.57};
+            goToPresetLocation(conveyor_up_);
+
+            pickup_pose.position.x = estimated_conveyor_pose.position.x;
+            pickup_pose.position.y = estimated_conveyor_pose.position.y;
+            pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height[product.type] + GRIPPER_HEIGHT - EPSILON;
+            pickup_pose.orientation.x = currentPose.orientation.x;
+            pickup_pose.orientation.y = currentPose.orientation.y;
+            pickup_pose.orientation.z = currentPose.orientation.z;
+            pickup_pose.orientation.w = currentPose.orientation.w;
+
+            pre_pickup_pose = pickup_pose;
+            pre_pickup_pose.position.z += 0.02;
+
+            left_arm_group_.setPoseTarget(pre_pickup_pose);
+            left_arm_group_.move();  // Move to the pre pick up location
+            left_arm_group_.setPoseTarget(pickup_pose);
+            missed = false;
+        }
+        
+        left_gripper_status = getGripperState("left_arm");
+    }
+
+
+    left_arm_group_.setPoseTarget(currentPose);
+    left_arm_group_.move();
+
+
+    tf2::Quaternion q_conveyor( 0, 0, -0.7068252, 0.7073883);
+    tf2::Quaternion q_init_part_temp(estimated_conveyor_pose.orientation.x,
+                                estimated_conveyor_pose.orientation.y,
+                                estimated_conveyor_pose.orientation.z,
+                                estimated_conveyor_pose.orientation.w);
+
+    tf2::Quaternion q_res = q_init_part_temp*q_conveyor;
+    product.p.pose.orientation.x = q_res.x();
+    product.p.pose.orientation.y = q_res.y();
+    product.p.pose.orientation.z = q_res.z();
+    product.p.pose.orientation.w = q_res.w();
+    return;
+}
+
+/*
 void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPartsObj) {
     ROS_INFO_STREAM("Going to pick " << product.type << " from conveyor ...");
     geometry_msgs::Pose estimated_conveyor_pose = product.estimated_conveyor_pose;
 
-    conveyor_up_.gantry = {estimated_conveyor_pose.position.x, -estimated_conveyor_pose.position.y+0.2, 1.57};
+    conveyor_up_.gantry = {estimated_conveyor_pose.position.x, -(estimated_conveyor_pose.position.y - 0.4) , 1.57};
     goToPresetLocation(conveyor_up_);
 
-    ROS_INFO_STREAM("Waiting to pick up ... ");
+    // ROS_INFO_STREAM("Waiting to pick up ... ");
     activateGripper("left_arm");
     auto left_gripper_status = getGripperState("left_arm");
     geometry_msgs::Pose pickup_pose, pre_pickup_pose;
@@ -1304,11 +1402,10 @@ void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
     	left_gripper_status = getGripperState("left_arm");
     }
 
+    auto currentPose = left_arm_group_.getCurrentPose().pose;
 	pickup_pose.position.x = estimated_conveyor_pose.position.x;
 	pickup_pose.position.y = estimated_conveyor_pose.position.y;
-	pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height.at(product.type) + GRIPPER_HEIGHT - EPSILON;
-
-	auto currentPose = left_arm_group_.getCurrentPose().pose;
+	pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height[product.type] + GRIPPER_HEIGHT - EPSILON;
 	pickup_pose.orientation.x = currentPose.orientation.x;
 	pickup_pose.orientation.y = currentPose.orientation.y;
 	pickup_pose.orientation.z = currentPose.orientation.z;
@@ -1324,27 +1421,26 @@ void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
     left_gripper_status = getGripperState("left_arm");
 
     while (!left_gripper_status.attached) {
-        if(conveyerPartsObj.checkForPick()) {
-            ROS_DEBUG_STREAM("Trying to pick it up");
-            left_arm_group_.move();
-            break;
-        }
-    }
-    
-    while (!left_gripper_status.attached) {
         ROS_DEBUG_STREAM_THROTTLE(10, "Waiting for part to be picked");
+        if(conveyerPartsObj.checkForPick()) {
+            // ROS_DEBUG_STREAM("Trying to pick it up");
+            left_arm_group_.move();
+            left_arm_group_.setPoseTarget(pre_pickup_pose);
+            left_arm_group_.move();
+            // break;
+        }
         left_gripper_status = getGripperState("left_arm");
     }
 
 	ROS_INFO_STREAM("[Gripper] = object attached");
 	//--Move arm to previous position
-	left_arm_group_.setPoseTarget(pre_pickup_pose);
-    left_arm_group_.move();
+	// left_arm_group_.setPoseTarget(pre_pickup_pose);
+ //    left_arm_group_.move();
     left_arm_group_.setPoseTarget(currentPose);
     left_arm_group_.move();
 
 
-    tf2::Quaternion q_conveyor( 0, 0, -0.6011984, 0.7990998);
+    tf2::Quaternion q_conveyor( 0, 0, -0.7068252, 0.7073883);
     tf2::Quaternion q_init_part_temp(estimated_conveyor_pose.orientation.x,
                                 estimated_conveyor_pose.orientation.y,
                                 estimated_conveyor_pose.orientation.z,
@@ -1357,6 +1453,7 @@ void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
     product.p.pose.orientation.w = q_res.w();
     return;
 }
+*/
 
 void GantryControl::goToPresetLocation(PresetLocation location) {
     //--gantry
