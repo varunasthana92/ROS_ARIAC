@@ -99,6 +99,7 @@ class GantryControl {
     agv1 agv1_, agv1_drop, agv1_right_;
     agv2 agv2_, agv2_drop, agv2_right_;
     conveyor_up conveyor_up_;
+    int quality_call_count =0;
     struct agvInfo agv1_allParts, agv2_allParts;
  
     static const int num_preLoc = 20;

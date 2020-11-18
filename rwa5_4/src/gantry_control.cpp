@@ -11,6 +11,7 @@
 
 // Quality control sensor 1 callback
 void GantryControl::qualityCallback2(const nist_gear::LogicalCameraImage& msg) {
+    quality_call_count = (quality_call_count+1) % 10000;
     if (msg.models.size() != 0) {
         // ROS_INFO_STREAM("Detected faulty part on agv2 : " << (msg.models[0]).type);
         is_part_faulty_agv2 = true;
@@ -688,6 +689,10 @@ bool GantryControl::placePart(Product &product,
     }
 
     ros::Duration(0.5).sleep();
+    int temp_call_check = quality_call_count;
+    while(temp_call_check == quality_call_count){
+        ROS_INFO_STREAM("-#########  BLACK OUT  ##########" << quality_call_count);
+    }
     if(part.type != "piston_rod_part_red" && part.type != "piston_rod_part_green" && part.type != "piston_rod_part_blue"){
         if (*is_part_faulty) {
             ROS_INFO_STREAM("-----------------Part faulty inside: " << *is_part_faulty);
