@@ -93,6 +93,7 @@ class GantryControl {
     nist_gear::VacuumGripperState getGripperState(std::string arm_name);
     geometry_msgs::Pose getTargetWorldPose(geometry_msgs::Pose target, std::string agv, std::string arm);
     //--preset locations;
+    int quality_call_count =0;
     start start_;
     bin3 bin3_;
     flipped_pulley flipped_pulley_, flipped_pulley_preset;
