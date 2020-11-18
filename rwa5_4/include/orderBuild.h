@@ -34,7 +34,7 @@ public:
 class BuildClass{
 private:
     std::string pick;
-    int num_shipment = -1;
+    int num_shipment = 0;
     int curr_build_shipment_num;
     Part *conveyor_Part = NULL;
     allStaticParts non_moving_part_data;

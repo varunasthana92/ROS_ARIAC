@@ -81,6 +81,8 @@ class GantryControl {
     bool escape(int &aisle_num, std::vector< std::pair<float , float> > &shelfGaps, const std::vector<int> &gapNum,
                 bool actPart, float &gantryX, float &gantryY, ObstaclesInAisle &obstObj, int &newGap,
                 std::vector<double> &left_arm, bool pickStatus);
+    void escape2conveyor(int &aisle_num, float &gantryX, float &gantryY, int currGap,
+                        const std::vector< std::pair<float , float> > &shelfGaps, ObstaclesInAisle & obstObj);
 //    bool conveyor();
 
     geometry_msgs::Pose getRobotPose(){

@@ -38,6 +38,7 @@ void BuildClass::setList(Product &product_received, int num_shipment, std::strin
     ROS_DEBUG_STREAM("Setting part  " << product_received.type);
     if(queryPart(product_received)){
         if(st_order){
+            ROS_INFO_STREAM("Setting in static list part  " << product_received.type);
             struct all_Order *temp = new(all_Order);
             temp->prod = st_order->prod;
             temp->ship_num = st_order->ship_num;
@@ -61,8 +62,9 @@ void BuildClass::setList(Product &product_received, int num_shipment, std::strin
         }else{
             ship_top_prod_static[num_shipment -1] = st_order;
         }
-        ROS_INFO_STREAM("Setting in static list part  " << product_received.type);
+        
     }else{
+        ROS_INFO_STREAM("Setting in moving list part  " << product_received.type);
         product_received.mv_prod = true;
         if(mv_order){
             struct all_Order *temp = new(all_Order);
@@ -90,7 +92,6 @@ void BuildClass::setList(Product &product_received, int num_shipment, std::strin
         }else{
             ship_top_prod_moving[num_shipment -1] = mv_order;
         }
-        ROS_INFO_STREAM("Setting in moving list part  " << product_received.type);
     }
     return;    
 }
@@ -237,7 +238,6 @@ void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {
             // product_recieved.p.pose = prod.pose;
             product_recieved.shipId = num_shipment;
             shipment_recieved.products.emplace_back(product_recieved);
-            ROS_INFO_STREAM("listened to part : " << prod.type);
             setList(product_recieved, num_shipment, ship.shipment_type);
         }
         order_recieved.shipments.push_back(shipment_recieved);

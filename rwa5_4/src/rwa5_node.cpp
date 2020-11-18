@@ -140,11 +140,11 @@ int main(int argc, char ** argv) {
             bool pickstatus = false;
             bool ready2pick = obstObj.isAisleClear(product.p.aisle_num);
             product.p.obstacle_free = ready2pick;
+            ROS_WARN_STREAM("Main() Obstacle Free? : "<< ready2pick);
             if(! ready2pick){
-                ROS_DEBUG_STREAM("Aisle number for part " << product.p.aisle_num);
                 gantry.move2closestGap(product.p, buildObj.positionGap, buildObj.gapNum, 1, gantryX,
                                                         gantryY, obstObj, currGap);
-                ROS_WARN_STREAM("Curr Gap in main: " << currGap);
+                ROS_WARN_STREAM("Main() Curr Aisle: "<< product.p.aisle_num <<" Gap: " << currGap);
                 while(!pickstatus){
                     // for aisles with obstacles: trigger to pick part
                     do{
@@ -155,53 +155,13 @@ int main(int argc, char ** argv) {
                     pickstatus = gantry.pickPart(product.p);
                     gantry.escape(product.p.aisle_num, buildObj.positionGap, buildObj.gapNum, 1, gantryX, gantryY,
                                   obstObj, currGap, left_arm, pickstatus);
+                    if(pickstatus && gantryX != 0){
+                        gantry.escape2conveyor(product.p.aisle_num, gantryX, gantryY, currGap, buildObj.positionGap, obstObj);
+                    }
                 }
             }else{
                 left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap);
                 pickstatus = gantry.pickPart(product.p);
-            }
-            product.p.obstacle_free = true;
-            //escape plan
-            ready2pick = obstObj.isAisleClear(product.p.aisle_num);
-            if(! ready2pick){
-                gantry.escape(product.p.aisle_num, buildObj.positionGap, buildObj.gapNum, 1, gantryX, gantryY,
-                            obstObj, currGap, left_arm, pickstatus);
-
-                ready2pick = obstObj.isAisleClear(product.p.aisle_num);
-                PresetLocation temp = gantry.start_;
-                if(gantryX != 0 && ready2pick){
-                    if(product.p.aisle_num == 1){
-                        temp.gantry[1] = -buildObj.positionGap[0].second;
-                    }else {
-                        temp.gantry[1] = -buildObj.positionGap[4].second;
-                    }
-                    temp.gantry[0] = gantryX;
-                    temp.left_arm = { 0, 0, 0, 0, 0, 0};
-                    temp.right_arm = { PI, 0, 0, 0, 0, 0};
-                    gantry.goToPresetLocation(temp);
-                    gantryX = temp.gantry[0];
-                    gantryY = -temp.gantry[1];
-
-                }else if(gantryX != 0 && !ready2pick){
-                    bool move = false;
-                    do{
-                        move = obstObj.moveBot(0, -3, product.p.aisle_num, gantryX, currGap);
-
-                    }while(!move);
-
-                    if(product.p.aisle_num == 1){
-                        temp.gantry[1] = -buildObj.positionGap[0].second;
-                    }else {
-                        temp.gantry[1] = -buildObj.positionGap[4].second;
-                    }
-                    temp.gantry[0] = gantryX;
-                    temp.left_arm = { 0, 0, 0, 0, 0, 0};
-                    temp.right_arm = { PI, 0, 0, 0, 0, 0};
-                    gantry.goToPresetLocation(temp);
-                    gantryX = temp.gantry[0];
-                    gantryY = -temp.gantry[1];
-                }
-
             }
             gantry.move2start(gantryX, -gantryY);            
         }
@@ -218,13 +178,14 @@ int main(int argc, char ** argv) {
             product.p.pose.orientation.w = q_part.w();
         }
 
+        product.p.obstacle_free = true; //to try pick pick again and again if faulty
         bool status = true;
         status = gantry.placePart(product, product.agv_id, arm);
         if(!status){
             buildObj.pushList(curr_prod);
         }else{
             buildObj.ship_build_count[curr_prod->ship_num]++;
-            if(buildObj.ship_build_count[curr_prod->ship_num] == buildObj.num_prod_in_ship[curr_prod->ship_num]){
+            if(buildObj.ship_build_count[curr_prod->ship_num] == buildObj.num_prod_in_ship[curr_prod->ship_num -1 ]){
                 gantry.goToPresetLocation(gantry.start_);
                 comp.shipAgv(curr_agv, curr_shipment_type);
             }
