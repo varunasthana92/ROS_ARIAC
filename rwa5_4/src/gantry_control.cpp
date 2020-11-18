@@ -12,10 +12,12 @@
 // Quality control sensor 1 callback
 void GantryControl::qualityCallback2(const nist_gear::LogicalCameraImage& msg) {
     quality_call_count = (quality_call_count+1)%10000;
-    if (msg.models.size() != 0) {
-        // ROS_INFO_STREAM("Detected faulty part on agv2 : " << (msg.models[0]).type);
+    for(auto curr_model : msg.models){
+        // ROS_INFO_STREAM("Detected faulty part on agv2 : " << curr_model.type);
+        if(curr_model.type == "piston_rod_part_red" || curr_model.type == "piston_rod_part_green" || curr_model.type == "piston_rod_part_blue")
+            continue;
         is_part_faulty_agv2 = true;
-        geometry_msgs::Pose model_pose = (msg.models[msg.models.size()-1]).pose;
+        geometry_msgs::Pose model_pose = curr_model.pose;
         geometry_msgs::TransformStamped transformStamped;
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
@@ -32,10 +34,12 @@ void GantryControl::qualityCallback2(const nist_gear::LogicalCameraImage& msg) {
 }
 
 void GantryControl::qualityCallback1(const nist_gear::LogicalCameraImage& msg) {
-    if (msg.models.size() != 0) {
-        // ROS_INFO_STREAM("Detected faulty part n agv1 : " << (msg.models[0]).type);
+    for(auto curr_model : msg.models){
+        // ROS_INFO_STREAM("Detected faulty part on agv1 : " << curr_model.type);
+        if(curr_model.type == "piston_rod_part_red" || curr_model.type == "piston_rod_part_green" || curr_model.type == "piston_rod_part_blue")
+            continue;
         is_part_faulty_agv1 = true;
-        geometry_msgs::Pose model_pose = (msg.models[msg.models.size()-1]).pose;
+        geometry_msgs::Pose model_pose = curr_model.pose;
         geometry_msgs::TransformStamped transformStamped;
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
