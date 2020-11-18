@@ -136,7 +136,7 @@ int main(int argc, char ** argv) {
             float gantryX = 0;
             float gantryY = 0;
             int currGap = -1;
-            std::vector<double> left_arm;
+            std::vector<double> left_arm = { 0, 0, 0, 0, 0, 0};
             bool pickstatus = false;
             bool ready2pick = obstObj.isAisleClear(product.p.aisle_num);
             product.p.obstacle_free = ready2pick;
@@ -151,7 +151,7 @@ int main(int argc, char ** argv) {
                         ready2pick = obstObj.moveBot(product.p.pose.position.x, -3, product.p.aisle_num, gantryX, currGap);
                     }while(! ready2pick);
 
-                    left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap);
+                    left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap, left_arm);
                     pickstatus = gantry.pickPart(product.p);
                     gantry.escape(product.p.aisle_num, buildObj.positionGap, buildObj.gapNum, 1, gantryX, gantryY,
                                   obstObj, currGap, left_arm, pickstatus);
@@ -160,7 +160,7 @@ int main(int argc, char ** argv) {
                     }
                 }
             }else{
-                left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap);
+                left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap, left_arm);
                 pickstatus = gantry.pickPart(product.p);
             }
             gantry.move2start(gantryX, -gantryY);            
@@ -170,12 +170,25 @@ int main(int argc, char ** argv) {
         if (product.pose.orientation.x == 1 || product.pose.orientation.x == -1) {
             gantry.flipPart();
             arm = "right";
-            product.p.rpy_init[0] = 0;
-            tf2::Quaternion q_part(product.p.rpy_init[2], product.p.rpy_init[1], product.p.rpy_init[0]);
-            product.p.pose.orientation.x = q_part.x();
-            product.p.pose.orientation.y = q_part.y();
-            product.p.pose.orientation.z = q_part.z();
-            product.p.pose.orientation.w = q_part.w();
+            product.rpy_final = quaternionToEuler(product.pose);
+            product.rpy_final[0] = 0;
+            tf2::Quaternion q_deliver(product.rpy_final[2], product.rpy_final[1], product.rpy_final[0]);
+            product.pose.orientation.x = q_deliver.x();
+            product.pose.orientation.y = q_deliver.y();
+            product.pose.orientation.z = q_deliver.z();
+            product.pose.orientation.w = q_deliver.w();
+
+            tf2::Quaternion q_pi( 0, 0, 1, 0);
+            tf2::Quaternion q_init_part(product.p.pose.orientation.x,
+                                product.p.pose.orientation.y,
+                                product.p.pose.orientation.z,
+                                product.p.pose.orientation.w);
+            tf2::Quaternion q_rslt = q_init_part*q_pi;
+
+            product.p.pose.orientation.x = q_rslt.x();
+            product.p.pose.orientation.y = q_rslt.y();
+            product.p.pose.orientation.z = q_rslt.z();
+            product.p.pose.orientation.w = q_rslt.w();
         }
 
         product.p.obstacle_free = true; //to try pick pick again and again if faulty

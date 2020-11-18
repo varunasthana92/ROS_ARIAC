@@ -81,7 +81,7 @@ sensor_blackout:
 
 faulty_products:
   - pulley_part_blue_3
-  # - piston_rod_part_red_2
-  # - piston_rod_part_red_6
+  - piston_rod_part_red_2
+  - piston_rod_part_red_6
   - gasket_part_green_4
 #time_limit: -1

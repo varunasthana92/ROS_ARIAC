@@ -12,7 +12,7 @@
 // Quality control sensor 1 callback
 void GantryControl::qualityCallback2(const nist_gear::LogicalCameraImage& msg) {
     if (msg.models.size() != 0) {
-        // ROS_INFO_STREAM("Detected faulty part on agv2 : " << (msg.models[0]).type);
+        ROS_INFO_STREAM("Detected faulty part on agv2 : " << (msg.models[0]).type);
         is_part_faulty_agv2 = true;
         geometry_msgs::Pose model_pose = (msg.models[msg.models.size()-1]).pose;
         geometry_msgs::TransformStamped transformStamped;
@@ -32,7 +32,7 @@ void GantryControl::qualityCallback2(const nist_gear::LogicalCameraImage& msg) {
 
 void GantryControl::qualityCallback1(const nist_gear::LogicalCameraImage& msg) {
     if (msg.models.size() != 0) {
-        // ROS_INFO_STREAM("Detected faulty part n agv1 : " << (msg.models[0]).type);
+        ROS_INFO_STREAM("Detected faulty part n agv1 : " << (msg.models[0]).type);
         is_part_faulty_agv1 = true;
         geometry_msgs::Pose model_pose = (msg.models[msg.models.size()-1]).pose;
         geometry_msgs::TransformStamped transformStamped;
@@ -438,7 +438,7 @@ bool GantryControl::pickPart(part part){
         ROS_INFO_STREAM("Part name is not present");
         return false;
     }
-    ROS_INFO_STREAM("Z in Pick"<< part.pose.position.z);
+    ROS_INFO_STREAM("Part Z in Pick "<< part.pose.position.z);
     part.pose.position.z = part.pose.position.z + model_height[part.type] + GRIPPER_HEIGHT - EPSILON;
     part.pose.orientation.x = currentPose.orientation.x;
     part.pose.orientation.y = currentPose.orientation.y;
@@ -467,6 +467,7 @@ bool GantryControl::pickPart(part part){
         ROS_INFO_STREAM("[Gripper] = enabled");
         //--Move arm to part
         if(*is_part_faulty){
+            part.pose.position.z = 0.73 + model_height[part.type];
             ROS_WARN_STREAM("Trying faulty pick");
             part.pose.position.z += 0.2;
             left_arm_group_.setPoseTarget(part.pose);
@@ -480,7 +481,9 @@ bool GantryControl::pickPart(part part){
         if (state.attached) {
             ROS_INFO_STREAM("[Gripper] = object attached");
             //--Move arm to previous position
-            part.pose.position.y = currentPose.position.y;
+            if (*is_part_faulty = false){
+                part.pose.position.y = currentPose.position.y;
+            }
             part.pose.position.z += 0.2;
             left_arm_group_.setPoseTarget(part.pose);
             left_arm_group_.move();
@@ -494,6 +497,7 @@ bool GantryControl::pickPart(part part){
             }
             if (*is_part_faulty){
                 part.pose = *faulty_part_pose;
+                part.pose.position.z = 0.73 + model_height[part.type];
                 part.pose.position.z = part.pose.position.z + model_height[part.type] + GRIPPER_HEIGHT - EPSILON;
                 ROS_INFO_STREAM("Z in Pick faulty trial "<< part.pose.position.z);
                 // part.pose.position.z = part.pose.position.z + model_height.at(part.type) + GRIPPER_HEIGHT - EPSILON - 0.0516;
@@ -567,7 +571,7 @@ bool GantryControl::placePart(Product &product,
     
     Part part = product.p;
     auto target_pose_in_tray = getTargetWorldPose(product.pose, agv, arm);
-
+    // target_pose_in_tray += model_height[part.type];
     product.rpy_final = quaternionToEuler(target_pose_in_tray);
 
     tf2::Quaternion q_pitch( 0, 0.7073883, 0, 0.7073883);
@@ -596,7 +600,7 @@ bool GantryControl::placePart(Product &product,
 //    ros::Duration(3.0).sleep();
     auto left_state = getGripperState("left_arm");
     auto right_state = getGripperState("right_arm");
-    float target_z_org = target_pose_in_tray.position.z + model_height[part.type]/2;
+    float target_z_org = target_pose_in_tray.position.z + model_height[part.type];
     target_pose_in_tray.position.z += (ABOVE_TARGET + 1.5*model_height[part.type]);
 
     // target_pose_in_tray.position.z = target_pose_in_tray.position.z + model_height.at(part.type) + GRIPPER_HEIGHT + 0.08;
@@ -692,15 +696,19 @@ bool GantryControl::placePart(Product &product,
         goToPresetLocation(agv_in_use);
         // part.pose.position.z = target_z_org;
         pickPart(part);
-        *is_part_faulty = false;
         goToPresetLocation(agv_in_use);
         goToPresetLocation(agv_in_use_drop);
         deactivateGripper("left_arm");
+        *is_part_faulty = false;
         return false;
     }
     ROS_INFO_STREAM("-----------------Matching Pose for : " << part.type);
     // ros::Duration(1).sleep();
     bool is_part_placed_correct = poseMatches(target_pose_in_tray, *part_placed_pose);
+
+    if(part.type == "piston_rod_part_red" || part.type == "piston_rod_part_green" || part.type == "piston_rod_part_blue")
+        is_part_placed_correct = true;
+
     if(is_part_placed_correct){
         product.agv_world_pose = *part_placed_pose;
         product.p.pose = *part_placed_pose;
@@ -728,6 +736,7 @@ bool GantryControl::placePart(Product &product,
             part.pose.orientation.z = q_res.z();
             part.pose.orientation.w = q_res.w();
         }
+        *is_part_faulty = true;
         product.p.pose = part.pose;
         // ROS_INFO_STREAM("Incorrect part pose: " << part.pose.position.x << std::endl
         //                                         << part.pose.position.y << std::endl
@@ -739,8 +748,9 @@ bool GantryControl::placePart(Product &product,
 //        goToPresetLocation(agv_in_use_drop);
         agv_in_use.gantry[0] = target_pose_in_tray.position.x + offset_x;
         goToPresetLocation(agv_in_use);
-        part.pose.position.z = target_z_org;
+        // part.pose.position.z = target_z_org;
         pickPart(part);
+        *is_part_faulty = false;
         // part.pose = original_part_pose;
         // ROS_INFO_STREAM("Original part pose: " << part.pose.position.x << std::endl
         //                                         << part.pose.orientation.x << std::endl
@@ -983,7 +993,7 @@ bool GantryControl::move2start ( float x, float y) {
     }
 }
 
-std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX, float &gantryY , int currGap) {
+std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX, float &gantryY , int currGap, std::vector<double> left_arm) {
 
     float offset_final_y = 1.1;
     float offset_y = offset_final_y + 0.2;
@@ -996,7 +1006,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
 
     move_trg = move;
     if(currGap != -1){
-        move.left_arm = { 0, 0, 0, 0, 0, 0};
+        move.left_arm = left_arm;
         move.right_arm = { PI, 0, 0, 0, 0, 0};
     }
 
@@ -1334,19 +1344,17 @@ void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
     left_arm_group_.move();
 
 
-    tf2::Quaternion q_robot( 0, 0, 0.7068252, 0.7073883);
+    tf2::Quaternion q_conveyor( 0, 0, -0.6011984, 0.7990998);
+    tf2::Quaternion q_init_part_temp(estimated_conveyor_pose.orientation.x,
+                                estimated_conveyor_pose.orientation.y,
+                                estimated_conveyor_pose.orientation.z,
+                                estimated_conveyor_pose.orientation.w);
 
-    tf2::Quaternion q_init_part(product.estimated_conveyor_pose.orientation.x,
-                                product.estimated_conveyor_pose.orientation.y,
-                                product.estimated_conveyor_pose.orientation.z,
-                                product.estimated_conveyor_pose.orientation.w);
-
-    tf2::Quaternion q_rslt = q_init_part*q_robot.inverse();
-    product.p.pose = product.estimated_conveyor_pose;
-    product.p.pose.orientation.x = q_rslt.x();
-    product.p.pose.orientation.y = q_rslt.y();
-    product.p.pose.orientation.z = q_rslt.z();
-    product.p.pose.orientation.w = q_rslt.w();
+    tf2::Quaternion q_res = q_init_part_temp*q_conveyor;
+    product.p.pose.orientation.x = q_res.x();
+    product.p.pose.orientation.y = q_res.y();
+    product.p.pose.orientation.z = q_res.z();
+    product.p.pose.orientation.w = q_res.w();
     return;
 }
 
@@ -1423,6 +1431,8 @@ int GantryControl::getNearestGap(float destX, int aisle_num, bool actPart, Obsta
 bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float> > &shelfGaps, const std::vector<int> &gapNum,
                             bool actPart, float &gantryX, float &gantryY, ObstaclesInAisle &obstObj, int &newGap,
                             std::vector<double> &left_arm, bool pickStatus){
+    
+    int org_aisle_num = aisle_num;
     shelfGaps[0].first = 0;
     shelfGaps[4].first = 0;
     shelfGaps[0].second = 6;
@@ -1466,6 +1476,7 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
         newGap = gapNum[nearestGap];
         aisle_num = nearestGap;
         if(pickStatus == false){
+            aisle_num = org_aisle_num;
             return false;
         }
     }
@@ -1491,6 +1502,10 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
         // temp.left_arm = { 0, 0, 0, 0, 0, 0};
         temp.right_arm = { PI, 0, 0, 0, 0, 0};
         goToPresetLocation(temp);
+
+        temp.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+        temp.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+        goToPresetLocation(temp);
         
         temp.gantry[0] = 0;
         temp.gantry[1] = -(shelfGaps[aisle_num-1].second + shelfGaps[aisle_num].second)/2;
@@ -1511,6 +1526,10 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
         temp.gantry[1] = -(shelfGaps[aisle_num].second + shelfGaps[aisle_num + 1].second)/2;
         // temp.left_arm = { 0, 0, 0, 0, 0, 0};
         temp.right_arm = { PI, 0, 0, 0, 0, 0};
+        goToPresetLocation(temp);
+
+        temp.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+        temp.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
         goToPresetLocation(temp);
         
         temp.gantry[0] = 0;
