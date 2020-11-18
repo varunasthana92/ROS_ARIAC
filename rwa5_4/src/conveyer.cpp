@@ -48,7 +48,7 @@ void ConveyerParts::conveyerLogicalCameraCallback(const nist_gear::LogicalCamera
 	}
 	// First pose and time detection
 	if(msg.models.size()==1 && current_detection.first_look_time == -1) {
-		ROS_WARN_STREAM_THROTTLE(1,"---------------------------------------" << allConveyerParts.size());
+		// ROS_WARN_STREAM_THROTTLE(1,"---------------------------------------" << allConveyerParts.size());
 		current_detection.first_look_time = giveCurrentTime();
 		// ROS_DEBUG_STREAM("Product on conveyer was watched first at " << current_detection.first_look_time << " seconds");
 		current_detection.first_pose = getPose_W(msg.models[0].pose);

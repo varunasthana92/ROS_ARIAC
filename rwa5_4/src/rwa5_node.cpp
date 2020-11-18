@@ -173,12 +173,21 @@ int main(int argc, char ** argv) {
             product.rpy_final = quaternionToEuler(product.pose);
             product.rpy_final[0] = 0;
             tf2::Quaternion q_deliver(product.rpy_final[2], product.rpy_final[1], product.rpy_final[0]);
-            product.pose.orientation.x = q_deliver.x();
-            product.pose.orientation.y = q_deliver.y();
-            product.pose.orientation.z = q_deliver.z();
-            product.pose.orientation.w = q_deliver.w();
+            // product.pose.orientation.x = q_deliver.x();
+            // product.pose.orientation.y = q_deliver.y();
+            // product.pose.orientation.z = q_deliver.z();
+            // product.pose.orientation.w = q_deliver.w();
+            product.pose.orientation.x = 0;
+            product.pose.orientation.y = 0;
+            product.pose.orientation.z = 0;
+            product.pose.orientation.w = 1;
 
             tf2::Quaternion q_pi( 0, 0, 1, 0);
+            // tf2::Quaternion q_flip( 0, 0, 0.6779718, 0.7350879);
+
+            product.p.pose.orientation.z *= -1;
+            product.p.pose.orientation.w *= -1;
+
             tf2::Quaternion q_init_part(product.p.pose.orientation.x,
                                 product.p.pose.orientation.y,
                                 product.p.pose.orientation.z,

@@ -494,6 +494,8 @@ bool GantryControl::pickPart(part part){
         else {
             ROS_INFO_STREAM("[Gripper] = object not attached");
             if(part.obstacle_free == false){
+                left_arm_group_.setPoseTarget(currentPose);
+                left_arm_group_.move();
                 return false;
             }
             if (*is_part_faulty){
@@ -660,10 +662,10 @@ bool GantryControl::placePart(Product &product,
         right_state = getGripperState("right_arm");
         if (right_state.attached){
             currentPose = right_arm_group_.getCurrentPose().pose;
-            target_pose_in_tray.orientation.x = currentPose.orientation.x;
-            target_pose_in_tray.orientation.y = currentPose.orientation.y;
-            target_pose_in_tray.orientation.z = currentPose.orientation.z;
-            target_pose_in_tray.orientation.w = currentPose.orientation.w;
+            // target_pose_in_tray.orientation.x = currentPose.orientation.x;
+            // target_pose_in_tray.orientation.y = currentPose.orientation.y;
+            // target_pose_in_tray.orientation.z = currentPose.orientation.z;
+            // target_pose_in_tray.orientation.w = currentPose.orientation.w;
 
             right_arm_group_.setPoseTarget(target_pose_in_tray);
             right_arm_group_.move();
@@ -691,7 +693,7 @@ bool GantryControl::placePart(Product &product,
     ros::Duration(0.5).sleep();
     int temp_call_check = quality_call_count;
     while(temp_call_check == quality_call_count){
-        ROS_INFO_STREAM("-#########  BLACK OUT  ##########" << quality_call_count);
+        ROS_INFO_STREAM("-#########  BLACK OUT  ##########");
     }
     if(part.type != "piston_rod_part_red" && part.type != "piston_rod_part_green" && part.type != "piston_rod_part_blue"){
         if (*is_part_faulty) {
@@ -1011,7 +1013,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
 
     PresetLocation move, move_trg;
     move.gantry = {x,y,0};
-    move.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    move.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
     move.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
     move_trg = move;
@@ -1545,7 +1547,7 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
 
     // get the nearest gap from the end, as parts are at the end helf only
     int nearestGap = getNearestGap(-18, aisle_num, actPart, obstObj, shelfGaps);
-    ROS_WARN_STREAM("Nearest gap " << nearestGap);
+    // ROS_WARN_STREAM("Nearest gap " << nearestGap);
     PresetLocation temp = start_;
     temp.left_arm = left_arm;
     if(temp.left_arm[2] > 0){
@@ -1653,7 +1655,7 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
     // escape(aisle_nun, shelfGaps, gapNum, 0, gantryX, gantryY, obstObj, newGap);
 
     nearestGap = getNearestGap(-18, aisle_num, 0, obstObj, shelfGaps);
-    ROS_WARN_STREAM("Nearest gap 2nd " << nearestGap);
+    // ROS_WARN_STREAM("Nearest gap 2nd " << nearestGap);
     int new_aisle = aisle_num;
     if(nearestGap > new_aisle){
         new_aisle = nearestGap;
@@ -1744,7 +1746,7 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
 
     int nearestGap = getNearestGap(part.pose.position.x, aisle_num, actPart, obstObj, shelfGaps);
 
-    ROS_WARN_STREAM("Nearest Gap = " << nearestGap);
+    // ROS_WARN_STREAM("Nearest Gap = " << nearestGap);
     float offset_y = 1.1;
     float offset_x = 0;
 
