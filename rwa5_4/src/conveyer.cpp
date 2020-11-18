@@ -109,15 +109,6 @@ bool ConveyerParts::checkForPick() {
 			return true;
 		}
 	}
-
-	// if(ready_for_pick && part2pick) {
-	// 	if(part2pick->current_pose.position.y - pick_pose.position.y <=0.08){
-	// 		ROS_WARN_STREAM("****** Try to pick up now ******");
-	// 		ready_for_pick = false;
-	// 		part2pick = NULL;
-	// 		return true;
-	// 	}
-	// }
 	return false;
 }
 
@@ -139,7 +130,6 @@ bool ConveyerParts::giveClosestPart(const std::string &part_name, geometry_msgs:
 			pick_pose = poseOnConveyer;
 			ready_for_pick = true;
 			pick_part = allConveyerParts[i];
-			part2pick = &allConveyerParts[i];
 			allConveyerParts[i].picked_up = true;
 			// allConveyerParts.erase(allConveyerParts.begin()+i);
 			return true;

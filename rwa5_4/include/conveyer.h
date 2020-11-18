@@ -49,7 +49,6 @@ class ConveyerParts {
     double offset = 2.0;
     geometry_msgs::Pose pick_pose;
     Detection pick_part;
-    Detection* part2pick;
     bool ready_for_pick=false;
     geometry_msgs::Pose getPose_W(const geometry_msgs::Pose &pose_C);
     ros::NodeHandle node_;
