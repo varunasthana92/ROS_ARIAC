@@ -13,13 +13,13 @@ options:
   belt_population_cycles: 10
 
 shelf_layout:
-  row_1: ['base','collar',0,'base'] #shelves: 3, 4, 5
-  row_2: ['pipe',0,'base','base']   #shelves: 6, 7, 8
-  row_3: ['base','pipe',0,'collar'] #shelves: 9, 10, 11
+  row_1: ['base',0,'collar','base'] #shelves: 3, 4, 5
+  row_2: ['pipe','base',0,'base']   #shelves: 6, 7, 8
+  row_3: ['base',0,'pipe','collar'] #shelves: 9, 10, 11
 
 aisle_layout:
   person_1:
-    location: -1.57
+    location: 4.71
     start_time: 0.
     move_time: 9.
     wait_time: 7.
@@ -37,17 +37,17 @@ orders:
     destinations: [agv1,agv2]
     products:
       product_0:
-        type: pulley_part_blue
+        type: gasket_part_green
         pose:
           xyz: [0.0, 0.15, 0]
-          rpy: ['pi', 0, 0]
+          rpy: [0, 0, 0]
       product_1:
         type: gasket_part_green
         pose:
           xyz: [-0.1, -0.2, 0]
           rpy: [0, 0, '-pi/4']
       product_2:
-        type: piston_rod_part_red
+        type: gasket_part_green
         pose:
           xyz: [0.15, -0.2, 0]
           rpy: [0, 0, 'pi/4']
@@ -75,13 +75,13 @@ models_over_shelves:
         num_models_x: 4
         num_models_y: 1
 
-sensor_blackout:
-  product_count: 2
-  duration: 50
+# sensor_blackout:
+#   product_count: 2
+#   duration: 50
 
-faulty_products:
-  - pulley_part_blue_3
-  - piston_rod_part_red_2
-  - piston_rod_part_red_6
-  - gasket_part_green_4
+# faulty_products:
+  # - pulley_part_blue_3
+  # - piston_rod_part_red_0
+  # - piston_rod_part_red_6
+  # - gasket_part_green_4
 #time_limit: -1
