@@ -1568,17 +1568,11 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
     if(actPart == 1){
         temp.gantry[0] = shelfGaps[nearestGap].first;
         temp.gantry[1] = -(gantryY + offset_y);
-        // temp.gantry[2] = -PI;
-        
-        // temp.left_arm = { 0, 0, 0, 0, 0, 0};
         temp.right_arm = { PI, 0, 0, 0, 0, 0};
         goToPresetLocation(temp);
         
         temp.gantry[0] = shelfGaps[nearestGap].first;
         temp.gantry[1] = -shelfGaps[nearestGap].second;
-        // temp.gantry[2] = 0;
-        // temp.left_arm = { 0, 0, 0, 0, 0, 0};
-        // temp.right_arm = { PI, 0, 0, 0, 0, 0};
         goToPresetLocation(temp);
 
         gantryX = temp.gantry[0];
@@ -1591,14 +1585,6 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
         }
 
         if(nearestGap == 0 || nearestGap == 4){
-            // temp.gantry[0] = 0;
-            // temp.gantry[1] = -gantryY;
-            // temp.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-            // temp.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
-            // goToPresetLocation(temp);
-
-            // gantryX = temp.gantry[0];
-            // gantryY = -temp.gantry[1];
             return true;
         }
     }
@@ -1618,13 +1604,11 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
 
         temp.gantry[1] = -(shelfGaps[new_aisle - 1].second + shelfGaps[new_aisle].second)/2;
         temp.gantry[0] = gantryX;
-        // temp.left_arm = { 0, 0, 0, 0, 0, 0};
         temp.right_arm = { PI, 0, 0, 0, 0, 0};
         goToPresetLocation(temp);
         temp.gantry[0] = shelfGaps[nearestGap].first;
         goToPresetLocation(temp);
 
-        // temp.gantry[0] = fakePart.pose.position.x;
         temp.gantry[1] = -shelfGaps[nearestGap].second;
         goToPresetLocation(temp);
 
@@ -1647,16 +1631,6 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
         temp.right_arm = { PI, 0, 0, 0, 0, 0};
         goToPresetLocation(temp);
 
-        // temp.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-        // temp.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
-        // goToPresetLocation(temp);
-        
-        // temp.gantry[0] = 0;
-        // temp.gantry[1] = -(shelfGaps[aisle_num-1].second + shelfGaps[aisle_num].second)/2;
-        // temp.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-        // temp.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
-        // goToPresetLocation(temp);
-
         gantryX = temp.gantry[0];
         gantryY = -temp.gantry[1];        
         return true;
@@ -1667,17 +1641,6 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
         temp.gantry[1] = -(shelfGaps[aisle_num].second + shelfGaps[aisle_num + 1].second)/2;
         temp.right_arm = { PI, 0, 0, 0, 0, 0};
         goToPresetLocation(temp);
-
-        // temp.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-        // temp.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
-        // goToPresetLocation(temp);
-        
-        // temp.gantry[0] = 0;
-        // temp.gantry[1] = -(shelfGaps[aisle_num].second + shelfGaps[aisle_num + 1].second)/2;
-        // temp.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
-        // temp.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
-        // goToPresetLocation(temp);
-
         gantryX = temp.gantry[0];
         gantryY = -temp.gantry[1];
         aisle_num += 1;     
@@ -1685,29 +1648,6 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
     }
 
     escape(aisle_num, shelfGaps, gapNum, 0, gantryX, gantryY, obstObj, currGap, left_arm, pickStatus);
-    // // escape(aisle_nun, shelfGaps, gapNum, 0, gantryX, gantryY, obstObj, currGap);
-
-    
-    // currGap = gapNum[nearestGap];
-    // temp.gantry[0] = shelfGaps[nearestGap].first;
-    // if(temp.gantry[0]  == 0){
-    //     temp.left_arm = { 0, -PI/4, PI/2, -PI/4, PI/2, 0};
-    //     temp.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
-    //     goToPresetLocation(temp);
-    //     gantryX = temp.gantry[0];
-    //     gantryY = -temp.gantry[1];
-    //     return true;
-    // }
-    // // temp.gantry[1] = -(fakePart.pose.position.y + part.pose.position.y)/2;
-    
-    // goToPresetLocation(temp);
-
-    // // temp.gantry[0] = fakePart.pose.position.x;
-    // temp.gantry[1] = -shelfGaps[nearestGap].second;
-    // goToPresetLocation(temp);
-
-    // gantryX = temp.gantry[0];
-    // gantryY = -temp.gantry[1];
     return true;
 }
 
