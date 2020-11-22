@@ -1,0 +1,250 @@
+sensors:
+
+  breakbeam_10:
+    type: break_beam
+    pose:
+      xyz: [-1.7, 3.73, 0.29448]
+      rpy: [0, 0, 1.557900]
+
+  breakbeam_11:
+    type: break_beam
+    pose:
+      xyz: [-3.2, 3.73, 0.29448]
+      rpy: [0, 0, 1.557900]
+
+  breakbeam_12:
+    type: break_beam
+    pose:
+      xyz: [-7.17, 3.73, 0.29448]
+      rpy: [0, 0, 1.557900]
+
+  breakbeam_13:
+    type: break_beam
+    pose:
+      xyz: [-11.3, 3.73, 0.29448]
+      rpy: [0, 0, 1.557900]
+
+  breakbeam_14:
+    type: break_beam
+    pose:
+      xyz: [-14.95, 3.73, 0.29448]
+      rpy: [0, 0, 1.557900]
+
+  breakbeam_15:
+    type: break_beam
+    pose:
+      xyz: [-16.48, 3.73, 0.29448]
+      rpy: [0, 0, 1.557900]
+
+  breakbeam_20:
+    type: break_beam
+    pose:
+      xyz: [-1.7, 2.377, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_21:
+    type: break_beam
+    pose:
+      xyz: [-3.2, 2.377, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_22:
+    type: break_beam
+    pose:
+      xyz: [-7.17, 2.377, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_23:
+    type: break_beam
+    pose:
+      xyz: [-11.3, 2.377, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_24:
+    type: break_beam
+    pose:
+      xyz: [-14.95, 2.377, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_25:
+    type: break_beam
+    pose:
+      xyz: [-16.48, 2.377, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_30:
+    type: break_beam
+    pose:
+      xyz: [-1.7, -0.72, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_31:
+    type: break_beam
+    pose:
+      xyz: [-3.2, -0.72, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_32:
+    type: break_beam
+    pose:
+      xyz: [-7.17, -0.72, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_33:
+    type: break_beam
+    pose:
+      xyz: [-11.3, -0.72, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_34:
+    type: break_beam
+    pose:
+      xyz: [-14.95, -0.72, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_35:
+    type: break_beam
+    pose:
+      xyz: [-16.61, -0.72, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_40:
+    type: break_beam
+    pose:
+      xyz: [-1.7, -3.7, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_41:
+    type: break_beam
+    pose:
+      xyz: [-3.2, -3.7, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_42:
+    type: break_beam
+    pose:
+      xyz: [-7.17, -3.7, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_43:
+    type: break_beam
+    pose:
+      xyz: [-11.3, -3.7, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_44:
+    type: break_beam
+    pose:
+      xyz: [-14.95, -3.7, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+  breakbeam_45:
+    type: break_beam
+    pose:
+      xyz: [-16.48, -3.7, 0.29448]
+      rpy: [0, 0, -1.557900]
+
+
+
+  logical_camera_1: # over conveyor belt
+    type: logical_camera
+    pose:
+      xyz: [ -0.05, 3, 1.92 ]
+      rpy: [ 0, 'pi/2', 'pi/2' ]
+
+  logical_camera_2: # over the 4 bins at the top left
+    type: logical_camera
+    pose:
+      xyz: [5.07, 1.750927, 1.82]
+      rpy: [0, 'pi/2', 'pi/2']
+
+  logical_camera_3:  # over the 4 bins at the bottom left
+    type: logical_camera
+    pose:
+      xyz: [ 2.99, 1.750927, 1.82 ]
+      rpy: [ 0, 'pi/2', 'pi/2' ]
+
+  logical_camera_4: # over the 4 bins at the top right
+    type: logical_camera
+    pose:
+      xyz: [ 5.07, -1.750927, 1.82 ]
+      rpy: [ 0, 'pi/2', 'pi/2' ]
+
+  logical_camera_5: # over the 4 bins at the bottom right
+    type: logical_camera
+    pose:
+      xyz: [ 2.99, -1.750927, 1.82 ]
+      rpy: [ 0, 'pi/2', 'pi/2' ]
+
+
+  logical_camera_6: # over bottom middle shelf
+    type: logical_camera
+    pose:
+      xyz: [-15.7668, 0, 2.49]
+      rpy: [0, 'pi/2', 'pi/2']
+
+  logical_camera_7: # over bottom middle shelf
+    type: logical_camera
+    pose:
+      xyz: [ -13.7042, 0, 2.49 ]
+      rpy: [ 0, 'pi/2', 'pi/2' ]
+
+  logical_camera_8: # over bottom left shelf
+    type: logical_camera
+    pose:
+      xyz: [ -15.7668, 3.05, 2.49 ]
+      rpy: [ 0, 'pi/2', 'pi/2' ]
+
+  logical_camera_9: # over bottom left shelf
+    type: logical_camera
+    pose:
+      xyz: [ -13.7042, 3.05, 2.49 ]
+      rpy: [ 0, 'pi/2', 'pi/2' ]
+
+  logical_camera_10: # over bottom right shelf
+    type: logical_camera
+    pose:
+      xyz: [ -15.7668, -3.02, 2.49 ]
+      rpy: [ 0, 'pi/2', 'pi/2' ]
+
+  logical_camera_11: # over bottom right shelf
+    type: logical_camera
+    pose:
+      xyz: [ -13.7042, -3.02, 2.49 ]
+      rpy: [ 0, 'pi/2', 'pi/2' ]
+
+  logical_camera_12: # over top right shelf
+    type: logical_camera
+    pose:
+      xyz: [ 4.9287, -3.62, 2.49 ]
+      rpy: [ 0, 'pi/2', 'pi/2' ]
+
+  logical_camera_13: # over top right shelf
+    type: logical_camera
+    pose:
+      xyz: [ 2.8594, -3.62, 2.49 ]
+      rpy: [ 0, 'pi/2', 'pi/2' ]
+
+  logical_camera_14: # over top left shelf
+    type: logical_camera
+    pose:
+      xyz: [ 4.9287, 3.62, 2.49 ]
+      rpy: [ 0, 'pi/2', 'pi/2' ]
+
+  logical_camera_15: # over top left shelf
+    type: logical_camera
+    pose:
+      xyz: [ 2.8594, 3.62, 2.49 ]
+      rpy: [ 0, 'pi/2', 'pi/2' ]
+
+  logical_camera_16: # over the AGV on the left side
+    type: logical_camera
+    pose:
+      xyz: [ -0.056, 7.12, 1.77 ]
+      rpy: [ 0, 'pi/2', 'pi/2' ]
+
+  logical_camera_17: # over the AGV on the right side
+    type: logical_camera
+    pose:
+      xyz: [ -0.056, -7.12, 1.77 ]
+      rpy: [ 0, 'pi/2', 'pi/2' ]
