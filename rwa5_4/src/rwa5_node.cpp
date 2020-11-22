@@ -160,7 +160,7 @@ int main(int argc, char ** argv) {
                 left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap, left_arm);
                 pickstatus = gantry.pickPart(product.p);
             }
-            gantry.move2start(gantryX, -gantryY);            
+            gantry.move2start(gantryX, -gantryY, left_arm);            
         }
         
         // product.p.pose = product.pose;
