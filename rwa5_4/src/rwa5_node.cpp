@@ -155,15 +155,12 @@ int main(int argc, char ** argv) {
                     pickstatus = gantry.pickPart(product.p);
                     gantry.escape(product.p.aisle_num, buildObj.positionGap, buildObj.gapNum, 1, gantryX, gantryY,
                                   obstObj, currGap, left_arm, pickstatus);
-                    if(pickstatus && gantryX != 0){
-                        gantry.escape2conveyor(product.p.aisle_num, gantryX, gantryY, currGap, buildObj.positionGap, obstObj);
-                    }
                 }
             }else{
                 left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap, left_arm);
                 pickstatus = gantry.pickPart(product.p);
             }
-            gantry.move2start(gantryX, -gantryY);            
+            gantry.move2start(gantryX, -gantryY, left_arm);            
         }
         
         // product.p.pose = product.pose;
