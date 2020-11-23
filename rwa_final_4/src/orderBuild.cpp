@@ -6,7 +6,6 @@
 
 int allStaticParts::getPart(Product &prod){
     std::string name = prod.type;
-    // name = "pulley_part_green";
     if(map.find(name) != map.end()){
         similarParts* temp = map[name];
         Part* data = NULL;
@@ -16,9 +15,12 @@ int allStaticParts::getPart(Product &prod){
             delete(temp);
             prod.p = *data;
             prod.p.agv_id = prod.agv_id;
+            ROS_WARN_STREAM("new part pick psotion from camera " << prod.p.frame);
             return 1;
+        }else{
+            map.erase(name);
         }
-        // std::cout << "\nread from function " << prod.p.frame << std::endl;
+        
         return 0;
     }else{
         return 0;       
@@ -99,6 +101,7 @@ void BuildClass::setList(Product &product_received, int num_shipment, std::strin
 void BuildClass::pushList(struct all_Order* prod){
     struct all_Order* temp;
     if(prod->prod.mv_prod){
+        ROS_WARN_STREAM("PushList() in mv: ");
         temp = mv_order;
         if(temp == NULL){
             mv_order = prod;
@@ -107,6 +110,7 @@ void BuildClass::pushList(struct all_Order* prod){
         }
     }else{
         queryPart(prod->prod);
+        ROS_WARN_STREAM("PushList() in st: ");
         temp = st_order;
         if(temp == NULL){
             st_order = prod;
@@ -115,6 +119,7 @@ void BuildClass::pushList(struct all_Order* prod){
         }
     }
 
+    ROS_WARN_STREAM("PushList() not NULL");
     while(temp->next && temp->ship_num > prod->ship_num){
         temp = temp->next;
     }
@@ -132,10 +137,12 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
     int mv_order_shipment_num_top = -1;
     if(mv_order){
         mv_order_shipment_num_top = mv_order->ship_num;
+        ROS_WARN_STREAM("getList() mv_list left ");
     }
     
     if(st_order){
         st_order_shipment_num_top = st_order->ship_num;
+        ROS_WARN_STREAM("getList() st_list left ");
     }
 
     struct all_Order* mv_temp = NULL;
@@ -243,6 +250,8 @@ void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {
         order_recieved.shipments.push_back(shipment_recieved);
     }
     ROS_INFO_STREAM("I heard: " << order_recieved.order_id);
+    order_read = true;
+    return;
 }   
 
 int BuildClass::queryPart(Product &prod){
@@ -329,10 +338,6 @@ void BuildClass::shelf_distance(){
             }
         }
     }
-
-    for(auto val : gaps){
-        std::cout<<" val (x,y) " << val.first << " , " << val.second<<std::endl;
-    }
     positionGap = gaps;
     gapNum = gapNum_;
     return;
@@ -342,15 +347,33 @@ void BuildClass::logical_camera_callback(const nist_gear::LogicalCameraImage::Co
     if(cam_id == 1)
         return;
     
+    
     if(callBackOnce[cam_id-2]){
-        ros::Duration timeout(5.0);
+        std::string frame_name = "logical_camera_" + std::to_string(cam_id) + "_frame";
+        
         tf2_ros::Buffer tfBuffer;
         tf2_ros::TransformListener tfListener(tfBuffer);
-        int i=0, part_idx=1;
-        while (i < msg->models.size()){
+        ros::Duration timeout(5.0);
+        geometry_msgs::TransformStamped transformStamped;
+        
+        int part_idx=1;
+        for(int i = 0; i < msg->models.size(); ++i){
             std::string partName = msg->models[i].type;
             if (i!=0 && msg->models[i].type != msg->models[i-1].type) {
                 part_idx=1;
+            }
+
+            bool found = false;
+
+            while(!found) {
+                try{
+                    transformStamped = tfBuffer.lookupTransform("world", frame_name, ros::Time(0), timeout);                
+                    // detected_part->time_stamp = ros::Time(0);
+                }
+                catch (tf2::TransformException &ex) {
+                    ROS_FATAL_STREAM( "Not able to find the camera frame -- " << ex.what());
+                }
+                if(transformStamped.child_frame_id.size()>0) found=true;
             }
 
             Part* detected_part = new(Part);
@@ -358,44 +381,34 @@ void BuildClass::logical_camera_callback(const nist_gear::LogicalCameraImage::Co
             detected_part->save_pose = msg->models[i].pose;
             detected_part->id = std::to_string(part_idx);
             detected_part->state = FREE;
-            detected_part->camFrame = cam_id;    
-
-            std::string frame_name = "logical_camera_" + std::to_string(cam_id) + "_" + msg->models[i].type + "_" + std::to_string(part_idx) + "_frame";
-            
-            detected_part->frame = "logical_camera_" + std::to_string(cam_id);
-            i++;
+            detected_part->camFrame = cam_id;            
+            detected_part->frame = frame_name;
             part_idx++;
-            geometry_msgs::TransformStamped transformStamped;
-            try{
-                
-                transformStamped = tfBuffer.lookupTransform("world", frame_name, ros::Time(0), timeout);                
-                detected_part->time_stamp = ros::Time(0);
-                detected_part->pose.position.x = transformStamped.transform.translation.x;
-                detected_part->pose.position.y = transformStamped.transform.translation.y;
-                detected_part->pose.position.z = transformStamped.transform.translation.z;
-                detected_part->pose.orientation = transformStamped.transform.rotation;
+            
+            geometry_msgs::Pose world_pose;
+            tf2::doTransform(detected_part->save_pose, world_pose, transformStamped);
+            detected_part->pose = world_pose;
 
-                if(detected_part->pose.position.x < 0){
-                    if(detected_part->pose.position.y >= 3.05 )
-                        detected_part->aisle_num = 1;
-                    if(detected_part->pose.position.y >= 0 && detected_part->pose.position.y < 3.05)
-                        detected_part->aisle_num = 2;
-                    if(detected_part->pose.position.y >= -3.05 && detected_part->pose.position.y < 0)
-                        detected_part->aisle_num = 3;
-                    if(detected_part->pose.position.y < -3.05 )
-                        detected_part->aisle_num = 4;
-                }
-
-                detected_part->rpy_init = quaternionToEuler(detected_part->pose);
-
-                similarParts* data = new(similarParts);
-                data->parts_data = detected_part;
-                data->next = NULL;
-                non_moving_part_data.setPart(data);
+            if(detected_part->pose.position.x < 0){
+                if(detected_part->pose.position.y >= 3.05 )
+                    detected_part->aisle_num = 1;
+                if(detected_part->pose.position.y >= 0 && detected_part->pose.position.y < 3.05)
+                    detected_part->aisle_num = 2;
+                if(detected_part->pose.position.y >= -3.05 && detected_part->pose.position.y < 0)
+                    detected_part->aisle_num = 3;
+                if(detected_part->pose.position.y < -3.05 )
+                    detected_part->aisle_num = 4;
             }
-            catch (...) {
-                continue;
-            }
+
+            detected_part->rpy_init = quaternionToEuler(detected_part->pose);
+
+            similarParts* data = new(similarParts);
+            data->parts_data = detected_part;
+            data->next = NULL;
+            if(detected_part->type == "pulley_part_red")
+                ROS_DEBUG_STREAM("Part red pulley at z= " << detected_part->pose.position << " from camera " << detected_part->frame);
+
+            non_moving_part_data.setPart(data);
         }
         camCount++;
         callBackOnce[cam_id - 2] = false;

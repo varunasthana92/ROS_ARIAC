@@ -80,7 +80,7 @@ void GantryControl::logicalCallback16(const nist_gear::LogicalCameraImage& msg) 
 
 
         if(world_pose.position.z < 0.89 && not check_exist_on_agv(model_name, world_pose, agv1_allParts)){
-            // ROS_WARN_STREAM("New apart on gv1: " << model_name << " x = " << world_pose.position.x);
+            ROS_WARN_STREAM("New apart on gv1: " << model_name << " x = " << world_pose.position.x);
             part_placed_pose_agv1 = world_pose;
             return;
         }
@@ -121,7 +121,7 @@ void GantryControl::logicalCallback17(const nist_gear::LogicalCameraImage& msg) 
 //        ROS_INFO_STREAM("Current Part name detected by camera: " << model_name );
 
         if(world_pose.position.z < 0.89 && not check_exist_on_agv(model_name, world_pose, agv2_allParts)){
-            // ROS_WARN_STREAM("New part on agv2: " << model_name << " x = " << world_pose.position.x);
+            ROS_WARN_STREAM("New part on agv2: " << model_name << " x = " << world_pose.position.x);
             part_placed_pose_agv2 = world_pose;
             return;
         }
@@ -474,11 +474,15 @@ bool GantryControl::pickPart(part part){
         if(*is_part_faulty){
             part.pose.position.z = 0.73 + model_height[part.type];
             ROS_WARN_STREAM("Trying faulty pick");
+        }
+        if(part.obstacle_free){
             part.pose.position.z += 0.2;
             left_arm_group_.setPoseTarget(part.pose);
             left_arm_group_.move();
             part.pose.position.z -= 0.2;
         }
+        
+
         ROS_INFO_STREAM("Z in Pick part "<< part.pose.position.z);
         left_arm_group_.setPoseTarget(part.pose);
         left_arm_group_.move();
@@ -486,13 +490,12 @@ bool GantryControl::pickPart(part part){
         if (state.attached) {
             ROS_INFO_STREAM("[Gripper] = object attached");
             //--Move arm to previous position
-            if (*is_part_faulty == false){
+            if (part.obstacle_free == false){
                 part.pose.position.y = currentPose.position.y;
             }
             part.pose.position.z += 0.2;
             left_arm_group_.setPoseTarget(part.pose);
             left_arm_group_.move();
-
             return true;
         }
         else {
@@ -654,8 +657,8 @@ bool GantryControl::placePart(Product &product,
             left_arm_group_.move();
 
             deactivateGripper("left_arm");
-            left_arm_group_.setPoseTarget(currentPose);
-            left_arm_group_.move();
+            // left_arm_group_.setPoseTarget(currentPose);
+            // left_arm_group_.move();
         }
     } else if (right_state.attached){
         agv_in_use.gantry[0] = target_pose_in_tray.position.x - offset_x;
@@ -673,8 +676,8 @@ bool GantryControl::placePart(Product &product,
             right_arm_group_.move();
 
             deactivateGripper("right_arm");
-            right_arm_group_.setPoseTarget(currentPose);
-            right_arm_group_.move();
+            // right_arm_group_.setPoseTarget(currentPose);
+            // right_arm_group_.move();
         }
     }
 
@@ -702,9 +705,11 @@ bool GantryControl::placePart(Product &product,
         if (*is_part_faulty) {
             ROS_INFO_STREAM("-----------------Part faulty inside: " << *is_part_faulty);
             part.pose = *faulty_part_pose;
-            agv_in_use.gantry[0] = target_pose_in_tray.position.x + offset_x;
-            agv_in_use.gantry[1] = -target_pose_in_tray.position.y - offset_y;
-            goToPresetLocation(agv_in_use);
+            if(arm == "right"){
+                agv_in_use.gantry[0] = target_pose_in_tray.position.x + offset_x;
+                agv_in_use.gantry[1] = -target_pose_in_tray.position.y - offset_y;
+                goToPresetLocation(agv_in_use);
+            }
             // part.pose.position.z = target_z_org;
             pickPart(part);
             goToPresetLocation(agv_in_use);
@@ -718,7 +723,7 @@ bool GantryControl::placePart(Product &product,
     }
     
     ROS_INFO_STREAM("-----------------Matching Pose for : " << part.type);
-    // ros::Duration(1).sleep();
+    ros::Duration(1).sleep();
     bool is_part_placed_correct = poseMatches(target_pose_in_tray, *part_placed_pose);
 
     if(part.type == "piston_rod_part_red" || part.type == "piston_rod_part_green" || part.type == "piston_rod_part_blue")
@@ -730,13 +735,9 @@ bool GantryControl::placePart(Product &product,
         product.part_placed = true;
         agv_data->prod_on_tray[product.type].push_back(product);
         agv_data->count++;
-    }else{
-        // agv_data->prod_on_tray[product.type].push_back(product);
-        // agv_data->count++;
-        
+    }else{        
         geometry_msgs::Pose original_part_pose = part.pose;
         part.pose = *part_placed_pose;
-        // part.rpy_init = quaternionToEuler(product.estimated_conveyor_pose);
         if(agv == "agv2"){
             // tf2::Quaternion q_init_part_temp(part.rpy_init[2], 0, 0 );
             ROS_WARN_STREAM("Faulty gripper AGV2 quat correction ");
@@ -751,29 +752,13 @@ bool GantryControl::placePart(Product &product,
             part.pose.orientation.z = q_res.z();
             part.pose.orientation.w = q_res.w();
         }
-        *is_part_faulty = true;
         product.p.pose = part.pose;
-        // ROS_INFO_STREAM("Incorrect part pose: " << part.pose.position.x << std::endl
-        //                                         << part.pose.position.y << std::endl
-        //                                         << part.pose.position.z << std::endl
-        //                                         << part.pose.orientation.x << std::endl
-        //                                         << part.pose.orientation.y << std::endl
-        //                                         << part.pose.orientation.z << std::endl
-        //                                         << part.pose.orientation.w);
-//        goToPresetLocation(agv_in_use_drop);
         agv_in_use.gantry[0] = target_pose_in_tray.position.x + offset_x;
         goToPresetLocation(agv_in_use);
-        // part.pose.position.z = target_z_org;
         pickPart(part);
-        *is_part_faulty = false;
-        // part.pose = original_part_pose;
-        // ROS_INFO_STREAM("Original part pose: " << part.pose.position.x << std::endl
-        //                                         << part.pose.orientation.x << std::endl
-        //                                         << part.pose.orientation.y << std::endl
-        //                                         << part.pose.orientation.z << std::endl
-        //                                         << part.pose.orientation.w);
         bool placed = placePart(product, agv, arm);
     }
+    goToPresetLocation(agv_in_use_drop);
     return true;
 }
 

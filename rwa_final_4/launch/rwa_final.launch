@@ -20,15 +20,14 @@
   <arg     if="$(arg load_moveit)" name="load_moveit_args" value="--load-moveit" />
 
   <node name="ariac_sim" pkg="nist_gear" type="gear.py"
-        args="--development-mode
-          $(arg verbose_args)
+      args="$(arg verbose_args)
           $(arg state_logging_args)
           $(arg gui_args)
           $(arg load_moveit_args)
           $(arg fill_demo_shipment_args)
           --visualize-sensor-views
-          -f $(find rwa5_4)/config/rwa5-sample.yaml
-          $(find rwa5_4)/config/rwa5_sensor_kootbally.yaml
+          -f $(find rwa_final_4)/config/baseline_3.yaml
+          $(find rwa_final_4)/config/rwa_final_sensor_kootbally.yaml
           " required="true" output="screen" />
 
 <!--  <group ns='ariac/gantry'>-->
@@ -37,5 +36,5 @@
 <!--    </include>-->
 <!--  </group>-->
   
-  <!-- <node name="rwa3_node" pkg="rwa3_4" type="rwa3_node" output="screen"/> -->
+  <!-- <node name="rwa3_node" pkg="rwa_final_4" type="rwa_final_node" output="screen"/> -->
 </launch>

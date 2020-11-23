@@ -48,6 +48,7 @@ private:
     int camCount=0;
 public:
     // struct agvInfo agv1, agv2;
+    bool order_read = false;
     std::vector<Order> allOrders;
     std::vector<int> num_prod_in_ship;
     std::unordered_map<int, int> ship_build_count;
