@@ -1,0 +1,132 @@
+#Baseline #5
+
+#Number of orders: 1
+#Number of shipments per order: 1
+#Challenges:
+#  -Interruption: no
+#  -Drop parts: yes
+#  -Sensor blackout: no
+#  -Part flipping: yes
+#  -Faulty parts: yes
+#  -Moving obstacle: no
+#Containers
+# -Belt: yes
+# -Bins: yes
+# -Shelf: yes
+#AGV
+# -order_0:
+#   -shipment_0: agv1
+#Time limit: yes
+
+time_limit: 500
+
+options:
+  gazebo_state_logging: true
+  insert_models_over_bins: true
+  insert_models_over_shelves: true
+  belt_population_cycles: 15
+  model_type_aliases:
+    order_part1: pulley_part_red
+    order_part2: piston_rod_part_red
+    order_part3: gasket_part_blue
+    order_part4: gear_part_blue
+
+shelf_layout:
+  row_1: ['base','collar',0,'base'] #shelves: 3, 4, 5
+  row_2: ['pipe', 0,'base','base']   #shelves: 6, 7, 8
+  row_3: ['base','pipe',0,'collar'] #shelves: 9, 10, 11
+
+
+orders:
+  order_0:
+    announcement_condition: time
+    announcement_condition_value: 0.0
+    shipment_count: 1
+    destinations: [agv1]
+    products:
+      part_0:
+        type: pulley_part_red
+        pose:
+          xyz: [0.0, 0.0, 0]
+          rpy: ['pi', 0, 0]
+      part_1:
+        type: piston_rod_part_red
+        pose:
+          xyz: [0.15, 0.2, 0]
+          rpy: [0, 0, 'pi/4']
+      part_2:
+        type: gasket_part_blue
+        pose:
+          xyz: [0.15, -0.2, 0]
+          rpy: [0, 0, '-pi/4']
+      part_3:
+        type: gear_part_blue
+        pose:
+          xyz: [-0.15, -0.2, 0]
+          rpy: [0, 0, '-pi/4']
+
+models_over_bins:
+  bin15:
+    models:
+      gear_part_blue:
+        xyz_start: [0.1, 0.1, 0.0]
+        xyz_end: [0.5, 0.5, 0.0]
+        rpy: [0, 0, 0]
+        num_models_x: 3
+        num_models_y: 3
+
+#2 arms advantageous
+models_over_shelves:
+  shelf8:
+    models:
+      gasket_part_blue:
+        xyz_start: [1, -0.5, 0.0]
+        xyz_end: [0., -0.4, 0.0]
+        rpy: [0, 0, 0]
+        num_models_x: 6
+        num_models_y: 1
+  shelf11:
+    models:
+      piston_rod_part_red:
+        xyz_start: [1, 0.5, 0.0]
+        xyz_end: [0., 0.4, 0.0]
+        rpy: [0, 0, 'pi/4']
+        num_models_x: 6
+        num_models_y: 1
+
+belt_models:
+  pulley_part_red:
+    10.0:
+      pose:
+        xyz: [0.0, 4.3, 0.92]
+        rpy: [0, 0, 0]
+
+#Faulty gripper
+drops:
+  drop_regions:
+    shipping_box_0_impeding:
+      frame: agv1::kit_tray_1
+      min:
+        xyz: [-0.3, -0.3, 0.0]
+      max:
+        xyz: [0.3, 0.3, 0.5]
+      destination:
+        xyz: [0.2, 0.3, 0.05] #drop on floor
+        rpy: [0, 0, 0.2]
+      product_type_to_drop: gear_part_blue
+    shipping_box_0_impeding:
+      frame: agv1::kit_tray_1
+      min:
+        xyz: [-0.3, -0.3, 0.0]
+      max:
+        xyz: [0.2, 0.3, 0.5]
+      destination:
+        xyz: [0.2, 0.3, 0.05] #drop on agv
+        rpy: [0, 0, 0.2]
+      product_type_to_drop: gasket_part_blue
+
+#Faulty products
+faulty_products:
+  - piston_rod_part_red_1
+  - gasket_part_blue_2
+  - gear_part_blue_3

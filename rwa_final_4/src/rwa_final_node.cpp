@@ -72,8 +72,6 @@ int main(int argc, char ** argv) {
       "/ariac/logical_camera_13",
       "/ariac/logical_camera_14",
       "/ariac/logical_camera_15"
-      // "/ariac/logical_camera_16",
-      // "/ariac/logical_camera_17"
       };
     std::vector<ros::Subscriber> logical_cam_subscribers;
 
@@ -94,7 +92,7 @@ int main(int argc, char ** argv) {
     std::string c_state = comp.getCompetitionState();
     comp.getClock();
 
-    ros::Subscriber order_sub = node.subscribe("/ariac/orders", 1000, &BuildClass::orderCallback, &buildObj);
+    ros::Subscriber order_sub = node.subscribe("/ariac/orders", 2, &BuildClass::orderCallback, &buildObj);
     
     ConveyerParts conveyerPartsObj(node);
     GantryControl gantry(node);
@@ -113,6 +111,10 @@ int main(int argc, char ** argv) {
     std::string curr_agv;
     std::string curr_shipment_type;
     struct all_Order* curr_prod = new(all_Order);
+
+    while(buildObj.order_read == false){
+        continue;
+    }
 
     while(buildObj.st_order || buildObj.mv_order){
         curr_prod = buildObj.getList(conveyerPartsObj);
@@ -192,6 +194,7 @@ int main(int argc, char ** argv) {
         bool status = true;
         status = gantry.placePart(product, product.agv_id, arm);
         if(!status){
+            ROS_WARN_STREAM("Main() Part place FAIL ");
             buildObj.pushList(curr_prod);
         }else{
             buildObj.ship_build_count[curr_prod->ship_num]++;
