@@ -202,7 +202,6 @@ int main(int argc, char ** argv) {
         }else{
             buildObj.ship_build_count[curr_prod->ship_num]++;
             if(buildObj.ship_build_count[curr_prod->ship_num] == buildObj.num_prod_in_ship[curr_prod->ship_num -1 ]){
-                gantry.goToPresetLocation(gantry.start_);
                 comp.shipAgv(curr_agv, curr_shipment_type);
                 if(curr_agv == "agv1"){
                     buildObj.agv1_allocated = false;
