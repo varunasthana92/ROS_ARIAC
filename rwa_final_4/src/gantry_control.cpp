@@ -1000,7 +1000,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
     float tune_odd_y = 0.2; //controller to fine tune offset in y axis only for left side of the shelf's on -ve x side
     float tune_even_y = 0.2; //controller to fine tune offset in y axis only for right side of the shelf's on -ve x side
     float bin_tune_y = 0.6; //controller to fine tune offset in y axis for bins to move toward y = 0
-    float bin_tune_x = 0.85; //controller to fine tune offset in x axis for bins to move towards the conveyor
+    float bin_tune_x = 0.75; //controller to fine tune offset in x axis for bins to move towards the conveyor
     float offset_final_x = 0.6;  //Earlier value was 0.4. Changed to 0.6 because arm was colliding with shelf while picking up
 
     PresetLocation move, move_trg;

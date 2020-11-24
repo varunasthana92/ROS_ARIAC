@@ -26,7 +26,7 @@
           $(arg load_moveit_args)
           $(arg fill_demo_shipment_args)
           --visualize-sensor-views
-          -f $(find rwa_final_4)/config/baseline_3.yaml
+          -f $(find rwa_final_4)/config/baseline_4.yaml
           $(find rwa_final_4)/config/rwa_final_sensor_kootbally.yaml
           " required="true" output="screen" />
 
