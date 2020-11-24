@@ -51,11 +51,6 @@ class GantryControl {
     stats getStats(std::string function);
     void qualityCallback1(const nist_gear::LogicalCameraImage& msg);
     void qualityCallback2(const nist_gear::LogicalCameraImage& msg);
-
-
-//    bool moveGantry(std::string waypoints);
-
-//    bool pickPart(part part, std::string arm_name);
     bool pickPart(part part);
     bool placePart(product &product, std::string agv, std::string arm);
     
@@ -89,7 +84,6 @@ class GantryControl {
 
     nist_gear::VacuumGripperState getGripperState(std::string arm_name);
     geometry_msgs::Pose getTargetWorldPose(geometry_msgs::Pose target, std::string agv, std::string arm);
-    //--preset locations;
     int quality_call_count =0;
     start start_;
     bin3 bin3_;
@@ -98,6 +92,8 @@ class GantryControl {
     agv2 agv2_, agv2_drop, agv2_right_;
     conveyor_up conveyor_up_;
     struct agvInfo agv1_allParts, agv2_allParts;
+    bool agv1_allocated = false;
+    bool agv2_allocated = false;
  
     static const int num_preLoc = 20;
 

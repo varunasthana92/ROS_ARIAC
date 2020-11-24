@@ -18,7 +18,7 @@
 
 class ObstaclesInAisle {
   private:
-    int num_obstacles = 0;
+    
     std::vector<ros::Subscriber> breakbeam_subscriber_1;
     std::vector<ros::Subscriber> breakbeam_subscriber_2;
     std::vector<ros::Subscriber> breakbeam_subscriber_3;
@@ -57,6 +57,7 @@ class ObstaclesInAisle {
       "/ariac/breakbeam_45"
       };
   public:
+    int num_obstacles = 0;
     std::vector<int> aisle_1_sensor_data;
     std::vector<int> aisle_2_sensor_data;
     std::vector<int> aisle_3_sensor_data;

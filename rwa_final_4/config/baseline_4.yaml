@@ -104,6 +104,6 @@ belt_models:
 
 #Faulty products
 faulty_products:
-  - gear_part_green_3
+  # - gear_part_green_3
   - disk_part_red_2
-  - piston_rod_part_red_4
+  # - piston_rod_part_red_4

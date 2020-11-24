@@ -33,7 +33,7 @@ const double RETRIEVE_TIMEOUT = 2.0;
 const double BELT_SPEED = 0.2; // m/s
 
 const double GRIPPER_HEIGHT = 0.01;
-const double EPSILON = 0.008; // for the gripper to firmly touch
+const double EPSILON = 0.018; // for the gripper to firmly touch
 
 const double BIN_HEIGHT = 0.724;
 const double TRAY_HEIGHT = 0.755;
@@ -71,6 +71,7 @@ typedef struct Part {
   bool obstacle_free = true;
   PartStates state; // model state (enum PartStates)
   float yaw_correction= 0;
+  bool flip_part = false;
 } part;
 
 typedef struct Position {
