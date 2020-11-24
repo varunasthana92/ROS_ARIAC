@@ -116,8 +116,10 @@ int main(int argc, char ** argv) {
         continue;
     }
 
+    int num_obstacles = obstObj.num_obstacles;
+
     while(buildObj.st_order || buildObj.mv_order){
-        curr_prod = buildObj.getList(conveyerPartsObj);
+        curr_prod = buildObj.getList(conveyerPartsObj, num_obstacles);
         ROS_DEBUG_STREAM("For shipement " << curr_prod->shipment_type);
         ROS_DEBUG_STREAM("For shipement num " << curr_prod->ship_num);
         ROS_DEBUG_STREAM("On agv " << curr_prod->prod.agv_id);
@@ -168,6 +170,7 @@ int main(int argc, char ** argv) {
         // product.p.pose = product.pose;
         if (product.pose.orientation.x == 1 || product.pose.orientation.x == -1) {
             gantry.flipPart();
+            product.p.flip_part = true;
             arm = "right";
             product.rpy_final = quaternionToEuler(product.pose);
             product.rpy_final[0] = 0;
@@ -199,8 +202,12 @@ int main(int argc, char ** argv) {
         }else{
             buildObj.ship_build_count[curr_prod->ship_num]++;
             if(buildObj.ship_build_count[curr_prod->ship_num] == buildObj.num_prod_in_ship[curr_prod->ship_num -1 ]){
-                gantry.goToPresetLocation(gantry.start_);
                 comp.shipAgv(curr_agv, curr_shipment_type);
+                if(curr_agv == "agv1"){
+                    buildObj.agv1_allocated = false;
+                }else{
+                    buildObj.agv2_allocated = false;
+                }
             }
             delete(curr_prod);
         }

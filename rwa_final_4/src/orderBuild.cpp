@@ -15,7 +15,6 @@ int allStaticParts::getPart(Product &prod){
             delete(temp);
             prod.p = *data;
             prod.p.agv_id = prod.agv_id;
-            ROS_WARN_STREAM("new part pick psotion from camera " << prod.p.frame);
             return 1;
         }else{
             map.erase(name);
@@ -132,7 +131,7 @@ void BuildClass::pushList(struct all_Order* prod){
     return;
 }
 
-struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
+struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj, int num_obstacles){
     int st_order_shipment_num_top = -1;
     int mv_order_shipment_num_top = -1;
     if(mv_order){
@@ -203,16 +202,22 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj){
                 mv_temp->prod.p.camFrame = 1;
                 return mv_temp;
             }
+            
             mv_temp_prev = mv_temp;
             mv_temp = mv_temp->next;
             if(mv_temp == NULL){
+                if(num_obstacles == 0){
+                    break;
+                }
                 mv_temp_prev = mv_dummy_head;
-                mv_temp = mv_order;
+                mv_temp = mv_temp_prev->next;
             }
         }
         delete(mv_dummy_head);
 
-    }else if(st_order_shipment_num_top != -1){
+    }
+
+    if(st_order_shipment_num_top != -1){
         st_temp = st_order;
         curr_build_shipment_num = st_temp->ship_num;
         st_order = st_order->next;
@@ -231,10 +236,24 @@ void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {
     Order order_recieved;
     order_recieved.order_id = ordermsg.order_id;
 
-    for(const auto &ship: ordermsg.shipments) {
+    for(auto ship: ordermsg.shipments) {
         num_shipment++;
         curr_build_shipment_num = num_shipment;
         shipment_recieved.shipment_type = ship.shipment_type;
+        if(ship.agv_id == "agv1"){
+            agv1_allocated = true;
+        }else if(ship.agv_id == "agv2"){
+            agv2_allocated = true;
+        }else{
+            if(agv1_allocated){
+                ship.agv_id = "agv2";
+                agv2_allocated = true;
+            }
+            else{
+                ship.agv_id = "agv1";
+                agv1_allocated = true;
+            }
+        }
         shipment_recieved.agv_id = ship.agv_id;
         num_prod_in_ship.push_back(ship.products.size());
         for(const auto &prod: ship.products) {
