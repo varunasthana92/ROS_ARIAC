@@ -206,7 +206,7 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj, int num_o
             mv_temp_prev = mv_temp;
             mv_temp = mv_temp->next;
             if(mv_temp == NULL){
-                if(num_obstacles == 0){
+                if(num_obstacles == 0 && st_order_shipment_num_top != -1){
                     break;
                 }
                 mv_temp_prev = mv_dummy_head;

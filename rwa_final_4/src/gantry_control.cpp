@@ -226,7 +226,7 @@ void GantryControl::init() {
     agv1_drop.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     agv1_drop.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    agv1_right_.gantry = {0.6, -6.9, -PI - PI/4};
+    agv1_right_.gantry = {0.6, -6.9,- PI/4};
     agv1_right_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     agv1_right_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
@@ -665,11 +665,11 @@ bool GantryControl::placePart(Product &product,
             // left_arm_group_.move();
         }
     } else if (right_state.attached){
-        agv_in_use.gantry[0] = target_pose_in_tray.position.x - offset_x;
-        agv_in_use.gantry[1] = -target_pose_in_tray.position.y - offset_y;
+        agv_in_use_right.gantry[0] = target_pose_in_tray.position.x + offset_x;
+        agv_in_use_right.gantry[1] = -target_pose_in_tray.position.y - offset_y;
         goToPresetLocation(agv_in_use_right);
 
-        tf2::Quaternion q_rslt = q_init_part.inverse()*q_final_part*q_pi*q_pi_by_2*q_pitch;
+        tf2::Quaternion q_rslt = q_init_part.inverse()*q_final_part*q_pitch;
         target_pose_in_tray.orientation.x = q_rslt.x();
         target_pose_in_tray.orientation.y = q_rslt.y();
         target_pose_in_tray.orientation.z = q_rslt.z();
@@ -677,11 +677,11 @@ bool GantryControl::placePart(Product &product,
 
         right_state = getGripperState("right_arm");
         if (right_state.attached){
-            currentPose = right_arm_group_.getCurrentPose().pose;
-            target_pose_in_tray.orientation.x = currentPose.orientation.x;
-            target_pose_in_tray.orientation.y = currentPose.orientation.y;
-            target_pose_in_tray.orientation.z = currentPose.orientation.z;
-            target_pose_in_tray.orientation.w = currentPose.orientation.w;
+            // currentPose = right_arm_group_.getCurrentPose().pose;
+            // target_pose_in_tray.orientation.x = currentPose.orientation.x;
+            // target_pose_in_tray.orientation.y = currentPose.orientation.y;
+            // target_pose_in_tray.orientation.z = currentPose.orientation.z;
+            // target_pose_in_tray.orientation.w = currentPose.orientation.w;
 
             right_arm_group_.setPoseTarget(target_pose_in_tray);
             right_arm_group_.move();
@@ -713,33 +713,24 @@ bool GantryControl::placePart(Product &product,
         // ROS_INFO_STREAM("-#########  BLACK OUT  ##########");
     }
 
-    // if(part.type != "piston_rod_part_red" && part.type != "piston_rod_part_green" && part.type != "piston_rod_part_blue"){
-        if (*is_part_faulty) {
-            ROS_INFO_STREAM("-----------------Part faulty inside: " << *is_part_faulty);
-            part.pose = *faulty_part_pose;
-            if(arm == "right"){
-                agv_in_use.gantry[0] = target_pose_in_tray.position.x + offset_x;
-                agv_in_use.gantry[1] = -target_pose_in_tray.position.y - offset_y;
-                goToPresetLocation(agv_in_use);
-            }
-            // part.pose.position.z = target_z_org;
-            pickPart(part);
-            goToPresetLocation(agv_in_use);
-            goToPresetLocation(agv_in_use_drop);
-            deactivateGripper("left_arm");
-            *is_part_faulty = false;
-            return false;
-        }
-    // }else{
-    //     *is_part_faulty =  false;
-    // }
+    if (*is_part_faulty) {
+        ROS_INFO_STREAM("-----------------Part faulty inside: " << *is_part_faulty);
+        part.pose = *faulty_part_pose;
+        agv_in_use.gantry[0] = part.pose.position.x + offset_x;
+        agv_in_use.gantry[1] = -part.pose.position.y - offset_y;
+        goToPresetLocation(agv_in_use);
+        pickPart(part);
+        // goToPresetLocation(agv_in_use);
+        goToPresetLocation(agv_in_use_drop);
+        deactivateGripper("left_arm");
+        *is_part_faulty = false;
+        return false;
+    }
 
-    ros::Duration(1).sleep();
+    // ros::Duration(1).sleep();
     ROS_INFO_STREAM("-----------------Matching Pose for : " << part.type << " agv: " << part.agv_id);
+    ros::Duration(3).sleep();
     bool is_part_placed_correct = poseMatches(target_pose_in_tray, *part_placed_pose);
-
-    if(part.type == "piston_rod_part_red" || part.type == "piston_rod_part_green" || part.type == "piston_rod_part_blue")
-        is_part_placed_correct = true;
 
     if(is_part_placed_correct){
         product.agv_world_pose = *part_placed_pose;
@@ -750,35 +741,58 @@ bool GantryControl::placePart(Product &product,
     }else{        
         geometry_msgs::Pose original_part_pose = part.pose;
         part.pose = *part_placed_pose;
-        if(agv == "agv2"){
-            // tf2::Quaternion q_init_part_temp(part.rpy_init[2], 0, 0 );
-            ROS_WARN_STREAM("Faulty gripper AGV2 quat correction ");
-            tf2::Quaternion q_init_part_temp(part.pose.orientation.x,
+        agv_in_use.gantry[0] = part.pose.position.x + offset_x;
+        agv_in_use.gantry[1] = -part.pose.position.y - offset_y;
+        goToPresetLocation(agv_in_use);
+        // if(agv == "agv2"){
+        //     // tf2::Quaternion q_init_part_temp(part.rpy_init[2], 0, 0 );
+        //     ROS_WARN_STREAM("Faulty gripper AGV2 quat correction ");
+        //     tf2::Quaternion q_init_part_temp(part.pose.orientation.x,
+        //                                 part.pose.orientation.y,
+        //                                 part.pose.orientation.z,
+        //                                 part.pose.orientation.w);
+
+        //     tf2::Quaternion q_res = q_init_part_temp*q_pi;
+        //     // if(part.flip_part){
+        //     //     tf2::Quaternion q_flip( 1, 0, 0, 0);
+        //     //     q_res = q_res*q_flip.inverse();
+        //     // }
+        //     part.pose.orientation.x = q_res.x();
+        //     part.pose.orientation.y = q_res.y();
+        //     part.pose.orientation.z = q_res.z();
+        //     part.pose.orientation.w = q_res.w();
+        // }
+
+        tf2::Quaternion q_init_part_temp(part.pose.orientation.x,
                                         part.pose.orientation.y,
                                         part.pose.orientation.z,
                                         part.pose.orientation.w);
+        
+        currentPose = left_arm_group_.getCurrentPose().pose;
+        tf2::Quaternion q_robot(currentPose.orientation.x,
+                                currentPose.orientation.y,
+                                currentPose.orientation.z,
+                                currentPose.orientation.w);
 
-            tf2::Quaternion q_res = q_init_part_temp*q_pi;
-            if(part.flip_part){
-                tf2::Quaternion q_flip( 1, 0, 0, 0);
-                q_res = q_res*q_flip.inverse();
-            }
-            part.pose.orientation.x = q_res.x();
-            part.pose.orientation.y = q_res.y();
-            part.pose.orientation.z = q_res.z();
-            part.pose.orientation.w = q_res.w();
+        tf2::Quaternion q_pi_by_4( 0, 0, -0.3826834, 0.9238795);
+
+        tf2::Quaternion q_res = q_init_part_temp*q_pi_by_4;
+
+        if(agv == "agv2"){
+            q_res = q_res*q_pi;
         }
+        if(part.flip_part){
+            tf2::Quaternion q_flip( 1, 0, 0, 0);
+            q_res = q_res*q_flip.inverse();
+        }
+        part.pose.orientation.x = q_res.x();
+        part.pose.orientation.y = q_res.y();
+        part.pose.orientation.z = q_res.z();
+        part.pose.orientation.w = q_res.w();
         product.p.pose = part.pose;
-        agv_in_use.gantry[0] = target_pose_in_tray.position.x;
-        agv_in_use.gantry[1] = -target_pose_in_tray.position.y - offset_y;
-        goToPresetLocation(agv_in_use);
         *is_part_faulty =  true;
         pickPart(part);
         *is_part_faulty =  false;
-
-        agv_in_use.gantry[0] = target_pose_in_tray.position.x;
-        agv_in_use.gantry[1] = -target_pose_in_tray.position.y - offset_y;
-        goToPresetLocation(agv_in_use);
         bool placed = placePart(product, agv, arm);
     }
     goToPresetLocation(agv_in_use_drop);
@@ -1321,7 +1335,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
 
 void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPartsObj){
     geometry_msgs::Pose estimated_conveyor_pose = product.estimated_conveyor_pose;
-    conveyor_up_.gantry = {estimated_conveyor_pose.position.x, -(estimated_conveyor_pose.position.y - 0.4) , 1.57};
+    conveyor_up_.gantry = {estimated_conveyor_pose.position.x + 0.2, -(estimated_conveyor_pose.position.y - 0.4) , PI/2};
     goToPresetLocation(conveyor_up_);
 
     activateGripper("left_arm");
@@ -1371,10 +1385,11 @@ void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
             ROS_DEBUG_STREAM_THROTTLE(10, "----MISSED----");
             bool status = false;
             do{
+                ROS_DEBUG_STREAM_THROTTLE(0.5, "----Searching on  conveyor----");
                 status = conveyerPartsObj.giveClosestPart(product.type, product.estimated_conveyor_pose);
             }while(status != true);
             estimated_conveyor_pose = product.estimated_conveyor_pose;
-            conveyor_up_.gantry = {estimated_conveyor_pose.position.x, -(estimated_conveyor_pose.position.y - 0.4) , 1.57};
+            conveyor_up_.gantry = {estimated_conveyor_pose.position.x, -(estimated_conveyor_pose.position.y - 0.4) , PI/2};
             goToPresetLocation(conveyor_up_);
 
             pickup_pose.position.x = estimated_conveyor_pose.position.x;
@@ -1402,7 +1417,7 @@ void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
     left_arm_group_.move();
 
 
-    tf2::Quaternion q_conveyor( 0, 0, -0.7068252, 0.7073883);
+    tf2::Quaternion q_conveyor( 0, 0, -0.7068252, 0.7073883); // -PI/2
     tf2::Quaternion q_init_part_temp(estimated_conveyor_pose.orientation.x,
                                 estimated_conveyor_pose.orientation.y,
                                 estimated_conveyor_pose.orientation.z,

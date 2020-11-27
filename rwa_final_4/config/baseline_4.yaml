@@ -43,28 +43,28 @@ orders:
     announcement_condition: time
     announcement_condition_value: 0.0
     shipment_count: 2
-    destinations: [any,any]
+    destinations: [agv2, agv1]
     products:
       part_0:
         type: pulley_part_blue
         pose:
           xyz: [0.0, 0.0, 0]
-          rpy: ['pi', 0, 0]
-      part_1:
-        type: gear_part_green
-        pose:
-          xyz: [0.15, 0.2, 0]
-          rpy: [0, 0, 'pi/4']
-      part_2:
-        type: disk_part_red
-        pose:
-          xyz: [0.15, -0.2, 0]
-          rpy: [0, 0, '-pi/4']
-      part_3:
-        type: piston_rod_part_red
-        pose:
-          xyz: [-0.15, -0.2, 0]
-          rpy: [0, 0, '-pi/4']
+          rpy: [0, 0, '-pi/2']
+      # part_1:
+      #   type: gear_part_green
+      #   pose:
+      #     xyz: [0.15, 0.2, 0]
+      #     rpy: [0, 0, 'pi/4']
+      # part_2:
+      #   type: disk_part_red
+      #   pose:
+      #     xyz: [0.15, -0.2, 0]
+      #     rpy: [0, 0, '-pi/4']
+      # part_3:
+      #   type: piston_rod_part_red
+      #   pose:
+      #     xyz: [-0.15, -0.2, 0]
+      #     rpy: [0, 0, '-pi/4']
 
 
 #2 arms advantageous
@@ -99,7 +99,7 @@ belt_models:
     15.0:
       pose:
         xyz: [0.0, 4.3, 0.92]
-        rpy: [0, 0, 0]
+        rpy: [0, 0, 'pi']
 
 
 #Faulty products
