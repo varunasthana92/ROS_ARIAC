@@ -181,16 +181,22 @@ int main(int argc, char ** argv) {
             product.pose.orientation.w = q_deliver.w();
 
             tf2::Quaternion q_pi( 0, 0, 1, 0);
+            tf2::Quaternion q_pi_by_2( 0, 0, 0.7071068, 0.7071068);
             tf2::Quaternion q_init_part(product.p.pose.orientation.x,
                                 product.p.pose.orientation.y,
                                 product.p.pose.orientation.z,
                                 product.p.pose.orientation.w);
-            tf2::Quaternion q_rslt = q_init_part*q_pi;
+            tf2::Quaternion q_rslt = q_init_part*q_pi_by_2.inverse();
 
             product.p.pose.orientation.x = q_rslt.x();
             product.p.pose.orientation.y = q_rslt.y();
             product.p.pose.orientation.z = q_rslt.z();
             product.p.pose.orientation.w = q_rslt.w();
+
+            // if(part.flip_part){
+            //     tf2::Quaternion q_flip( 1, 0, 0, 0);
+            //     q_res = q_res*q_pi_by_2*q_flip.inverse();
+            // }
         }
 
         product.p.obstacle_free = true; //to try pick pick again and again if faulty
@@ -201,7 +207,9 @@ int main(int argc, char ** argv) {
             buildObj.pushList(curr_prod);
         }else{
             buildObj.ship_build_count[curr_prod->ship_num]++;
+            // ROS_WARN_STREAM("Main() Part place SUCCESS ");
             if(buildObj.ship_build_count[curr_prod->ship_num] == buildObj.num_prod_in_ship[curr_prod->ship_num -1 ]){
+                ros::Duration(0.5).sleep();
                 comp.shipAgv(curr_agv, curr_shipment_type);
                 if(curr_agv == "agv1"){
                     buildObj.agv1_allocated = false;

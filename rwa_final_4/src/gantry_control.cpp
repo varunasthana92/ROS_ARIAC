@@ -82,7 +82,7 @@ void GantryControl::logicalCallback16(const nist_gear::LogicalCameraImage& msg) 
 
 
         if(world_pose.position.z < 0.89 && not check_exist_on_agv(model_name, world_pose, agv1_allParts)){
-            ROS_WARN_STREAM("New apart on agv1: " << model_name << " x = " << world_pose.position.x << " y = " << world_pose.position.y);
+            // ROS_WARN_STREAM("New apart on agv1: " << model_name << " x = " << world_pose.position.x << " y = " << world_pose.position.y);
             part_placed_pose_agv1 = world_pose;
             return;
         }
@@ -116,7 +116,7 @@ void GantryControl::logicalCallback17(const nist_gear::LogicalCameraImage& msg) 
 //        ROS_INFO_STREAM("Current Part name detected by camera: " << model_name );
 
         if(world_pose.position.z < 0.89 && not check_exist_on_agv(model_name, world_pose, agv2_allParts)){
-            ROS_WARN_STREAM("New part on agv2: " << model_name << " x = " << world_pose.position.x << " y = " << world_pose.position.y);
+            // ROS_WARN_STREAM("New part on agv2: " << model_name << " x = " << world_pose.position.x << " y = " << world_pose.position.y);
             part_placed_pose_agv2 = world_pose;
             return;
         }
@@ -226,7 +226,7 @@ void GantryControl::init() {
     agv1_drop.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     agv1_drop.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
-    agv1_right_.gantry = {0.6, -6.9,- PI/4};
+    agv1_right_.gantry = {0.6, -6.9,-PI/2- PI/4};
     agv1_right_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
     agv1_right_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
@@ -468,6 +468,7 @@ bool GantryControl::pickPart(part part){
         //--Move arm to part
         if(*is_part_faulty){
             part.pose.position.z = 0.73 + model_height[part.type];
+            // part.pose.position.z = part.pose.position.z + model_height[part.type] + GRIPPER_HEIGHT - EPSILON;
             ROS_WARN_STREAM("Trying faulty pick");
         }
         if(part.obstacle_free){
@@ -501,7 +502,7 @@ bool GantryControl::pickPart(part part){
             if (*is_part_faulty){
                 part.pose = *faulty_part_pose;
                 part.pose.position.z = 0.73 + model_height[part.type];
-                part.pose.position.z = part.pose.position.z + model_height[part.type] + GRIPPER_HEIGHT - EPSILON;
+                // part.pose.position.z = part.pose.position.z + model_height[part.type] + GRIPPER_HEIGHT - EPSILON;
                 ROS_INFO_STREAM("Z in Pick faulty trial "<< part.pose.position.z);
                 // part.pose.position.z = part.pose.position.z + model_height.at(part.type) + GRIPPER_HEIGHT - EPSILON - 0.0516;
                 part.pose.orientation.x = currentPose.orientation.x;
@@ -665,6 +666,7 @@ bool GantryControl::placePart(Product &product,
             // left_arm_group_.move();
         }
     } else if (right_state.attached){
+
         agv_in_use_right.gantry[0] = target_pose_in_tray.position.x + offset_x;
         agv_in_use_right.gantry[1] = -target_pose_in_tray.position.y - offset_y;
         goToPresetLocation(agv_in_use_right);
@@ -729,7 +731,6 @@ bool GantryControl::placePart(Product &product,
 
     // ros::Duration(1).sleep();
     ROS_INFO_STREAM("-----------------Matching Pose for : " << part.type << " agv: " << part.agv_id);
-    ros::Duration(3).sleep();
     bool is_part_placed_correct = poseMatches(target_pose_in_tray, *part_placed_pose);
 
     if(is_part_placed_correct){
@@ -783,7 +784,7 @@ bool GantryControl::placePart(Product &product,
         }
         if(part.flip_part){
             tf2::Quaternion q_flip( 1, 0, 0, 0);
-            q_res = q_res*q_flip.inverse();
+            q_res = q_res*q_pi_by_2*q_flip.inverse();
         }
         part.pose.orientation.x = q_res.x();
         part.pose.orientation.y = q_res.y();
@@ -1034,6 +1035,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
 
     float offset_final_y = 1.1;
     float offset_y = offset_final_y + 0.2;
+    float tune_even_y_bin_side = 0.2; //controller to fine tune offset in y axis only for right side of the shelf's on bin side
     float tune_odd_y = 0.2; //controller to fine tune offset in y axis only for left side of the shelf's on -ve x side
     float tune_even_y = 0.2; //controller to fine tune offset in y axis only for right side of the shelf's on -ve x side
     float bin_tune_y = 0.6; //controller to fine tune offset in y axis for bins to move toward y = 0
@@ -1213,6 +1215,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
             return move_trg.left_arm;
         }
         else  if( y <= 6.3 && y > 3.6){
+            offset_y -= tune_even_y_bin_side;
             move.gantry[0] = gantryX;
             move.gantry[1] += offset_y;
             // move.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
@@ -1264,6 +1267,8 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
         }
 
         else  if( y <= -2.45 && y > -3.6){
+            offset_y -= tune_even_y_bin_side;
+            offset_final_y -= tune_even_y_bin_side;
             move.gantry[0] = gantryX;
             move.gantry[1] += offset_y;
             // move.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
@@ -1330,12 +1335,11 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
         }
         return move_trg.left_arm;
    }
-
 }
 
 void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPartsObj){
     geometry_msgs::Pose estimated_conveyor_pose = product.estimated_conveyor_pose;
-    conveyor_up_.gantry = {estimated_conveyor_pose.position.x + 0.2, -(estimated_conveyor_pose.position.y - 0.4) , PI/2};
+    conveyor_up_.gantry = {estimated_conveyor_pose.position.x + 0.2, -(estimated_conveyor_pose.position.y - 0.6) , PI/2};
     goToPresetLocation(conveyor_up_);
 
     activateGripper("left_arm");
@@ -1367,9 +1371,10 @@ void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
 
     bool missed = false;
     while (!left_gripper_status.attached) {
-        ROS_WARN_STREAM_THROTTLE(10, "Waiting for part to be picked");
+        ROS_WARN_STREAM_THROTTLE(1, "Waiting for part to be picked");
         if(conveyerPartsObj.checkForPick()) {
             // ROS_DEBUG_STREAM("Trying to pick it up");
+            ROS_WARN_STREAM("Lets pick !!!! ");
             left_arm_group_.move();
             left_arm_group_.setPoseTarget(pre_pickup_pose);
             left_arm_group_.move();
@@ -1381,8 +1386,8 @@ void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
         }
 
         if(missed == true){
-            goToPresetLocation(start_);
-            ROS_DEBUG_STREAM_THROTTLE(10, "----MISSED----");
+            // goToPresetLocation(start_);
+            ROS_DEBUG_STREAM_THROTTLE(1, "----MISSED----");
             bool status = false;
             do{
                 ROS_DEBUG_STREAM_THROTTLE(0.5, "----Searching on  conveyor----");
