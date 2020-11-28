@@ -1592,7 +1592,7 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
         temp.left_arm[1] = PI/4;
     }
 
-    float offset_y = 0.3;
+    float offset_y = 0.2;
 
     if(gantryY < 0){
         offset_y *= -1;
