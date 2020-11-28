@@ -1591,16 +1591,10 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
     }else{
         temp.left_arm[1] = PI/4;
     }
-
-    float offset_y = 0.2;
-
-    if(gantryY < 0){
-        offset_y *= -1;
-    }
-
+    
     if(actPart == 1){
         temp.gantry[0] = shelfGaps[nearestGap].first;
-        temp.gantry[1] = -(gantryY + offset_y);
+        temp.gantry[1] = -(shelfGaps[nearestGap-1].second + shelfGaps[nearestGap].second)/2;
         temp.right_arm = { PI, 0, 0, 0, 0, 0};
         goToPresetLocation(temp);
         
