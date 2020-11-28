@@ -213,8 +213,12 @@ int main(int argc, char ** argv) {
                 comp.shipAgv(curr_agv, curr_shipment_type);
                 if(curr_agv == "agv1"){
                     buildObj.agv1_allocated = false;
+                    gantry.agv1_allParts.prod_on_tray.clear();
+                    gantry.agv1_allParts.count = 0;
                 }else{
                     buildObj.agv2_allocated = false;
+                    gantry.agv2_allParts.prod_on_tray.clear();
+                    gantry.agv2_allParts.count = 0;
                 }
             }
             delete(curr_prod);
@@ -222,7 +226,7 @@ int main(int argc, char ** argv) {
     }
 
     gantry.goToPresetLocation(gantry.start_);
-    comp.shipAgv(curr_agv, curr_shipment_type);
+    // comp.shipAgv(curr_agv, curr_shipment_type);
     comp.endCompetition();
     spinner.stop();
     ros::shutdown();
