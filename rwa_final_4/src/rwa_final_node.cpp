@@ -44,6 +44,10 @@
 
 #include <ros/console.h>
 
+void clockCallback(const std_msgs::String::ConstPtr& msg)
+{
+  ROS_INFO("I heard: [%s]", msg->data.c_str());
+}
 
 
 
@@ -127,6 +131,9 @@ int main(int argc, char ** argv) {
         curr_build_shipment_num = curr_prod->ship_num;
         curr_agv = curr_prod->prod.agv_id;
         curr_shipment_type = curr_prod->shipment_type;
+        if(comp.agv_ship_data.find(curr_shipment_type) == comp.agv_ship_data.end()){
+            comp.agv_ship_data[curr_shipment_type] = curr_agv;
+        }
 
         arm = "left";
         
@@ -192,11 +199,6 @@ int main(int argc, char ** argv) {
             product.p.pose.orientation.y = q_rslt.y();
             product.p.pose.orientation.z = q_rslt.z();
             product.p.pose.orientation.w = q_rslt.w();
-
-            // if(part.flip_part){
-            //     tf2::Quaternion q_flip( 1, 0, 0, 0);
-            //     q_res = q_res*q_pi_by_2*q_flip.inverse();
-            // }
         }
 
         product.p.obstacle_free = true; //to try pick pick again and again if faulty
@@ -210,19 +212,24 @@ int main(int argc, char ** argv) {
             // ROS_WARN_STREAM("Main() Part place SUCCESS ");
             if(buildObj.ship_build_count[curr_prod->ship_num] == buildObj.num_prod_in_ship[curr_prod->ship_num -1 ]){
                 ros::Duration(0.5).sleep();
+                comp.agv_ship_data.erase(curr_shipment_type);
                 comp.shipAgv(curr_agv, curr_shipment_type);
                 if(curr_agv == "agv1"){
                     buildObj.agv1_allocated = false;
+                    gantry.agv1_allParts.prod_on_tray.clear();
+                    gantry.agv1_allParts.count = 0;
                 }else{
                     buildObj.agv2_allocated = false;
+                    gantry.agv2_allParts.prod_on_tray.clear();
+                    gantry.agv2_allParts.count = 0;
                 }
             }
             delete(curr_prod);
         }
     }
 
-    gantry.goToPresetLocation(gantry.start_);
-    comp.shipAgv(curr_agv, curr_shipment_type);
+    // gantry.goToPresetLocation(gantry.start_);
+    // comp.shipAgv(curr_agv, curr_shipment_type);
     comp.endCompetition();
     spinner.stop();
     ros::shutdown();

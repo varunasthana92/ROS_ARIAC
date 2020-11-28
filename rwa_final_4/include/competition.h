@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <ros/ros.h>
-
+#include <stdio.h> 
 #include <std_msgs/Float32.h>
 #include <std_msgs/String.h>
 #include <rosgraph_msgs/Clock.h>
@@ -34,6 +34,7 @@ public:
     double getStartTime();
     std::string getCompetitionState();
     stats getStats(std::string function);
+    std::unordered_map< std::string, std::string> agv_ship_data;
 
 private:
     ros::NodeHandle node_;

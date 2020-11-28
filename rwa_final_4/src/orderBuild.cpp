@@ -99,35 +99,58 @@ void BuildClass::setList(Product &product_received, int num_shipment, std::strin
 
 void BuildClass::pushList(struct all_Order* prod){
     struct all_Order* temp;
+    struct all_Order* prev;
+    struct all_Order* dummy = new(all_Order);
+    dummy->ship_num = -1;
+    dummy->next = NULL;
+    prev = dummy;
+
+    bool st_found = 0;
     if(prod->prod.mv_prod){
         ROS_WARN_STREAM("PushList() in mv: ");
+        dummy->next = mv_order;
         temp = mv_order;
         if(temp == NULL){
             mv_order = prod;
             mv_order->next = NULL;
+            delete(dummy);
             return;
         }
     }else{
+        st_found = 1;
         queryPart(prod->prod);
         ROS_WARN_STREAM("PushList() in st: ");
+        dummy->next = st_order;
         temp = st_order;
         if(temp == NULL){
             st_order = prod;
             st_order->next = NULL;
+            delete(dummy);
             return;
         }
     }
 
-    ROS_WARN_STREAM("PushList() not NULL");
+    ROS_WARN_STREAM("PushList() NOT empty");
+    // ROS_WARN_STREAM("temp part " << temp->prod.type << " ship: " << temp->ship_num);
+    // ROS_WARN_STREAM("added part " << prod->prod.type << " ship: " << prod->ship_num);
     while(temp->next && temp->ship_num > prod->ship_num){
+        prev = temp;
         temp = temp->next;
     }
 
-    struct all_Order* next;
-    next = temp->next;
-    temp->next = prod;
-    temp = temp->next;
-    temp->next = next;
+    prev->next = prod;
+    prod->next = temp;
+    if(st_found){
+        st_order = dummy->next;
+    }else{
+        mv_order = dummy->next;
+    }
+
+    // next = temp->next;
+    // temp->next = prod;
+    // temp = temp->next;
+    // temp->next = next;
+    delete(dummy);
     return;
 }
 
@@ -424,9 +447,6 @@ void BuildClass::logical_camera_callback(const nist_gear::LogicalCameraImage::Co
             similarParts* data = new(similarParts);
             data->parts_data = detected_part;
             data->next = NULL;
-            if(detected_part->type == "pulley_part_red")
-                ROS_DEBUG_STREAM("Part red pulley at z= " << detected_part->pose.position << " from camera " << detected_part->frame);
-
             non_moving_part_data.setPart(data);
         }
         camCount++;
