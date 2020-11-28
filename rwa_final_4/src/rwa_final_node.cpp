@@ -144,7 +144,7 @@ int main(int argc, char ** argv) {
             gantry.pickFromConveyor(product, conveyerPartsObj);
             product.p.rpy_init = quaternionToEuler(product.estimated_conveyor_pose);
         } else {
-            float gantryX = 0;
+            float gantryX = 0.4;
             float gantryY = 0;
             int currGap = -1;
             std::vector<double> left_arm = { 0, 0, 0, 0, 0, 0};
@@ -155,7 +155,7 @@ int main(int argc, char ** argv) {
             if(! ready2pick){
                 gantry.move2closestGap(product.p, buildObj.positionGap, buildObj.gapNum, 1, gantryX,
                                                         gantryY, obstObj, currGap);
-                ROS_WARN_STREAM("Main() Curr Aisle: "<< product.p.aisle_num <<" Gap: " << currGap);
+                ROS_DEBUG_STREAM("Main() Aisle of Interest: "<< product.p.aisle_num);
                 while(!pickstatus){
                     // for aisles with obstacles: trigger to pick part
                     do{
