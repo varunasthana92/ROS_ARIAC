@@ -1,6 +1,6 @@
 #include "competition.h"
 #include "utils.h"
-
+#include <stdio.h> 
 #include <std_srvs/Trigger.h>
 #include <nist_gear/AGVControl.h>
 ////////////////////////////////////////////////////
@@ -53,6 +53,15 @@ void Competition::order_callback(const nist_gear::Order::ConstPtr & msg) {
 /// Called when a new message is received.
 void Competition::competition_clock_callback(const rosgraph_msgs::Clock::ConstPtr & msg) {
   competition_clock_ = msg->clock;
+
+  if(competition_clock_.toSec() > 495){
+
+    for(auto itr : agv_ship_data){
+      shipAgv(itr.second, itr.first);
+    }
+    endCompetition();
+    exit(0);
+  }
 }
 
 

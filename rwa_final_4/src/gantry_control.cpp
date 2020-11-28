@@ -1258,6 +1258,22 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
             gantryY = -move_trg.gantry[1];
             return move_trg.left_arm;
         }
+        else  if( y <= 0 && y > -2.45){
+            offset_y = bin_tune_y;
+            offset_final_x = bin_tune_x;
+            move.gantry[0] = gantryX;
+
+            ROS_INFO_STREAM("Position of trg  trg_bins2");
+
+            goToPresetLocation(move);
+
+            move_trg.gantry[0] -= offset_final_x;
+//            move_trg.gantry[1] -= offset_y;
+            goToPresetLocation(move_trg);
+            gantryX = move_trg.gantry[0];
+            gantryY = -move_trg.gantry[1];
+            return move_trg.left_arm;
+        }
 
         else  if( y <= -2.45 && y > -3.6){
             offset_y -= tune_even_y_bin_side;
@@ -1278,22 +1294,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
             gantryY = -move_trg.gantry[1];
             return move_trg.left_arm;
         }
-        else  if( y <= 0 && y > -2.45){
-            offset_y = bin_tune_y;
-            offset_final_x = bin_tune_x;
-            move.gantry[0] = gantryX;
-
-            ROS_INFO_STREAM("Position of trg  trg_bins2");
-
-            goToPresetLocation(move);
-
-            move_trg.gantry[0] -= offset_final_x;
-//            move_trg.gantry[1] -= offset_y;
-            goToPresetLocation(move_trg);
-            gantryX = move_trg.gantry[0];
-            gantryY = -move_trg.gantry[1];
-            return move_trg.left_arm;
-        }
+        
         else  if( y <= -3.6 && y > -6.6){
             move.gantry[0] = gantryX;
             move.gantry[1] -= offset_y;
@@ -1591,7 +1592,7 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
         temp.left_arm[1] = PI/4;
     }
 
-    float offset_y = 0.5;
+    float offset_y = 0.3;
 
     if(gantryY < 0){
         offset_y *= -1;
