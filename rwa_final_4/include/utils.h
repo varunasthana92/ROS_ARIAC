@@ -73,6 +73,7 @@ typedef struct Part {
   float yaw_correction= 0;
   bool flip_part = false;
   bool flip_part_correction = false;
+  bool flip_part_preset_correction = false;
 } part;
 
 typedef struct Position {
