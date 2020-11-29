@@ -124,9 +124,32 @@ int main(int argc, char ** argv) {
 
     while(buildObj.st_order || buildObj.mv_order){
         curr_prod = buildObj.getList(conveyerPartsObj, num_obstacles);
+
+        if(curr_prod->prod.agv_id == "agv1"){
+            buildObj.agv1_allocated = true;
+        }else{
+            buildObj.agv2_allocated = true;
+        }
+
         ROS_DEBUG_STREAM("For shipement " << curr_prod->shipment_type);
         ROS_DEBUG_STREAM("For shipement num " << curr_prod->ship_num);
         ROS_DEBUG_STREAM("On agv " << curr_prod->prod.agv_id);
+
+        if(buildObj.clear_agv1){
+            if( buildObj.clear_agv1_for_ship_type == curr_prod->shipment_type){
+                gantry.clearAgv(curr_prod->prod.agv_id, buildObj);
+                buildObj.clear_agv1 = false;
+                buildObj.clear_agv1_for_ship_type = "";
+            }
+        }
+
+        if(buildObj.clear_agv2){
+            if( buildObj.clear_agv2_for_ship_type == curr_prod->shipment_type){
+                gantry.clearAgv("agv2", buildObj);
+                buildObj.clear_agv2 = false;
+                buildObj.clear_agv2_for_ship_type = "";
+            }
+        }
 
         curr_build_shipment_num = curr_prod->ship_num;
         curr_agv = curr_prod->prod.agv_id;
@@ -203,7 +226,7 @@ int main(int argc, char ** argv) {
 
         product.p.obstacle_free = true; //to try pick pick again and again if faulty
         bool status = true;
-        status = gantry.placePart(product, product.agv_id, arm);
+        status = gantry.placePart(product, product.agv_id, arm, curr_prod);
         if(!status){
             ROS_WARN_STREAM("Main() Part place FAIL ");
             buildObj.pushList(curr_prod);
@@ -215,16 +238,26 @@ int main(int argc, char ** argv) {
                 comp.agv_ship_data.erase(curr_shipment_type);
                 comp.shipAgv(curr_agv, curr_shipment_type);
                 if(curr_agv == "agv1"){
+                    buildObj.most_recent_order_agv1.pop_back();
                     buildObj.agv1_allocated = false;
                     gantry.agv1_allParts.prod_on_tray.clear();
                     gantry.agv1_allParts.count = 0;
+                    for(int i = 0; i < gantry.agv1_allParts.complete_order_data.size(); ++i){
+                        delete(gantry.agv1_allParts.complete_order_data[i]);
+                    }
+                    gantry.agv1_allParts.complete_order_data.clear();
                 }else{
+                    buildObj.most_recent_order_agv2.pop_back();
                     buildObj.agv2_allocated = false;
                     gantry.agv2_allParts.prod_on_tray.clear();
                     gantry.agv2_allParts.count = 0;
+                    for(int i = 0; i < gantry.agv2_allParts.complete_order_data.size(); ++i){
+                        delete(gantry.agv2_allParts.complete_order_data[i]);
+                    }
+                    gantry.agv2_allParts.complete_order_data.clear();
                 }
             }
-            delete(curr_prod);
+            // delete(curr_prod);
         }
     }
 

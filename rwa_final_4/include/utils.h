@@ -33,7 +33,7 @@ const double RETRIEVE_TIMEOUT = 2.0;
 const double BELT_SPEED = 0.2; // m/s
 
 const double GRIPPER_HEIGHT = 0.01;
-const double EPSILON = 0.015; // for the gripper to firmly touch
+const double EPSILON = 0.01; // for the gripper to firmly touch
 
 const double BIN_HEIGHT = 0.724;
 const double TRAY_HEIGHT = 0.755;
@@ -72,6 +72,7 @@ typedef struct Part {
   PartStates state; // model state (enum PartStates)
   float yaw_correction= 0;
   bool flip_part = false;
+  bool flip_part_correction = false;
 } part;
 
 typedef struct Position {
@@ -127,8 +128,17 @@ typedef struct Stats {
   int fails = 0;
 } stats;
 
+struct all_Order{
+    Product prod;
+    int ship_num;
+    std::string shipment_type;
+    bool priority = false;
+    struct all_Order *next;
+};
+
 struct agvInfo{
     std::unordered_map<std::string, std::vector<Product>> prod_on_tray;
+    std::vector<struct all_Order *> complete_order_data;
     int count = 0;
 };
 

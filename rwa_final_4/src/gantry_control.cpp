@@ -5,6 +5,7 @@
 #include <geometry_msgs/TransformStamped.h>
 #include <nist_gear/LogicalCameraImage.h>
 #include "utils.h"
+#include "orderBuild.h"
 #include "conveyer.h"
 #include "obstacles.h"
 
@@ -523,20 +524,23 @@ bool GantryControl::pickPart(part part){
 
             int max_attempts{5};
             int current_attempt{0};
-            while(!state.attached) {
+            while(!state.attached && current_attempt <= max_attempts) {
                 activateGripper("left_arm");
                 // part.pose.position.y = currentPose.position.y;
                 part.pose.position.z += 0.2;
                 left_arm_group_.setPoseTarget(part.pose);
                 left_arm_group_.move();
                 part.pose.position.z -= 0.2;
-//                left_arm_group_.setPoseTarget(part.pose);
-//                left_arm_group_.move();
-                // ros::Duration(0.5).sleep();
+
                 left_arm_group_.setPoseTarget(part.pose);
                 left_arm_group_.move();
-                
                 state = getGripperState("left_arm");
+
+                current_attempt++;
+            }
+
+            if(!state.attached){
+                return false;
             }
         }
         return true;
@@ -545,43 +549,10 @@ bool GantryControl::pickPart(part part){
         ROS_INFO_STREAM("[Gripper] = not enabled");
     }
     return false;
-    
-    /**
-     * We want the Cartesian path to be interpolated at a resolution of 1 cm which is why
-     * we will specify 0.01 as the max step in Cartesian translation.
-     * We will specify the jump threshold as 0.0, effectively disabling it.
-     */
-    //--define a set of waypoints
-//    geometry_msgs::Pose near_pick_pose;
-//    geometry_msgs::Pose pick_pose;
-//    near_pick_pose = part.pose;
-//    pick_pose = part.pose;
-//
-//    near_pick_pose.position.z += 0.1;
-//    pick_pose.position.z += 0.015;
-//
-//    //--waypoints
-//    ROS_INFO_STREAM("[near_pick_pose]= " << near_pick_pose.position.x << "," << near_pick_pose.position.y << "," << near_pick_pose.position.z << "," << near_pick_pose.orientation.x << "," << near_pick_pose.orientation.y << "," << near_pick_pose.orientation.z << "," << near_pick_pose.orientation.w);
-//    ROS_INFO_STREAM("[pick_pose]= " << pick_pose.position.x << "," << pick_pose.position.y << "," << pick_pose.position.z << "," << pick_pose.orientation.x << "," << pick_pose.orientation.y << "," << pick_pose.orientation.z << "," << pick_pose.orientation.w);
-//    std::vector<geometry_msgs::Pose> waypoints;
-//    waypoints.push_back(near_pick_pose);
-//    waypoints.push_back(pick_pose);
-
-//    moveit_msgs::RobotTrajectory trajectory;
-//    const double jump_threshold = 0.0;
-//    const double eef_step = 0.001;
-//    double fraction = left_arm_group_.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
-//
-//    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
-//    bool success = (left_arm_group_.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-//    if (success)
-//        left_arm_group_.move();
-//    ros::waitForShutdown();
 }
 
-bool GantryControl::placePart(Product &product,
-                              std::string agv,
-                              std::string arm){
+bool GantryControl::placePart(Product &product, std::string agv,
+                              std::string arm, struct all_Order *curr_prod){
 
     Part part = product.p;
     auto target_pose_in_tray = getTargetWorldPose(product.pose, agv, arm);
@@ -741,11 +712,11 @@ bool GantryControl::placePart(Product &product,
     // ros::Duration(3).sleep();
     bool is_part_placed_correct = poseMatches(target_pose_in_tray, *part_placed_pose);
 
-    bool temp_flip_status = product.p.flip_part;
-    if(product.p.flip_part == true){
+    // bool temp_flip_status = product.p.flip_part;
+    if(product.p.flip_part == true && product.p.flip_part_correction == false){
         ROS_INFO_STREAM("-----------------Correcting pose for flipped part");
         is_part_placed_correct = false;
-        product.p.flip_part == false;
+        product.p.flip_part_correction = true;
     }
 
     if(is_part_placed_correct){
@@ -753,14 +724,16 @@ bool GantryControl::placePart(Product &product,
         product.p.pose = *part_placed_pose;
         product.part_placed = true;
         agv_data->prod_on_tray[product.type].push_back(product);
+        agv_data->complete_order_data.push_back(curr_prod);
         agv_data->count++;
     }else{        
         geometry_msgs::Pose original_part_pose = part.pose;
         part.pose = *part_placed_pose;
-        if(temp_flip_status){
+        if(product.p.flip_part == true && product.p.flip_part_preset_correction == false){
             agv_in_use_right.gantry[0] = target_pose_in_tray.position.x + offset_x;
             agv_in_use_right.gantry[1] = -target_pose_in_tray.position.y - (2*offset_y);
             goToPresetLocation(agv_in_use_right);
+            product.p.flip_part_preset_correction = true;
         }
 
         agv_in_use.gantry[0] = part.pose.position.x + offset_x;
@@ -784,7 +757,7 @@ bool GantryControl::placePart(Product &product,
         if(agv == "agv2"){
             q_res = q_res*q_pi;
         }
-        if(part.flip_part){
+        if(product.p.flip_part){
             tf2::Quaternion q_flip( 1, 0, 0, 0);
             q_res = q_res*q_pi_by_2*q_flip.inverse();
         }
@@ -796,11 +769,67 @@ bool GantryControl::placePart(Product &product,
         *is_part_faulty =  true;
         pickPart(part);
         *is_part_faulty =  false;
-        bool placed = placePart(product, agv, arm);
+        bool placed = placePart(product, agv, arm, curr_prod);
     }
-    product.p.flip_part = temp_flip_status;
+    // product.p.flip_part = temp_flip_status;
     goToPresetLocation(agv_in_use_drop);
     return true;
+}
+
+void GantryControl::clearAgv(std::string agv, BuildClass &buildObj){
+
+    PresetLocation agv_in_use;
+    PresetLocation agv_in_use_drop;
+    struct agvInfo* agv_data;
+
+    float offset_x = 0.2;
+    float offset_y = 0.6;
+
+    if(agv == "agv1"){
+        agv_in_use = agv1_;
+        agv_in_use_drop = agv1_drop;
+        agv_data = &agv1_allParts;
+        offset_x *=-1;
+        offset_y *=-1;
+    }else{
+        agv_in_use = agv2_;
+        agv_in_use_drop = agv2_drop;
+        agv_data = &agv2_allParts;
+    }
+
+    ROS_WARN_STREAM("Clearing Product on " << agv);
+    for(auto prod_map: agv_data->prod_on_tray){
+        std::cout << prod_map.first << " : " << prod_map.second.size() << std::endl;
+        std::cout << "With poses - " << std::endl; 
+        for(auto allProd : prod_map.second){
+            std::cout << allProd.agv_world_pose.position <<std::endl;
+            Part remove_part = allProd.p;
+            remove_part.pose  = allProd.agv_world_pose;
+
+            agv_in_use.gantry[0] = remove_part.pose.position.x + offset_x;
+            agv_in_use.gantry[1] = -remove_part.pose.position.y - offset_y;
+            goToPresetLocation(agv_in_use);
+            
+            auto currentPose = left_arm_group_.getCurrentPose().pose;
+            remove_part.pose.orientation = currentPose.orientation;
+            remove_part.pose.position.z = 0.73;
+
+            pickPart(remove_part);
+            goToPresetLocation(agv_in_use); // to avoid part drag on tray, need to pull the parm
+            goToPresetLocation(agv_in_use_drop);
+            deactivateGripper("left_arm");
+        }
+    }
+
+    agv_data->prod_on_tray.clear();
+    agv_data->count = 0;
+    ROS_WARN_STREAM("clearAGV() complete_order_data.size() : " << agv_data->complete_order_data.size());
+    for(auto curr_prod : agv_data->complete_order_data){
+        buildObj.pushList(curr_prod);
+        buildObj.ship_build_count[curr_prod->ship_num]--;
+    }
+    agv_data->complete_order_data.clear();
+    return;
 }
 
 bool GantryControl::move2start ( float x, float y, std::vector<double> left_arm) {
@@ -1381,7 +1410,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
 
 void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPartsObj){
     geometry_msgs::Pose estimated_conveyor_pose = product.estimated_conveyor_pose;
-    conveyor_up_.gantry = {estimated_conveyor_pose.position.x + 0.2, -(estimated_conveyor_pose.position.y - 0.6) , PI/2};
+    conveyor_up_.gantry = {estimated_conveyor_pose.position.x + 0.1, -(estimated_conveyor_pose.position.y - 0.6) , PI/2};
     goToPresetLocation(conveyor_up_);
 
     activateGripper("left_arm");
@@ -1436,7 +1465,7 @@ void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
                 status = conveyerPartsObj.giveClosestPart(product.type, product.estimated_conveyor_pose);
             }while(status != true);
             estimated_conveyor_pose = product.estimated_conveyor_pose;
-            conveyor_up_.gantry = {estimated_conveyor_pose.position.x + 0.2, -(estimated_conveyor_pose.position.y - 0.6) , PI/2};
+            conveyor_up_.gantry = {estimated_conveyor_pose.position.x + 0.1, -(estimated_conveyor_pose.position.y - 0.6) , PI/2};
             goToPresetLocation(conveyor_up_);
 
             pickup_pose.position.x = estimated_conveyor_pose.position.x;
@@ -1877,7 +1906,7 @@ void GantryControl::activateGripper(std::string arm_name) {
     } else {
         right_gripper_control_client.call(srv);
     }
-    ROS_INFO_STREAM("[GantryControl][activateGripper] DEBUG: srv.response =" << srv.response);
+    // ROS_INFO_STREAM("[GantryControl][activateGripper] DEBUG: srv.response =" << srv.response);
 }
 
 /// Turn off vacuum gripper

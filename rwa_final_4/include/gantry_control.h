@@ -37,6 +37,7 @@
 #include <trajectory_msgs/JointTrajectory.h>
 
 #include "utils.h"
+#include "orderBuild.h"
 #include "conveyer.h"
 #include "obstacles.h"
 #include <nist_gear/LogicalCameraImage.h>
@@ -52,7 +53,7 @@ class GantryControl {
     void qualityCallback1(const nist_gear::LogicalCameraImage& msg);
     void qualityCallback2(const nist_gear::LogicalCameraImage& msg);
     bool pickPart(part part);
-    bool placePart(product &product, std::string agv, std::string arm);
+    bool placePart(product &product, std::string agv, std::string arm, struct all_Order *curr_prod);
     
     /// Send command message to robot controller
     bool send_command(trajectory_msgs::JointTrajectory command_msg);
@@ -76,6 +77,7 @@ class GantryControl {
     bool escape(int &aisle_num, std::vector< std::pair<float , float> > &shelfGaps, const std::vector<int> &gapNum,
                 bool actPart, float &gantryX, float &gantryY, ObstaclesInAisle &obstObj, int &newGap,
                 std::vector<double> &left_arm, bool pickStatus);
+    void clearAgv(std::string agv, BuildClass &buildObj);
 
     geometry_msgs::Pose getRobotPose(){
       return full_robot_group_.getCurrentPose().pose;
