@@ -1,3 +1,22 @@
+/**
+ *  Copyright 2020 Nalin Das
+ *  @file gantry_control.cpp
+ * 
+ *  @author Varun Asthana
+ *  @author Saumil Shah
+ *  @author Nalin Das
+ *  @author Markose Jacob
+ *  @author Aditya Goswami
+ * 
+ *  @date 11/28/2020
+ * 
+ *  @brief Implements the GantryControl class methods
+ * 
+ *  @section DESCRIPTION
+ *
+ *  Source file for the GantryControl class methods
+ *
+ */
 #include "gantry_control.h"
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>

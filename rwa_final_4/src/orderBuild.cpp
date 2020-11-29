@@ -1,3 +1,23 @@
+/**
+ *  Copyright 2020 Varun Asthana, Saumil Shah, Nalin Das, Markose Jacob, Aditya Goswami
+ *  @file orderBuild.cpp
+ * 
+ *  @author Varun Asthana
+ *  @author Saumil Shah
+ *  @author Nalin Das
+ *  @author Markose Jacob
+ *  @author Aditya Goswami
+ * 
+ *  @date 11/29/2020
+ * 
+ *  @brief BuildClass and allStaticParts class implementation
+ * 
+ *  @section DESCRIPTION
+ *
+ *  Source file for BuildClass and allStaticParts class methods
+ *  implementation
+ *
+ */
 #include "orderBuild.h"
 #include <unordered_map>
 #include "conveyer.h"

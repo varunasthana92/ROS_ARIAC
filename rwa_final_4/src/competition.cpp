@@ -1,9 +1,27 @@
+/**
+ *  Copyright 2020 Nalin Das
+ *  @file competition.cpp
+ * 
+ *  @author Varun Asthana
+ *  @author Saumil Shah
+ *  @author Nalin Das
+ *  @author Markose Jacob
+ *  @author Aditya Goswami
+ * 
+ *  @date 11/28/2020
+ * 
+ *  @brief Starts the ARIAC competition
+ * 
+ *  @section DESCRIPTION
+ *
+ *  Source file for ARIAC competition class
+ *
+ */
 #include "competition.h"
 #include "utils.h"
 #include <stdio.h> 
 #include <std_srvs/Trigger.h>
 #include <nist_gear/AGVControl.h>
-////////////////////////////////////////////////////
 
 Competition::Competition(ros::NodeHandle & node): current_score_(0)
 {
