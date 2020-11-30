@@ -524,8 +524,8 @@ bool GantryControl::pickPart(part part){
 
             int max_attempts{4};
             int current_attempt{0};
-            while(!state.attached && current_attempt <= max_attempts) {
             // while(!state.attached && current_attempt <= max_attempts) {
+            while(!state.attached) {
                 activateGripper("left_arm");
                 // part.pose.position.y = currentPose.position.y;
                 part.pose.position.z += 0.2;
@@ -540,9 +540,9 @@ bool GantryControl::pickPart(part part){
                 current_attempt++;
             }
 
-            if(!state.attached){
-                return false;
-            }
+            // if(!state.attached){
+            //     return false;
+            // }
         }
         return true;
     }

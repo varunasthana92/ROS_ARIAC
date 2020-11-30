@@ -195,10 +195,10 @@ int main(int argc, char ** argv) {
                 pickstatus = gantry.pickPart(product.p);
             }
             gantry.move2start(gantryX, -gantryY, left_arm);
-            if(pickstatus == false){
-                buildObj.ship_build_count[curr_prod->ship_num]++;
-                continue;
-            }          
+            // if(pickstatus == false){
+            //     buildObj.ship_build_count[curr_prod->ship_num]++;
+            //     continue;
+            // }          
         }
         
         if (product.pose.orientation.x == 1 || product.pose.orientation.x == -1) {
