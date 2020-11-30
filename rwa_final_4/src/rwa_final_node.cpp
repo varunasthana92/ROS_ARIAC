@@ -194,10 +194,12 @@ int main(int argc, char ** argv) {
                 left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap, left_arm);
                 pickstatus = gantry.pickPart(product.p);
             }
-            gantry.move2start(gantryX, -gantryY, left_arm);            
+            gantry.move2start(gantryX, -gantryY, left_arm);
+            if(pickstatus == false){
+                continue;
+            }          
         }
         
-        // product.p.pose = product.pose;
         if (product.pose.orientation.x == 1 || product.pose.orientation.x == -1) {
             gantry.flipPart();
             product.p.flip_part = true;
@@ -234,10 +236,11 @@ int main(int argc, char ** argv) {
             buildObj.ship_build_count[curr_prod->ship_num]++;
             // ROS_WARN_STREAM("Main() Part place SUCCESS ");
             if(buildObj.ship_build_count[curr_prod->ship_num] == buildObj.num_prod_in_ship[curr_prod->ship_num -1 ]){
-                ros::Duration(0.5).sleep();
                 comp.agv_ship_data.erase(curr_shipment_type);
-                comp.shipAgv(curr_agv, curr_shipment_type);
                 if(curr_agv == "agv1"){
+                    gantry.goToPresetLocation(gantry.agv1_drop);
+                    comp.shipAgv(curr_agv, curr_shipment_type);
+                    ros::Duration(0.5).sleep();
                     buildObj.most_recent_order_agv1.pop_back();
                     buildObj.agv1_allocated = false;
                     gantry.agv1_allParts.prod_on_tray.clear();
@@ -247,6 +250,9 @@ int main(int argc, char ** argv) {
                     }
                     gantry.agv1_allParts.complete_order_data.clear();
                 }else{
+                    gantry.goToPresetLocation(gantry.agv2_drop);
+                    comp.shipAgv(curr_agv, curr_shipment_type);
+                    ros::Duration(0.5).sleep();
                     buildObj.most_recent_order_agv2.pop_back();
                     buildObj.agv2_allocated = false;
                     gantry.agv2_allParts.prod_on_tray.clear();
@@ -257,12 +263,8 @@ int main(int argc, char ** argv) {
                     gantry.agv2_allParts.complete_order_data.clear();
                 }
             }
-            // delete(curr_prod);
         }
     }
-
-    // gantry.goToPresetLocation(gantry.start_);
-    // comp.shipAgv(curr_agv, curr_shipment_type);
     comp.endCompetition();
     spinner.stop();
     ros::shutdown();

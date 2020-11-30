@@ -522,9 +522,10 @@ bool GantryControl::pickPart(part part){
                 part.pose.orientation.w = currentPose.orientation.w;
             }
 
-            int max_attempts{5};
+            int max_attempts{4};
             int current_attempt{0};
             while(!state.attached && current_attempt <= max_attempts) {
+            // while(!state.attached && current_attempt <= max_attempts) {
                 activateGripper("left_arm");
                 // part.pose.position.y = currentPose.position.y;
                 part.pose.position.z += 0.2;
@@ -779,7 +780,6 @@ bool GantryControl::placePart(Product &product, std::string agv,
         bool placed = placePart(product, agv, arm, curr_prod);
     }
     // product.p.flip_part = temp_flip_status;
-    goToPresetLocation(agv_in_use_drop);
     return true;
 }
 
