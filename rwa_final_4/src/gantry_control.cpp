@@ -696,6 +696,13 @@ bool GantryControl::placePart(Product &product, std::string agv,
     if (*is_part_faulty) {
         ROS_INFO_STREAM("-----------------Part faulty: " << *is_part_faulty);
         part.pose = *faulty_part_pose;
+
+        if(product.p.flip_part == true){
+            agv_in_use_right.gantry[0] = part.pose.position.x + offset_x;
+            agv_in_use_right.gantry[1] = -part.pose.position.y - (2*offset_y);
+            goToPresetLocation(agv_in_use_right);
+        }
+        
         agv_in_use.gantry[0] = part.pose.position.x + offset_x;
         agv_in_use.gantry[1] = -part.pose.position.y - offset_y;
         goToPresetLocation(agv_in_use);
