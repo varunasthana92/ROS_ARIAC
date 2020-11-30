@@ -21,5 +21,13 @@ note:
 
 * We were not able to pick the piston part from agv tray. Robot arm was not able to reach to that height and hence bypassing quality and pose check for piston parts.
 
+## Doxygen Documentation
+The doxygen generated documents have been added to the docs folder of the repository. A config file named 'Doxyfile' has been added to generate the documentation. To generate the doxygen documentation, follow the steps below:
+```
+cd ~/catkin_ws/
+source devel/setup.bash
+cd src/rwa_final_4/
+doxygen Doxyfile
+```
 
 
