@@ -196,6 +196,7 @@ int main(int argc, char ** argv) {
             }
             gantry.move2start(gantryX, -gantryY, left_arm);
             if(pickstatus == false){
+                buildObj.ship_build_count[curr_prod->ship_num]++;
                 continue;
             }          
         }
