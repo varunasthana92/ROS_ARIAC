@@ -36,7 +36,6 @@ private:
     bool callBackOnce[16];   // for 16 logical cameras, not including onveyor belt camera cam_id = 1
     int camCount=0;
     
-
 public:
     // struct agvInfo agv1, agv2;
     bool agv1_allocated = false;
