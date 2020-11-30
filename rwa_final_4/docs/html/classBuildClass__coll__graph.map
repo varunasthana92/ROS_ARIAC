@@ -1,0 +1,7 @@
+<map id="BuildClass" name="BuildClass">
+<area shape="rect" id="node2" href="$structall__Order.html" title="All order struct. " alt="" coords="13,273,87,300"/>
+<area shape="rect" id="node3" href="$structProduct.html" title="Product typedef. " alt="" coords="17,184,83,211"/>
+<area shape="rect" id="node4" href="$structPart.html" title="Part typedef. " alt="" coords="5,95,52,121"/>
+<area shape="rect" id="node5" href="$structShipment.html" title="Shipment typedef. " alt="" coords="77,95,154,121"/>
+<area shape="rect" id="node6" href="$structOrder.html" title="Order typedef. " alt="" coords="88,5,143,32"/>
+</map>

@@ -1,0 +1,254 @@
+\hypertarget{utils_8h}{}\section{include/utils.h File Reference}
+\label{utils_8h}\index{include/utils.\+h@{include/utils.\+h}}
+
+
+Contains general utility typedefs.  
+
+
+{\ttfamily \#include $<$geometry\+\_\+msgs/\+Pose.\+h$>$}\newline
+{\ttfamily \#include $<$geometry\+\_\+msgs/\+Point.\+h$>$}\newline
+{\ttfamily \#include $<$unordered\+\_\+map$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$ros/ros.\+h$>$}\newline
+{\ttfamily \#include $<$nist\+\_\+gear/\+Vacuum\+Gripper\+State.\+h$>$}\newline
+{\ttfamily \#include $<$tf2\+\_\+ros/buffer.\+h$>$}\newline
+{\ttfamily \#include $<$tf2\+\_\+ros/transform\+\_\+listener.\+h$>$}\newline
+{\ttfamily \#include $<$tf2\+\_\+geometry\+\_\+msgs/tf2\+\_\+geometry\+\_\+msgs.\+h$>$}\newline
+Include dependency graph for utils.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{utils_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{utils_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structPresetLocation}{Preset\+Location}
+\begin{DoxyCompactList}\small\item\em Preset Location typedef. \end{DoxyCompactList}\item 
+struct \hyperlink{structPart}{Part}
+\begin{DoxyCompactList}\small\item\em \hyperlink{structPart}{Part} typedef. \end{DoxyCompactList}\item 
+struct \hyperlink{structPosition}{Position}
+\begin{DoxyCompactList}\small\item\em \hyperlink{structPosition}{Position} typedef. \end{DoxyCompactList}\item 
+struct \hyperlink{structShipment}{Shipment}
+\begin{DoxyCompactList}\small\item\em \hyperlink{structShipment}{Shipment} typedef. \end{DoxyCompactList}\item 
+struct \hyperlink{structProduct}{Product}
+\begin{DoxyCompactList}\small\item\em \hyperlink{structProduct}{Product} typedef. \end{DoxyCompactList}\item 
+struct \hyperlink{structOrder}{Order}
+\begin{DoxyCompactList}\small\item\em \hyperlink{structOrder}{Order} typedef. \end{DoxyCompactList}\item 
+struct \hyperlink{structStats}{Stats}
+\begin{DoxyCompactList}\small\item\em \hyperlink{structStats}{Stats} typedef. \end{DoxyCompactList}\item 
+struct \hyperlink{structagvInfo}{agv\+Info}
+\begin{DoxyCompactList}\small\item\em A\+GV Information struct. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{structShipment}{Shipment} \hyperlink{utils_8h_af15e89ebba88d2450b2866c705b15559}{shipment}
+\begin{DoxyCompactList}\small\item\em \hyperlink{structShipment}{Shipment} struct object. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{structOrder}{Order} \hyperlink{utils_8h_a88b083f4969e7c61a34a7231180f9e41}{order}
+\begin{DoxyCompactList}\small\item\em Object struct object. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{structProduct}{Product} \hyperlink{utils_8h_a48a7207852c0455cce7e65703b12ec7e}{product}
+\begin{DoxyCompactList}\small\item\em \hyperlink{structProduct}{Product} struct object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_a36494ad089a17d7ae00c4cc799ed0970}\label{utils_8h_a36494ad089a17d7ae00c4cc799ed0970}} 
+typedef struct \hyperlink{structPresetLocation}{Preset\+Location} \hyperlink{utils_8h_a36494ad089a17d7ae00c4cc799ed0970}{start}
+\begin{DoxyCompactList}\small\item\em Preset Location typedef. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_a44799e750ff70c96e6da44b750d28504}\label{utils_8h_a44799e750ff70c96e6da44b750d28504}} 
+typedef struct \hyperlink{structPresetLocation}{Preset\+Location} {\bfseries bin3}
+\item 
+\mbox{\Hypertarget{utils_8h_a07d4041d68ff8967b0030f72d7f6671a}\label{utils_8h_a07d4041d68ff8967b0030f72d7f6671a}} 
+typedef struct \hyperlink{structPresetLocation}{Preset\+Location} {\bfseries agv1}
+\item 
+\mbox{\Hypertarget{utils_8h_a20c31ccc433318f0c29e1f143206cca7}\label{utils_8h_a20c31ccc433318f0c29e1f143206cca7}} 
+typedef struct \hyperlink{structPresetLocation}{Preset\+Location} {\bfseries agv2}
+\item 
+\mbox{\Hypertarget{utils_8h_ac68ff98e1a4c6dc8c303bef9e7434681}\label{utils_8h_ac68ff98e1a4c6dc8c303bef9e7434681}} 
+typedef struct \hyperlink{structPresetLocation}{Preset\+Location} {\bfseries flipped\+\_\+pulley}
+\item 
+\mbox{\Hypertarget{utils_8h_a116eaae25b61b26d0f6d86ea7b1868e9}\label{utils_8h_a116eaae25b61b26d0f6d86ea7b1868e9}} 
+typedef struct \hyperlink{structPresetLocation}{Preset\+Location} {\bfseries conveyor\+\_\+up}
+\item 
+\mbox{\Hypertarget{utils_8h_a67ee3a5b9091664130eca8efc8b97ab9}\label{utils_8h_a67ee3a5b9091664130eca8efc8b97ab9}} 
+typedef struct \hyperlink{structPart}{Part} \hyperlink{utils_8h_a67ee3a5b9091664130eca8efc8b97ab9}{part}
+\begin{DoxyCompactList}\small\item\em \hyperlink{structPart}{Part} typedef. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_ac33d19e14b97838596178faf9194d5e2}\label{utils_8h_ac33d19e14b97838596178faf9194d5e2}} 
+typedef struct \hyperlink{structPosition}{Position} \hyperlink{utils_8h_ac33d19e14b97838596178faf9194d5e2}{position}
+\begin{DoxyCompactList}\small\item\em \hyperlink{structPosition}{Position} typedef. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_abd807f196b951c0cdd24d50164d54763}\label{utils_8h_abd807f196b951c0cdd24d50164d54763}} 
+typedef struct \hyperlink{structStats}{Stats} \hyperlink{utils_8h_abd807f196b951c0cdd24d50164d54763}{stats}
+\begin{DoxyCompactList}\small\item\em \hyperlink{structStats}{Stats} typedef. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{utils_8h_aaf7e202ccc2e0bac6d05d124e49b11d3}\label{utils_8h_aaf7e202ccc2e0bac6d05d124e49b11d3}} 
+enum \hyperlink{utils_8h_aaf7e202ccc2e0bac6d05d124e49b11d3}{Part\+States} \{ \newline
+{\bfseries F\+R\+EE}, 
+{\bfseries B\+O\+O\+K\+ED}, 
+{\bfseries U\+N\+R\+E\+A\+C\+H\+A\+B\+LE}, 
+{\bfseries O\+N\+\_\+\+T\+R\+AY}, 
+\newline
+{\bfseries G\+R\+I\+P\+P\+ED}, 
+{\bfseries G\+O\+I\+N\+G\+\_\+\+H\+O\+ME}, 
+{\bfseries R\+E\+M\+O\+V\+E\+\_\+\+F\+R\+O\+M\+\_\+\+T\+R\+AY}, 
+{\bfseries L\+O\+ST}
+ \}\begin{DoxyCompactList}\small\item\em \hyperlink{structPart}{Part} states. \end{DoxyCompactList}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ double $>$ \hyperlink{utils_8h_a6296f07aa6ba20f987431f971ffd77b9}{quaternion\+To\+Euler} (geometry\+\_\+msgs\+::\+Pose pose)
+\begin{DoxyCompactList}\small\item\em Quaternion To Euler function. \end{DoxyCompactList}\item 
+bool \hyperlink{utils_8h_a395ab737d890071e60aa28796372be0f}{is\+Aisle\+Clear} (int aisle\+\_\+num)
+\begin{DoxyCompactList}\small\item\em Checks if aisle is clear. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{utils_8h_a952eac791b596a61bba0a133a3bb439f}\label{utils_8h_a952eac791b596a61bba0a133a3bb439f}} 
+const double {\bfseries PI} = 3.\+141592
+\item 
+\mbox{\Hypertarget{utils_8h_a5db325f306a804d4fee12e3ad0d39d96}\label{utils_8h_a5db325f306a804d4fee12e3ad0d39d96}} 
+const int \hyperlink{utils_8h_a5db325f306a804d4fee12e3ad0d39d96}{M\+A\+X\+\_\+\+N\+U\+M\+B\+E\+R\+\_\+\+O\+F\+\_\+\+C\+A\+M\+E\+R\+AS} = 17
+\begin{DoxyCompactList}\small\item\em Max Number of logical cameras. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_a90cee088fb10cf6717fec7eb20aee725}\label{utils_8h_a90cee088fb10cf6717fec7eb20aee725}} 
+const int \hyperlink{utils_8h_a90cee088fb10cf6717fec7eb20aee725}{M\+A\+X\+\_\+\+P\+I\+C\+K\+I\+N\+G\+\_\+\+A\+T\+T\+E\+M\+P\+TS} = 3
+\begin{DoxyCompactList}\small\item\em Maximum picking attempts. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_af49bd256f294b2ef350ec879bcce88f1}\label{utils_8h_af49bd256f294b2ef350ec879bcce88f1}} 
+const double \hyperlink{utils_8h_af49bd256f294b2ef350ec879bcce88f1}{A\+B\+O\+V\+E\+\_\+\+T\+A\+R\+G\+ET} = 0.\+1
+\begin{DoxyCompactList}\small\item\em Above target z pos when picking/placing part. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_a903b8785bcd1d36cef1a0fdc52cd43b3}\label{utils_8h_a903b8785bcd1d36cef1a0fdc52cd43b3}} 
+const double \hyperlink{utils_8h_a903b8785bcd1d36cef1a0fdc52cd43b3}{P\+I\+C\+K\+\_\+\+T\+I\+M\+E\+O\+UT} = 4.\+0
+\begin{DoxyCompactList}\small\item\em Pickup Timeout. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_a810037d8e3661f8fba6182e550fada34}\label{utils_8h_a810037d8e3661f8fba6182e550fada34}} 
+const double \hyperlink{utils_8h_a810037d8e3661f8fba6182e550fada34}{R\+E\+T\+R\+I\+E\+V\+E\+\_\+\+T\+I\+M\+E\+O\+UT} = 2.\+0
+\begin{DoxyCompactList}\small\item\em Retrieve Timeout. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_ad0c4f19278f08a8e1859b67e7c29a481}\label{utils_8h_ad0c4f19278f08a8e1859b67e7c29a481}} 
+const double \hyperlink{utils_8h_ad0c4f19278f08a8e1859b67e7c29a481}{B\+E\+L\+T\+\_\+\+S\+P\+E\+ED} = 0.\+2
+\begin{DoxyCompactList}\small\item\em Belt Speed in m/s. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_aa4641c377cd847a8e8625e8419265dd1}\label{utils_8h_aa4641c377cd847a8e8625e8419265dd1}} 
+const double \hyperlink{utils_8h_aa4641c377cd847a8e8625e8419265dd1}{G\+R\+I\+P\+P\+E\+R\+\_\+\+H\+E\+I\+G\+HT} = 0.\+01
+\begin{DoxyCompactList}\small\item\em Gripper Height. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_a596344e5a2992d2beec43b76a6294de0}\label{utils_8h_a596344e5a2992d2beec43b76a6294de0}} 
+const double \hyperlink{utils_8h_a596344e5a2992d2beec43b76a6294de0}{E\+P\+S\+I\+L\+ON} = 0.\+015
+\begin{DoxyCompactList}\small\item\em Epsilon for the gripper to firmly touch. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_a77876460e2cb342aa6783c5fda04ef5c}\label{utils_8h_a77876460e2cb342aa6783c5fda04ef5c}} 
+const double \hyperlink{utils_8h_a77876460e2cb342aa6783c5fda04ef5c}{B\+I\+N\+\_\+\+H\+E\+I\+G\+HT} = 0.\+724
+\begin{DoxyCompactList}\small\item\em Bin Height. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_a094f5efa5987e6e53c7ecbe2a8bdf7cc}\label{utils_8h_a094f5efa5987e6e53c7ecbe2a8bdf7cc}} 
+const double \hyperlink{utils_8h_a094f5efa5987e6e53c7ecbe2a8bdf7cc}{T\+R\+A\+Y\+\_\+\+H\+E\+I\+G\+HT} = 0.\+755
+\begin{DoxyCompactList}\small\item\em Tray Height. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_a39c6028d8032823b175d86b2053ee13c}\label{utils_8h_a39c6028d8032823b175d86b2053ee13c}} 
+const double \hyperlink{utils_8h_a39c6028d8032823b175d86b2053ee13c}{R\+A\+I\+L\+\_\+\+H\+E\+I\+G\+HT} = 0.\+95
+\begin{DoxyCompactList}\small\item\em Rail Height. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_a9d3410770ee083c74e767d72261a798f}\label{utils_8h_a9d3410770ee083c74e767d72261a798f}} 
+const double \hyperlink{utils_8h_a9d3410770ee083c74e767d72261a798f}{P\+L\+A\+N\+N\+I\+N\+G\+\_\+\+T\+I\+ME} = 20
+\begin{DoxyCompactList}\small\item\em Planning\+\_\+\+Time for move\+\_\+group. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_a429e859a3b7d55b6dcfdf308af80f473}\label{utils_8h_a429e859a3b7d55b6dcfdf308af80f473}} 
+const int \hyperlink{utils_8h_a429e859a3b7d55b6dcfdf308af80f473}{M\+A\+X\+\_\+\+E\+X\+C\+H\+A\+N\+G\+E\+\_\+\+A\+T\+T\+E\+M\+P\+TS} = 6
+\begin{DoxyCompactList}\small\item\em Max Exchange Attempts. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_a1fe773a5a64450e78e8e4ab7adbf4ecb}\label{utils_8h_a1fe773a5a64450e78e8e4ab7adbf4ecb}} 
+std\+::string \hyperlink{utils_8h_a1fe773a5a64450e78e8e4ab7adbf4ecb}{action\+\_\+state\+\_\+name} \mbox{[}$\,$\mbox{]}
+\begin{DoxyCompactList}\small\item\em Action state name. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{utils_8h_a4443f04d04826b4cb4d695dadc9a3a03}\label{utils_8h_a4443f04d04826b4cb4d695dadc9a3a03}} 
+std\+::unordered\+\_\+map$<$ std\+::string, double $>$ \hyperlink{utils_8h_a4443f04d04826b4cb4d695dadc9a3a03}{model\+\_\+height}
+\begin{DoxyCompactList}\small\item\em Model height hashmap. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Contains general utility typedefs. 
+
+Copyright 2020 Varun Asthana, Saumil Shah, Nalin Das, Markose Jacob, Aditya Goswami
+
+\begin{DoxyAuthor}{Author}
+Varun Asthana 
+
+Saumil Shah 
+
+Nalin Das 
+
+Markose Jacob 
+
+Aditya Goswami
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+11/29/2020
+\end{DoxyDate}
+\hypertarget{utils_8cpp_DESCRIPTION}{}\subsection{D\+E\+S\+C\+R\+I\+P\+T\+I\+ON}\label{utils_8cpp_DESCRIPTION}
+Header file for utility typedefs 
+
+\subsection{Typedef Documentation}
+\mbox{\Hypertarget{utils_8h_a88b083f4969e7c61a34a7231180f9e41}\label{utils_8h_a88b083f4969e7c61a34a7231180f9e41}} 
+\index{utils.\+h@{utils.\+h}!order@{order}}
+\index{order@{order}!utils.\+h@{utils.\+h}}
+\subsubsection{\texorpdfstring{order}{order}}
+{\footnotesize\ttfamily typedef struct \hyperlink{structOrder}{Order} \hyperlink{utils_8h_a88b083f4969e7c61a34a7231180f9e41}{order}}
+
+
+
+Object struct object. 
+
+\hyperlink{structOrder}{Order} typedef. \mbox{\Hypertarget{utils_8h_a48a7207852c0455cce7e65703b12ec7e}\label{utils_8h_a48a7207852c0455cce7e65703b12ec7e}} 
+\index{utils.\+h@{utils.\+h}!product@{product}}
+\index{product@{product}!utils.\+h@{utils.\+h}}
+\subsubsection{\texorpdfstring{product}{product}}
+{\footnotesize\ttfamily typedef struct \hyperlink{structProduct}{Product} \hyperlink{utils_8h_a48a7207852c0455cce7e65703b12ec7e}{product}}
+
+
+
+\hyperlink{structProduct}{Product} struct object. 
+
+\hyperlink{structProduct}{Product} typedef. \mbox{\Hypertarget{utils_8h_af15e89ebba88d2450b2866c705b15559}\label{utils_8h_af15e89ebba88d2450b2866c705b15559}} 
+\index{utils.\+h@{utils.\+h}!shipment@{shipment}}
+\index{shipment@{shipment}!utils.\+h@{utils.\+h}}
+\subsubsection{\texorpdfstring{shipment}{shipment}}
+{\footnotesize\ttfamily typedef struct \hyperlink{structShipment}{Shipment} \hyperlink{utils_8h_af15e89ebba88d2450b2866c705b15559}{shipment}}
+
+
+
+\hyperlink{structShipment}{Shipment} struct object. 
+
+\hyperlink{structShipment}{Shipment} typedef. 
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{utils_8h_a395ab737d890071e60aa28796372be0f}\label{utils_8h_a395ab737d890071e60aa28796372be0f}} 
+\index{utils.\+h@{utils.\+h}!is\+Aisle\+Clear@{is\+Aisle\+Clear}}
+\index{is\+Aisle\+Clear@{is\+Aisle\+Clear}!utils.\+h@{utils.\+h}}
+\subsubsection{\texorpdfstring{is\+Aisle\+Clear()}{isAisleClear()}}
+{\footnotesize\ttfamily bool is\+Aisle\+Clear (\begin{DoxyParamCaption}\item[{int}]{aisle\+\_\+num }\end{DoxyParamCaption})}
+
+
+
+Checks if aisle is clear. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em aisle\+\_\+num} & Aisle number \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if Aisle clear else false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{utils_8h_a6296f07aa6ba20f987431f971ffd77b9}\label{utils_8h_a6296f07aa6ba20f987431f971ffd77b9}} 
+\index{utils.\+h@{utils.\+h}!quaternion\+To\+Euler@{quaternion\+To\+Euler}}
+\index{quaternion\+To\+Euler@{quaternion\+To\+Euler}!utils.\+h@{utils.\+h}}
+\subsubsection{\texorpdfstring{quaternion\+To\+Euler()}{quaternionToEuler()}}
+{\footnotesize\ttfamily std\+::vector$<$double$>$ quaternion\+To\+Euler (\begin{DoxyParamCaption}\item[{geometry\+\_\+msgs\+::\+Pose}]{pose }\end{DoxyParamCaption})}
+
+
+
+Quaternion To Euler function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pose} & Quaternion pose \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Converted Euler angles 
+\end{DoxyReturn}

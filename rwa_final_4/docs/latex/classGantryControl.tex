@@ -1,0 +1,688 @@
+\hypertarget{classGantryControl}{}\section{Gantry\+Control Class Reference}
+\label{classGantryControl}\index{Gantry\+Control@{Gantry\+Control}}
+
+
+Gantry Control class.  
+
+
+
+
+{\ttfamily \#include $<$gantry\+\_\+control.\+h$>$}
+
+
+
+Collaboration diagram for Gantry\+Control\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=252pt]{classGantryControl__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classGantryControl_a9b8ad2f8dda14130976eb5d9634acbae}{Gantry\+Control} (ros\+::\+Node\+Handle \&node)
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+void \hyperlink{classGantryControl_a71f13d325c732d931ed5ed175c5b3e7a}{init} ()
+\begin{DoxyCompactList}\small\item\em Initialization. \end{DoxyCompactList}\item 
+\hyperlink{utils_8h_abd807f196b951c0cdd24d50164d54763}{stats} \hyperlink{classGantryControl_a2ac175070ddb578c03bb5a33cf2d49a4}{get\+Stats} (std\+::string function)
+\begin{DoxyCompactList}\small\item\em Gets the stats. \end{DoxyCompactList}\item 
+void \hyperlink{classGantryControl_a6557b18bde7b776e6a05fe85d9e858d9}{quality\+Callback1} (const nist\+\_\+gear\+::\+Logical\+Camera\+Image \&msg)
+\begin{DoxyCompactList}\small\item\em Quality camera 1 callback. \end{DoxyCompactList}\item 
+void \hyperlink{classGantryControl_a355b299969bfa74073062ba1c6c1ec04}{quality\+Callback2} (const nist\+\_\+gear\+::\+Logical\+Camera\+Image \&msg)
+\begin{DoxyCompactList}\small\item\em Quality camera 2 callback. \end{DoxyCompactList}\item 
+bool \hyperlink{classGantryControl_af9280bbee71d1ceca8aef3d616d48254}{pick\+Part} (\hyperlink{utils_8h_a67ee3a5b9091664130eca8efc8b97ab9}{part} \hyperlink{utils_8h_a67ee3a5b9091664130eca8efc8b97ab9}{part})
+\begin{DoxyCompactList}\small\item\em Makes robot pick the part. \end{DoxyCompactList}\item 
+bool \hyperlink{classGantryControl_a0d0eb41f65891a98cae6f2a4a42d281a}{place\+Part} (\hyperlink{utils_8h_a48a7207852c0455cce7e65703b12ec7e}{product} \&\hyperlink{utils_8h_a48a7207852c0455cce7e65703b12ec7e}{product}, std\+::string agv, std\+::string arm)
+\begin{DoxyCompactList}\small\item\em Makes robot place the part. \end{DoxyCompactList}\item 
+bool \hyperlink{classGantryControl_ab271ce06b0d336eddb26e1ba5a2ce594}{send\+\_\+command} (trajectory\+\_\+msgs\+::\+Joint\+Trajectory command\+\_\+msg)
+\begin{DoxyCompactList}\small\item\em Send command message to robot controller. \end{DoxyCompactList}\item 
+void \hyperlink{classGantryControl_a6986d4f622840037e003c6db840d78ed}{go\+To\+Preset\+Location} (\hyperlink{structPresetLocation}{Preset\+Location} location)
+\begin{DoxyCompactList}\small\item\em Makes robot move to preset location. \end{DoxyCompactList}\item 
+void \hyperlink{classGantryControl_ad7a304b37a95f29634631d4183276be3}{rotate\+\_\+gantry} (double angle)
+\begin{DoxyCompactList}\small\item\em Rotate gantry. \end{DoxyCompactList}\item 
+void \hyperlink{classGantryControl_aaccd9c43b5564c198288ba51cbcecabe}{activate\+Gripper} (std\+::string gripper\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Activate gripper. \end{DoxyCompactList}\item 
+void \hyperlink{classGantryControl_a1485577d4e29baf708a4c5c028a47798}{deactivate\+Gripper} (std\+::string gripper\+\_\+id)
+\begin{DoxyCompactList}\small\item\em deactivate\+Gripper \end{DoxyCompactList}\item 
+void \hyperlink{classGantryControl_a9206feae49953cf691e0dec2331cc3ae}{logical\+Callback16} (const nist\+\_\+gear\+::\+Logical\+Camera\+Image \&msg)
+\begin{DoxyCompactList}\small\item\em Logical camera 16 callback. \end{DoxyCompactList}\item 
+void \hyperlink{classGantryControl_a9d745504ec1dbcc8549f5a604f34bbcc}{logical\+Callback17} (const nist\+\_\+gear\+::\+Logical\+Camera\+Image \&msg)
+\begin{DoxyCompactList}\small\item\em Logical camera 17 callback. \end{DoxyCompactList}\item 
+void \hyperlink{classGantryControl_a0220eeac3687f7f043fa4014f5ea302e}{pick\+From\+Conveyor} (\hyperlink{structProduct}{Product} \&\hyperlink{utils_8h_a48a7207852c0455cce7e65703b12ec7e}{product}, \hyperlink{classConveyerParts}{Conveyer\+Parts} \&conveyer\+Parts\+Obj)
+\begin{DoxyCompactList}\small\item\em Pick from conveyor. \end{DoxyCompactList}\item 
+bool \hyperlink{classGantryControl_a9c655daed586e64921ffc53cb90b2873}{pose\+Matches} (const geometry\+\_\+msgs\+::\+Pose \&pose1, const geometry\+\_\+msgs\+::\+Pose \&pose2)
+\begin{DoxyCompactList}\small\item\em Pose Matches. \end{DoxyCompactList}\item 
+bool \hyperlink{classGantryControl_a31672ce076ba59662af6c77c82ab136f}{check\+\_\+exist\+\_\+on\+\_\+agv} (const std\+::string \&name, const geometry\+\_\+msgs\+::\+Pose \&part\+\_\+pose, \hyperlink{structagvInfo}{agv\+Info} \&agv)
+\begin{DoxyCompactList}\small\item\em Check if a part exists on A\+GV. \end{DoxyCompactList}\item 
+void \hyperlink{classGantryControl_a80a0b29105892d6435ef1bb061f35d8f}{flip\+Part} ()
+\begin{DoxyCompactList}\small\item\em Flip part. \end{DoxyCompactList}\item 
+bool \hyperlink{classGantryControl_adfbb542c0c4b836ec50bc7cf70557220}{move2start} (float x, float y, std\+::vector$<$ double $>$ left\+\_\+arm)
+\begin{DoxyCompactList}\small\item\em Moves robot to start position. \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \hyperlink{classGantryControl_aa3b48219dcba01f5608c6a4d9ff447e9}{move2trg} (float x, float y, float \&gantryX, float \&gantryY, int curr\+Gap, std\+::vector$<$ double $>$ left\+\_\+arm)
+\begin{DoxyCompactList}\small\item\em Move to target. \end{DoxyCompactList}\item 
+bool \hyperlink{classGantryControl_aa6ba7baf102ac7e39d68b2ae2492f9a5}{move2closest\+Gap} (struct \hyperlink{structPart}{Part} \&\hyperlink{utils_8h_a67ee3a5b9091664130eca8efc8b97ab9}{part}, std\+::vector$<$ std\+::pair$<$ float, float $>$ $>$ \&shelf\+Gaps, const std\+::vector$<$ int $>$ \&gap\+Num, bool act\+Part, float \&gantryX, float \&gantryY, \hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} \&obj, int \&new\+Gap)
+\begin{DoxyCompactList}\small\item\em Move to closest gap. \end{DoxyCompactList}\item 
+int \hyperlink{classGantryControl_ab475e912ab1ea0d13efc10078695102e}{get\+Nearest\+Gap} (float destX, int aisle\+\_\+num, bool act\+Part, \hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} \&obst\+Obj, const std\+::vector$<$ std\+::pair$<$ float, float $>$ $>$ \&shelf\+Gaps)
+\begin{DoxyCompactList}\small\item\em Gets the nearest gap from shelf. \end{DoxyCompactList}\item 
+bool \hyperlink{classGantryControl_aa014dd433af4fc580d38639c6353e7b8}{escape} (int \&aisle\+\_\+num, std\+::vector$<$ std\+::pair$<$ float, float $>$ $>$ \&shelf\+Gaps, const std\+::vector$<$ int $>$ \&gap\+Num, bool act\+Part, float \&gantryX, float \&gantryY, \hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} \&obst\+Obj, int \&new\+Gap, std\+::vector$<$ double $>$ \&left\+\_\+arm, bool pick\+Status)
+\begin{DoxyCompactList}\small\item\em Makes robot escape from Aisle. \end{DoxyCompactList}\item 
+geometry\+\_\+msgs\+::\+Pose \hyperlink{classGantryControl_aefa12231efd7960bc201638f832d9478}{get\+Robot\+Pose} ()
+\begin{DoxyCompactList}\small\item\em Gets the robot pose. \end{DoxyCompactList}\item 
+nist\+\_\+gear\+::\+Vacuum\+Gripper\+State \hyperlink{classGantryControl_a986691834604135cf47b1c070f8d915e}{get\+Gripper\+State} (std\+::string arm\+\_\+name)
+\begin{DoxyCompactList}\small\item\em Gets the gripper state. \end{DoxyCompactList}\item 
+geometry\+\_\+msgs\+::\+Pose \hyperlink{classGantryControl_ae92c2fdeba302399425c1abafc76f973}{get\+Target\+World\+Pose} (geometry\+\_\+msgs\+::\+Pose target, std\+::string agv, std\+::string arm)
+\begin{DoxyCompactList}\small\item\em Gets target pose in world frame. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classGantryControl_a34ef8dd7ccc4b5bca673caca267b8cae}\label{classGantryControl_a34ef8dd7ccc4b5bca673caca267b8cae}} 
+int \hyperlink{classGantryControl_a34ef8dd7ccc4b5bca673caca267b8cae}{quality\+\_\+call\+\_\+count} =0
+\begin{DoxyCompactList}\small\item\em Quality call count variable. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classGantryControl_a5a45b3fc19e50496208af90d8c49590d}\label{classGantryControl_a5a45b3fc19e50496208af90d8c49590d}} 
+\hyperlink{utils_8h_a36494ad089a17d7ae00c4cc799ed0970}{start} \hyperlink{classGantryControl_a5a45b3fc19e50496208af90d8c49590d}{start\+\_\+}
+\begin{DoxyCompactList}\small\item\em Start preset location. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classGantryControl_a50911044f2a712e70d35ad0513a1d3cf}\label{classGantryControl_a50911044f2a712e70d35ad0513a1d3cf}} 
+\hyperlink{structPresetLocation}{bin3} \hyperlink{classGantryControl_a50911044f2a712e70d35ad0513a1d3cf}{bin3\+\_\+}
+\begin{DoxyCompactList}\small\item\em Bin 3 preset location. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classGantryControl_aafaf6e121f9340813966dc81aaf0853f}\label{classGantryControl_aafaf6e121f9340813966dc81aaf0853f}} 
+\hyperlink{structPresetLocation}{flipped\+\_\+pulley} \hyperlink{classGantryControl_aafaf6e121f9340813966dc81aaf0853f}{flipped\+\_\+pulley\+\_\+}
+\begin{DoxyCompactList}\small\item\em Flipped pulley \& Flipped pulley Preset location. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classGantryControl_addcefc6d7411cbb92b007eb21afc6cd1}\label{classGantryControl_addcefc6d7411cbb92b007eb21afc6cd1}} 
+\hyperlink{structPresetLocation}{flipped\+\_\+pulley} {\bfseries flipped\+\_\+pulley\+\_\+preset}
+\item 
+\mbox{\Hypertarget{classGantryControl_acf9dbf2d68e9cc06a5ac71f88f1f313d}\label{classGantryControl_acf9dbf2d68e9cc06a5ac71f88f1f313d}} 
+\hyperlink{structPresetLocation}{agv1} \hyperlink{classGantryControl_acf9dbf2d68e9cc06a5ac71f88f1f313d}{agv1\+\_\+}
+\begin{DoxyCompactList}\small\item\em A\+G\+V1 Preset Locations. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classGantryControl_a9b61b6968325f0f602d3a0db40634ddb}\label{classGantryControl_a9b61b6968325f0f602d3a0db40634ddb}} 
+\hyperlink{structPresetLocation}{agv1} {\bfseries agv1\+\_\+drop}
+\item 
+\mbox{\Hypertarget{classGantryControl_a34e2582f1799acde6587eafb805aa36a}\label{classGantryControl_a34e2582f1799acde6587eafb805aa36a}} 
+\hyperlink{structPresetLocation}{agv1} {\bfseries agv1\+\_\+right\+\_\+}
+\item 
+\mbox{\Hypertarget{classGantryControl_ac7b1c37af6a9ccce853e821b36088c42}\label{classGantryControl_ac7b1c37af6a9ccce853e821b36088c42}} 
+\hyperlink{structPresetLocation}{agv2} \hyperlink{classGantryControl_ac7b1c37af6a9ccce853e821b36088c42}{agv2\+\_\+}
+\begin{DoxyCompactList}\small\item\em A\+G\+V2 Preset Locations. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classGantryControl_abc7a7f96e8ba220e0c95e1ab8292e200}\label{classGantryControl_abc7a7f96e8ba220e0c95e1ab8292e200}} 
+\hyperlink{structPresetLocation}{agv2} {\bfseries agv2\+\_\+drop}
+\item 
+\mbox{\Hypertarget{classGantryControl_a0d329f5035a3f83d370713ef25431ff0}\label{classGantryControl_a0d329f5035a3f83d370713ef25431ff0}} 
+\hyperlink{structPresetLocation}{agv2} {\bfseries agv2\+\_\+right\+\_\+}
+\item 
+\mbox{\Hypertarget{classGantryControl_a72d258b3cce201922919fc6a4105f09a}\label{classGantryControl_a72d258b3cce201922919fc6a4105f09a}} 
+\hyperlink{structPresetLocation}{conveyor\+\_\+up} \hyperlink{classGantryControl_a72d258b3cce201922919fc6a4105f09a}{conveyor\+\_\+up\+\_\+}
+\begin{DoxyCompactList}\small\item\em Conveyor up Preset location. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classGantryControl_a79ac55bacfc11034d9fdd83920b3871d}\label{classGantryControl_a79ac55bacfc11034d9fdd83920b3871d}} 
+struct \hyperlink{structagvInfo}{agv\+Info} agv1\+\_\+all\+Parts \hyperlink{classGantryControl_a79ac55bacfc11034d9fdd83920b3871d}{agv2\+\_\+all\+Parts}
+\begin{DoxyCompactList}\small\item\em A\+GV information. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classGantryControl_a568d5391ab16be3d57db4f48379dcaa6}\label{classGantryControl_a568d5391ab16be3d57db4f48379dcaa6}} 
+bool \hyperlink{classGantryControl_a568d5391ab16be3d57db4f48379dcaa6}{agv1\+\_\+allocated} = false
+\begin{DoxyCompactList}\small\item\em A\+G\+V1 allocated flag. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classGantryControl_afde665598b615a44b753bb2208d11afc}\label{classGantryControl_afde665598b615a44b753bb2208d11afc}} 
+bool \hyperlink{classGantryControl_afde665598b615a44b753bb2208d11afc}{agv2\+\_\+allocated} = false
+\begin{DoxyCompactList}\small\item\em A\+G\+V2 allocated flag. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classGantryControl_abea9b6d47cfab1e5e6761206c5d32770}\label{classGantryControl_abea9b6d47cfab1e5e6761206c5d32770}} 
+static const int \hyperlink{classGantryControl_abea9b6d47cfab1e5e6761206c5d32770}{num\+\_\+pre\+Loc} = 20
+\begin{DoxyCompactList}\small\item\em Num pre\+Loc. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Gantry Control class. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classGantryControl_a9b8ad2f8dda14130976eb5d9634acbae}\label{classGantryControl_a9b8ad2f8dda14130976eb5d9634acbae}} 
+\index{Gantry\+Control@{Gantry\+Control}!Gantry\+Control@{Gantry\+Control}}
+\index{Gantry\+Control@{Gantry\+Control}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{Gantry\+Control()}{GantryControl()}}
+{\footnotesize\ttfamily Gantry\+Control\+::\+Gantry\+Control (\begin{DoxyParamCaption}\item[{ros\+::\+Node\+Handle \&}]{node }\end{DoxyParamCaption})}
+
+
+
+Constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em node} & R\+OS nodehandle \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classGantryControl_aaccd9c43b5564c198288ba51cbcecabe}\label{classGantryControl_aaccd9c43b5564c198288ba51cbcecabe}} 
+\index{Gantry\+Control@{Gantry\+Control}!activate\+Gripper@{activate\+Gripper}}
+\index{activate\+Gripper@{activate\+Gripper}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{activate\+Gripper()}{activateGripper()}}
+{\footnotesize\ttfamily void Gantry\+Control\+::activate\+Gripper (\begin{DoxyParamCaption}\item[{std\+::string}]{gripper\+\_\+id }\end{DoxyParamCaption})}
+
+
+
+Activate gripper. 
+
+Turn on vacuum gripper.
+
+
+\begin{DoxyParams}{Parameters}
+{\em gripper\+\_\+id} & Gripper ID \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_a31672ce076ba59662af6c77c82ab136f}\label{classGantryControl_a31672ce076ba59662af6c77c82ab136f}} 
+\index{Gantry\+Control@{Gantry\+Control}!check\+\_\+exist\+\_\+on\+\_\+agv@{check\+\_\+exist\+\_\+on\+\_\+agv}}
+\index{check\+\_\+exist\+\_\+on\+\_\+agv@{check\+\_\+exist\+\_\+on\+\_\+agv}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{check\+\_\+exist\+\_\+on\+\_\+agv()}{check\_exist\_on\_agv()}}
+{\footnotesize\ttfamily bool Gantry\+Control\+::check\+\_\+exist\+\_\+on\+\_\+agv (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name,  }\item[{const geometry\+\_\+msgs\+::\+Pose \&}]{part\+\_\+pose,  }\item[{\hyperlink{structagvInfo}{agv\+Info} \&}]{agv }\end{DoxyParamCaption})}
+
+
+
+Check if a part exists on A\+GV. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & Name \\
+\hline
+{\em part\+\_\+pose} & \hyperlink{structPart}{Part} pose \\
+\hline
+{\em agv} & A\+GV Info \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if part exists on A\+GV else false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_a1485577d4e29baf708a4c5c028a47798}\label{classGantryControl_a1485577d4e29baf708a4c5c028a47798}} 
+\index{Gantry\+Control@{Gantry\+Control}!deactivate\+Gripper@{deactivate\+Gripper}}
+\index{deactivate\+Gripper@{deactivate\+Gripper}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{deactivate\+Gripper()}{deactivateGripper()}}
+{\footnotesize\ttfamily void Gantry\+Control\+::deactivate\+Gripper (\begin{DoxyParamCaption}\item[{std\+::string}]{gripper\+\_\+id }\end{DoxyParamCaption})}
+
+
+
+deactivate\+Gripper 
+
+Turn off vacuum gripper.
+
+
+\begin{DoxyParams}{Parameters}
+{\em gripper\+\_\+id} & Gripper ID \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_aa014dd433af4fc580d38639c6353e7b8}\label{classGantryControl_aa014dd433af4fc580d38639c6353e7b8}} 
+\index{Gantry\+Control@{Gantry\+Control}!escape@{escape}}
+\index{escape@{escape}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{escape()}{escape()}}
+{\footnotesize\ttfamily bool Gantry\+Control\+::escape (\begin{DoxyParamCaption}\item[{int \&}]{aisle\+\_\+num,  }\item[{std\+::vector$<$ std\+::pair$<$ float, float $>$ $>$ \&}]{shelf\+Gaps,  }\item[{const std\+::vector$<$ int $>$ \&}]{gap\+Num,  }\item[{bool}]{act\+Part,  }\item[{float \&}]{gantryX,  }\item[{float \&}]{gantryY,  }\item[{\hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} \&}]{obst\+Obj,  }\item[{int \&}]{new\+Gap,  }\item[{std\+::vector$<$ double $>$ \&}]{left\+\_\+arm,  }\item[{bool}]{pick\+Status }\end{DoxyParamCaption})}
+
+
+
+Makes robot escape from Aisle. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em aisle\+\_\+num} & Aisle number \\
+\hline
+{\em shelf\+Gaps} & Gap from shelves \\
+\hline
+{\em gap\+Num} & Gap number \\
+\hline
+{\em act\+Part} & Act part \\
+\hline
+{\em gantryX} & Gantry X-\/\+Coordinate \\
+\hline
+{\em gantryY} & Gantry Y-\/\+Coordinate \\
+\hline
+{\em obst\+Obj} & \hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} object \\
+\hline
+{\em new\+Gap} & Newgap from shelf \\
+\hline
+{\em left\+\_\+arm} & Left arm \\
+\hline
+{\em pick\+Status} & Status of pickup \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if escape successfull else false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_a80a0b29105892d6435ef1bb061f35d8f}\label{classGantryControl_a80a0b29105892d6435ef1bb061f35d8f}} 
+\index{Gantry\+Control@{Gantry\+Control}!flip\+Part@{flip\+Part}}
+\index{flip\+Part@{flip\+Part}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{flip\+Part()}{flipPart()}}
+{\footnotesize\ttfamily void Gantry\+Control\+::flip\+Part (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Flip part. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em None} & None \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_a986691834604135cf47b1c070f8d915e}\label{classGantryControl_a986691834604135cf47b1c070f8d915e}} 
+\index{Gantry\+Control@{Gantry\+Control}!get\+Gripper\+State@{get\+Gripper\+State}}
+\index{get\+Gripper\+State@{get\+Gripper\+State}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{get\+Gripper\+State()}{getGripperState()}}
+{\footnotesize\ttfamily nist\+\_\+gear\+::\+Vacuum\+Gripper\+State Gantry\+Control\+::get\+Gripper\+State (\begin{DoxyParamCaption}\item[{std\+::string}]{arm\+\_\+name }\end{DoxyParamCaption})}
+
+
+
+Gets the gripper state. 
+
+Retrieve gripper state.
+
+
+\begin{DoxyParams}{Parameters}
+{\em arm\+\_\+name} & Arm name \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Gripper state 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_ab475e912ab1ea0d13efc10078695102e}\label{classGantryControl_ab475e912ab1ea0d13efc10078695102e}} 
+\index{Gantry\+Control@{Gantry\+Control}!get\+Nearest\+Gap@{get\+Nearest\+Gap}}
+\index{get\+Nearest\+Gap@{get\+Nearest\+Gap}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{get\+Nearest\+Gap()}{getNearestGap()}}
+{\footnotesize\ttfamily int Gantry\+Control\+::get\+Nearest\+Gap (\begin{DoxyParamCaption}\item[{float}]{destX,  }\item[{int}]{aisle\+\_\+num,  }\item[{bool}]{act\+Part,  }\item[{\hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} \&}]{obst\+Obj,  }\item[{const std\+::vector$<$ std\+::pair$<$ float, float $>$ $>$ \&}]{shelf\+Gaps }\end{DoxyParamCaption})}
+
+
+
+Gets the nearest gap from shelf. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em destX} & Destination X-\/\+Coordinate \\
+\hline
+{\em aisle\+\_\+num} & Aisle number \\
+\hline
+{\em act\+Part} & Act part \\
+\hline
+{\em obst\+Obj} & \hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} object \\
+\hline
+{\em shelf\+Gaps} & Gap from shelf \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Nearest gap from shelf 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_aefa12231efd7960bc201638f832d9478}\label{classGantryControl_aefa12231efd7960bc201638f832d9478}} 
+\index{Gantry\+Control@{Gantry\+Control}!get\+Robot\+Pose@{get\+Robot\+Pose}}
+\index{get\+Robot\+Pose@{get\+Robot\+Pose}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{get\+Robot\+Pose()}{getRobotPose()}}
+{\footnotesize\ttfamily geometry\+\_\+msgs\+::\+Pose Gantry\+Control\+::get\+Robot\+Pose (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets the robot pose. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em None} & None \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Robot pose 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_a2ac175070ddb578c03bb5a33cf2d49a4}\label{classGantryControl_a2ac175070ddb578c03bb5a33cf2d49a4}} 
+\index{Gantry\+Control@{Gantry\+Control}!get\+Stats@{get\+Stats}}
+\index{get\+Stats@{get\+Stats}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{get\+Stats()}{getStats()}}
+{\footnotesize\ttfamily \hyperlink{utils_8h_abd807f196b951c0cdd24d50164d54763}{stats} Gantry\+Control\+::get\+Stats (\begin{DoxyParamCaption}\item[{std\+::string}]{function }\end{DoxyParamCaption})}
+
+
+
+Gets the stats. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em function} & Function \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\hyperlink{structStats}{Stats} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_ae92c2fdeba302399425c1abafc76f973}\label{classGantryControl_ae92c2fdeba302399425c1abafc76f973}} 
+\index{Gantry\+Control@{Gantry\+Control}!get\+Target\+World\+Pose@{get\+Target\+World\+Pose}}
+\index{get\+Target\+World\+Pose@{get\+Target\+World\+Pose}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{get\+Target\+World\+Pose()}{getTargetWorldPose()}}
+{\footnotesize\ttfamily geometry\+\_\+msgs\+::\+Pose Gantry\+Control\+::get\+Target\+World\+Pose (\begin{DoxyParamCaption}\item[{geometry\+\_\+msgs\+::\+Pose}]{target,  }\item[{std\+::string}]{agv,  }\item[{std\+::string}]{arm }\end{DoxyParamCaption})}
+
+
+
+Gets target pose in world frame. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Target \\
+\hline
+{\em agv} & A\+GV Number \\
+\hline
+{\em arm} & Left/\+Right arm \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Target pose in world frame 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_a6986d4f622840037e003c6db840d78ed}\label{classGantryControl_a6986d4f622840037e003c6db840d78ed}} 
+\index{Gantry\+Control@{Gantry\+Control}!go\+To\+Preset\+Location@{go\+To\+Preset\+Location}}
+\index{go\+To\+Preset\+Location@{go\+To\+Preset\+Location}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{go\+To\+Preset\+Location()}{goToPresetLocation()}}
+{\footnotesize\ttfamily void Gantry\+Control\+::go\+To\+Preset\+Location (\begin{DoxyParamCaption}\item[{\hyperlink{structPresetLocation}{Preset\+Location}}]{location }\end{DoxyParamCaption})}
+
+
+
+Makes robot move to preset location. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em location} & Preset location \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_a71f13d325c732d931ed5ed175c5b3e7a}\label{classGantryControl_a71f13d325c732d931ed5ed175c5b3e7a}} 
+\index{Gantry\+Control@{Gantry\+Control}!init@{init}}
+\index{init@{init}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{init()}{init()}}
+{\footnotesize\ttfamily void Gantry\+Control\+::init (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Initialization. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em None} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_a9206feae49953cf691e0dec2331cc3ae}\label{classGantryControl_a9206feae49953cf691e0dec2331cc3ae}} 
+\index{Gantry\+Control@{Gantry\+Control}!logical\+Callback16@{logical\+Callback16}}
+\index{logical\+Callback16@{logical\+Callback16}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{logical\+Callback16()}{logicalCallback16()}}
+{\footnotesize\ttfamily void Gantry\+Control\+::logical\+Callback16 (\begin{DoxyParamCaption}\item[{const nist\+\_\+gear\+::\+Logical\+Camera\+Image \&}]{msg }\end{DoxyParamCaption})}
+
+
+
+Logical camera 16 callback. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & Logical\+Camera\+Image \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_a9d745504ec1dbcc8549f5a604f34bbcc}\label{classGantryControl_a9d745504ec1dbcc8549f5a604f34bbcc}} 
+\index{Gantry\+Control@{Gantry\+Control}!logical\+Callback17@{logical\+Callback17}}
+\index{logical\+Callback17@{logical\+Callback17}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{logical\+Callback17()}{logicalCallback17()}}
+{\footnotesize\ttfamily void Gantry\+Control\+::logical\+Callback17 (\begin{DoxyParamCaption}\item[{const nist\+\_\+gear\+::\+Logical\+Camera\+Image \&}]{msg }\end{DoxyParamCaption})}
+
+
+
+Logical camera 17 callback. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & Logical\+Camera\+Image \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_aa6ba7baf102ac7e39d68b2ae2492f9a5}\label{classGantryControl_aa6ba7baf102ac7e39d68b2ae2492f9a5}} 
+\index{Gantry\+Control@{Gantry\+Control}!move2closest\+Gap@{move2closest\+Gap}}
+\index{move2closest\+Gap@{move2closest\+Gap}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{move2closest\+Gap()}{move2closestGap()}}
+{\footnotesize\ttfamily bool Gantry\+Control\+::move2closest\+Gap (\begin{DoxyParamCaption}\item[{struct \hyperlink{structPart}{Part} \&}]{part,  }\item[{std\+::vector$<$ std\+::pair$<$ float, float $>$ $>$ \&}]{shelf\+Gaps,  }\item[{const std\+::vector$<$ int $>$ \&}]{gap\+Num,  }\item[{bool}]{act\+Part,  }\item[{float \&}]{gantryX,  }\item[{float \&}]{gantryY,  }\item[{\hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} \&}]{obj,  }\item[{int \&}]{new\+Gap }\end{DoxyParamCaption})}
+
+
+
+Move to closest gap. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em part} & \hyperlink{structPart}{Part} \\
+\hline
+{\em shelf\+Gaps} & Shelf gaps \\
+\hline
+{\em gap\+Num} & Gap number \\
+\hline
+{\em act\+Part} & Act part \\
+\hline
+{\em gantryX} & Gantry X-\/\+Coordinate \\
+\hline
+{\em gantryY} & Gantry Y-\/\+Coordinate \\
+\hline
+{\em obj} & \hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} object \\
+\hline
+{\em new\+Gap} & New gap \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if moved successfuly else false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_adfbb542c0c4b836ec50bc7cf70557220}\label{classGantryControl_adfbb542c0c4b836ec50bc7cf70557220}} 
+\index{Gantry\+Control@{Gantry\+Control}!move2start@{move2start}}
+\index{move2start@{move2start}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{move2start()}{move2start()}}
+{\footnotesize\ttfamily bool Gantry\+Control\+::move2start (\begin{DoxyParamCaption}\item[{float}]{x,  }\item[{float}]{y,  }\item[{std\+::vector$<$ double $>$}]{left\+\_\+arm }\end{DoxyParamCaption})}
+
+
+
+Moves robot to start position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & X-\/\+Coordinate \\
+\hline
+{\em y} & Y-\/\+Coordinate \\
+\hline
+{\em left\+\_\+arm} & Left arm \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_aa3b48219dcba01f5608c6a4d9ff447e9}\label{classGantryControl_aa3b48219dcba01f5608c6a4d9ff447e9}} 
+\index{Gantry\+Control@{Gantry\+Control}!move2trg@{move2trg}}
+\index{move2trg@{move2trg}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{move2trg()}{move2trg()}}
+{\footnotesize\ttfamily std\+::vector$<$ double $>$ Gantry\+Control\+::move2trg (\begin{DoxyParamCaption}\item[{float}]{x,  }\item[{float}]{y,  }\item[{float \&}]{gantryX,  }\item[{float \&}]{gantryY,  }\item[{int}]{curr\+Gap,  }\item[{std\+::vector$<$ double $>$}]{left\+\_\+arm }\end{DoxyParamCaption})}
+
+
+
+Move to target. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & X-\/\+Coordinate \\
+\hline
+{\em y} & Y-\/\+Coordinate \\
+\hline
+{\em gantryX} & Gantry position X coordinate \\
+\hline
+{\em gantryY} & Gantry position Y coordinate \\
+\hline
+{\em curr\+Gap} & Current gap \\
+\hline
+{\em left\+\_\+arm} & Left arm \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Joint angles of arm 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_a0220eeac3687f7f043fa4014f5ea302e}\label{classGantryControl_a0220eeac3687f7f043fa4014f5ea302e}} 
+\index{Gantry\+Control@{Gantry\+Control}!pick\+From\+Conveyor@{pick\+From\+Conveyor}}
+\index{pick\+From\+Conveyor@{pick\+From\+Conveyor}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{pick\+From\+Conveyor()}{pickFromConveyor()}}
+{\footnotesize\ttfamily void Gantry\+Control\+::pick\+From\+Conveyor (\begin{DoxyParamCaption}\item[{\hyperlink{structProduct}{Product} \&}]{product,  }\item[{\hyperlink{classConveyerParts}{Conveyer\+Parts} \&}]{conveyer\+Parts\+Obj }\end{DoxyParamCaption})}
+
+
+
+Pick from conveyor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em product} & \hyperlink{structProduct}{Product} \\
+\hline
+{\em conveyer\+Parts\+Obj} & Conveyor parts object \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_af9280bbee71d1ceca8aef3d616d48254}\label{classGantryControl_af9280bbee71d1ceca8aef3d616d48254}} 
+\index{Gantry\+Control@{Gantry\+Control}!pick\+Part@{pick\+Part}}
+\index{pick\+Part@{pick\+Part}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{pick\+Part()}{pickPart()}}
+{\footnotesize\ttfamily bool Gantry\+Control\+::pick\+Part (\begin{DoxyParamCaption}\item[{\hyperlink{utils_8h_a67ee3a5b9091664130eca8efc8b97ab9}{part}}]{part }\end{DoxyParamCaption})}
+
+
+
+Makes robot pick the part. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em part} & \hyperlink{structPart}{Part} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if picked successfully else false 
+\end{DoxyReturn}
+We want the Cartesian path to be interpolated at a resolution of 1 cm which is why we will specify 0.\+01 as the max step in Cartesian translation. We will specify the jump threshold as 0.\+0, effectively disabling it.\mbox{\Hypertarget{classGantryControl_a0d0eb41f65891a98cae6f2a4a42d281a}\label{classGantryControl_a0d0eb41f65891a98cae6f2a4a42d281a}} 
+\index{Gantry\+Control@{Gantry\+Control}!place\+Part@{place\+Part}}
+\index{place\+Part@{place\+Part}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{place\+Part()}{placePart()}}
+{\footnotesize\ttfamily bool Gantry\+Control\+::place\+Part (\begin{DoxyParamCaption}\item[{\hyperlink{utils_8h_a48a7207852c0455cce7e65703b12ec7e}{product} \&}]{product,  }\item[{std\+::string}]{agv,  }\item[{std\+::string}]{arm }\end{DoxyParamCaption})}
+
+
+
+Makes robot place the part. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em product} & \hyperlink{structProduct}{Product} \\
+\hline
+{\em agv} & A\+GV Number \\
+\hline
+{\em arm} & Left/\+Right arm \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if placed successfully else false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_a9c655daed586e64921ffc53cb90b2873}\label{classGantryControl_a9c655daed586e64921ffc53cb90b2873}} 
+\index{Gantry\+Control@{Gantry\+Control}!pose\+Matches@{pose\+Matches}}
+\index{pose\+Matches@{pose\+Matches}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{pose\+Matches()}{poseMatches()}}
+{\footnotesize\ttfamily bool Gantry\+Control\+::pose\+Matches (\begin{DoxyParamCaption}\item[{const geometry\+\_\+msgs\+::\+Pose \&}]{pose1,  }\item[{const geometry\+\_\+msgs\+::\+Pose \&}]{pose2 }\end{DoxyParamCaption})}
+
+
+
+Pose Matches. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pose1} & Pose 1 \\
+\hline
+{\em pose2} & Pose 2 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if pose matches else false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_a6557b18bde7b776e6a05fe85d9e858d9}\label{classGantryControl_a6557b18bde7b776e6a05fe85d9e858d9}} 
+\index{Gantry\+Control@{Gantry\+Control}!quality\+Callback1@{quality\+Callback1}}
+\index{quality\+Callback1@{quality\+Callback1}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{quality\+Callback1()}{qualityCallback1()}}
+{\footnotesize\ttfamily void Gantry\+Control\+::quality\+Callback1 (\begin{DoxyParamCaption}\item[{const nist\+\_\+gear\+::\+Logical\+Camera\+Image \&}]{msg }\end{DoxyParamCaption})}
+
+
+
+Quality camera 1 callback. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & Logical Camera Image \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_a355b299969bfa74073062ba1c6c1ec04}\label{classGantryControl_a355b299969bfa74073062ba1c6c1ec04}} 
+\index{Gantry\+Control@{Gantry\+Control}!quality\+Callback2@{quality\+Callback2}}
+\index{quality\+Callback2@{quality\+Callback2}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{quality\+Callback2()}{qualityCallback2()}}
+{\footnotesize\ttfamily void Gantry\+Control\+::quality\+Callback2 (\begin{DoxyParamCaption}\item[{const nist\+\_\+gear\+::\+Logical\+Camera\+Image \&}]{msg }\end{DoxyParamCaption})}
+
+
+
+Quality camera 2 callback. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & Logical Camera Image \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_ad7a304b37a95f29634631d4183276be3}\label{classGantryControl_ad7a304b37a95f29634631d4183276be3}} 
+\index{Gantry\+Control@{Gantry\+Control}!rotate\+\_\+gantry@{rotate\+\_\+gantry}}
+\index{rotate\+\_\+gantry@{rotate\+\_\+gantry}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{rotate\+\_\+gantry()}{rotate\_gantry()}}
+{\footnotesize\ttfamily void Gantry\+Control\+::rotate\+\_\+gantry (\begin{DoxyParamCaption}\item[{double}]{angle }\end{DoxyParamCaption})}
+
+
+
+Rotate gantry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em angle} & Angle \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classGantryControl_ab271ce06b0d336eddb26e1ba5a2ce594}\label{classGantryControl_ab271ce06b0d336eddb26e1ba5a2ce594}} 
+\index{Gantry\+Control@{Gantry\+Control}!send\+\_\+command@{send\+\_\+command}}
+\index{send\+\_\+command@{send\+\_\+command}!Gantry\+Control@{Gantry\+Control}}
+\subsubsection{\texorpdfstring{send\+\_\+command()}{send\_command()}}
+{\footnotesize\ttfamily bool Gantry\+Control\+::send\+\_\+command (\begin{DoxyParamCaption}\item[{trajectory\+\_\+msgs\+::\+Joint\+Trajectory}]{command\+\_\+msg }\end{DoxyParamCaption})}
+
+
+
+Send command message to robot controller. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em command\+\_\+msg} & Joint trajectory command message \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if command published successfully else false 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\hyperlink{gantry__control_8h}{gantry\+\_\+control.\+h}\item 
+src/\hyperlink{gantry__control_8cpp}{gantry\+\_\+control.\+cpp}\end{DoxyCompactItemize}

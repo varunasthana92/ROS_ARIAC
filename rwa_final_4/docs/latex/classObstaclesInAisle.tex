@@ -1,0 +1,175 @@
+\hypertarget{classObstaclesInAisle}{}\section{Obstacles\+In\+Aisle Class Reference}
+\label{classObstaclesInAisle}\index{Obstacles\+In\+Aisle@{Obstacles\+In\+Aisle}}
+
+
+\hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} class.  
+
+
+
+
+{\ttfamily \#include $<$obstacles.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classObstaclesInAisle_a62fe52625ce87d35a55f5c790ba45bb9}{breakbeam\+\_\+callback} (const nist\+\_\+gear\+::\+Proximity\+::\+Const\+Ptr \&msg, int id)
+\begin{DoxyCompactList}\small\item\em Breakbeam callback. \end{DoxyCompactList}\item 
+bool \hyperlink{classObstaclesInAisle_afeb7df3fceeec86c72b67e43c55bae84}{move\+Bot} (float destX, int gap\+Num, int aisle\+\_\+num, float currX, int curr\+Gap)
+\begin{DoxyCompactList}\small\item\em Move Robot. \end{DoxyCompactList}\item 
+\hyperlink{classObstaclesInAisle_a4d20a41862867ff7cdba73fad954cdb1}{Obstacles\+In\+Aisle} (ros\+::\+Node\+Handle \&node)
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+bool \hyperlink{classObstaclesInAisle_a30674dc5290f284f32ad2730dc0fb8a5}{is\+Aisle\+Clear} (int aisle\+\_\+num)
+\begin{DoxyCompactList}\small\item\em Checks if aisle is clear. \end{DoxyCompactList}\item 
+void \hyperlink{classObstaclesInAisle_a44704e14f7829f5e3a81e0f6595bab63}{Init} ()
+\begin{DoxyCompactList}\small\item\em Initialization. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classObstaclesInAisle_a249e7e48865ed9e778beb4e153128d16}\label{classObstaclesInAisle_a249e7e48865ed9e778beb4e153128d16}} 
+int \hyperlink{classObstaclesInAisle_a249e7e48865ed9e778beb4e153128d16}{num\+\_\+obstacles} = 0
+\begin{DoxyCompactList}\small\item\em Number of obstacles. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classObstaclesInAisle_a6e77c0470caedc4ec4a1a6dce61b25ba}\label{classObstaclesInAisle_a6e77c0470caedc4ec4a1a6dce61b25ba}} 
+std\+::vector$<$ int $>$ \hyperlink{classObstaclesInAisle_a6e77c0470caedc4ec4a1a6dce61b25ba}{aisle\+\_\+1\+\_\+sensor\+\_\+data}
+\begin{DoxyCompactList}\small\item\em Aisle 1 sensor data. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classObstaclesInAisle_a7a2b0d66baf6b26a133028eae236ac09}\label{classObstaclesInAisle_a7a2b0d66baf6b26a133028eae236ac09}} 
+std\+::vector$<$ int $>$ \hyperlink{classObstaclesInAisle_a7a2b0d66baf6b26a133028eae236ac09}{aisle\+\_\+2\+\_\+sensor\+\_\+data}
+\begin{DoxyCompactList}\small\item\em Aisle 2 sensor data. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classObstaclesInAisle_adc6a05051fdaa774a8d856f8be08ee83}\label{classObstaclesInAisle_adc6a05051fdaa774a8d856f8be08ee83}} 
+std\+::vector$<$ int $>$ \hyperlink{classObstaclesInAisle_adc6a05051fdaa774a8d856f8be08ee83}{aisle\+\_\+3\+\_\+sensor\+\_\+data}
+\begin{DoxyCompactList}\small\item\em Aisle 3 sensor data. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classObstaclesInAisle_aa7e031213bce831621cd41c3a99eb3a0}\label{classObstaclesInAisle_aa7e031213bce831621cd41c3a99eb3a0}} 
+std\+::vector$<$ int $>$ \hyperlink{classObstaclesInAisle_aa7e031213bce831621cd41c3a99eb3a0}{aisle\+\_\+4\+\_\+sensor\+\_\+data}
+\begin{DoxyCompactList}\small\item\em Aisle 4 sensor data. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classObstaclesInAisle_a2e40ef4a8bba5d82a85096a7fb4d4ea5}\label{classObstaclesInAisle_a2e40ef4a8bba5d82a85096a7fb4d4ea5}} 
+std\+::pair$<$ int, int $>$ \hyperlink{classObstaclesInAisle_a2e40ef4a8bba5d82a85096a7fb4d4ea5}{aisle\+\_\+1\+\_\+dir}
+\begin{DoxyCompactList}\small\item\em aisle\+\_\+1\+\_\+dir \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classObstaclesInAisle_a73a4e67f39d2d9fd4ed4d08d9756974c}\label{classObstaclesInAisle_a73a4e67f39d2d9fd4ed4d08d9756974c}} 
+std\+::pair$<$ int, int $>$ \hyperlink{classObstaclesInAisle_a73a4e67f39d2d9fd4ed4d08d9756974c}{aisle\+\_\+2\+\_\+dir}
+\begin{DoxyCompactList}\small\item\em Aisle 2 dir. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classObstaclesInAisle_a8980518cb32802fe08cf0abdb5423133}\label{classObstaclesInAisle_a8980518cb32802fe08cf0abdb5423133}} 
+std\+::pair$<$ int, int $>$ \hyperlink{classObstaclesInAisle_a8980518cb32802fe08cf0abdb5423133}{aisle\+\_\+3\+\_\+dir}
+\begin{DoxyCompactList}\small\item\em Aisle 3 dir. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classObstaclesInAisle_a1a82a72080e5afcfefbc5e915988ddd2}\label{classObstaclesInAisle_a1a82a72080e5afcfefbc5e915988ddd2}} 
+std\+::pair$<$ int, int $>$ \hyperlink{classObstaclesInAisle_a1a82a72080e5afcfefbc5e915988ddd2}{aisle\+\_\+4\+\_\+dir}
+\begin{DoxyCompactList}\small\item\em Aisle 4 dir. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classObstaclesInAisle_aafc047331e5dcc65a222c886af234d83}\label{classObstaclesInAisle_aafc047331e5dcc65a222c886af234d83}} 
+std\+::vector$<$ bool $>$ \hyperlink{classObstaclesInAisle_aafc047331e5dcc65a222c886af234d83}{aisle\+\_\+clear}
+\begin{DoxyCompactList}\small\item\em Aisle clear. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classObstaclesInAisle_afcfdaf180f0bddd565bc96ed9667b676}\label{classObstaclesInAisle_afcfdaf180f0bddd565bc96ed9667b676}} 
+ros\+::\+Node\+Handle \hyperlink{classObstaclesInAisle_afcfdaf180f0bddd565bc96ed9667b676}{node\+\_\+}
+\begin{DoxyCompactList}\small\item\em R\+OS Nodehandle. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} class. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classObstaclesInAisle_a4d20a41862867ff7cdba73fad954cdb1}\label{classObstaclesInAisle_a4d20a41862867ff7cdba73fad954cdb1}} 
+\index{Obstacles\+In\+Aisle@{Obstacles\+In\+Aisle}!Obstacles\+In\+Aisle@{Obstacles\+In\+Aisle}}
+\index{Obstacles\+In\+Aisle@{Obstacles\+In\+Aisle}!Obstacles\+In\+Aisle@{Obstacles\+In\+Aisle}}
+\subsubsection{\texorpdfstring{Obstacles\+In\+Aisle()}{ObstaclesInAisle()}}
+{\footnotesize\ttfamily Obstacles\+In\+Aisle\+::\+Obstacles\+In\+Aisle (\begin{DoxyParamCaption}\item[{ros\+::\+Node\+Handle \&}]{node }\end{DoxyParamCaption})}
+
+
+
+Constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em node} & R\+OS nodehandle \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classObstaclesInAisle_a62fe52625ce87d35a55f5c790ba45bb9}\label{classObstaclesInAisle_a62fe52625ce87d35a55f5c790ba45bb9}} 
+\index{Obstacles\+In\+Aisle@{Obstacles\+In\+Aisle}!breakbeam\+\_\+callback@{breakbeam\+\_\+callback}}
+\index{breakbeam\+\_\+callback@{breakbeam\+\_\+callback}!Obstacles\+In\+Aisle@{Obstacles\+In\+Aisle}}
+\subsubsection{\texorpdfstring{breakbeam\+\_\+callback()}{breakbeam\_callback()}}
+{\footnotesize\ttfamily void Obstacles\+In\+Aisle\+::breakbeam\+\_\+callback (\begin{DoxyParamCaption}\item[{const nist\+\_\+gear\+::\+Proximity\+::\+Const\+Ptr \&}]{msg,  }\item[{int}]{id }\end{DoxyParamCaption})}
+
+
+
+Breakbeam callback. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & Proximity sensor data \\
+\hline
+{\em id} & Sensor id number \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classObstaclesInAisle_a44704e14f7829f5e3a81e0f6595bab63}\label{classObstaclesInAisle_a44704e14f7829f5e3a81e0f6595bab63}} 
+\index{Obstacles\+In\+Aisle@{Obstacles\+In\+Aisle}!Init@{Init}}
+\index{Init@{Init}!Obstacles\+In\+Aisle@{Obstacles\+In\+Aisle}}
+\subsubsection{\texorpdfstring{Init()}{Init()}}
+{\footnotesize\ttfamily void Obstacles\+In\+Aisle\+::\+Init (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Initialization. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em None} & None \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classObstaclesInAisle_a30674dc5290f284f32ad2730dc0fb8a5}\label{classObstaclesInAisle_a30674dc5290f284f32ad2730dc0fb8a5}} 
+\index{Obstacles\+In\+Aisle@{Obstacles\+In\+Aisle}!is\+Aisle\+Clear@{is\+Aisle\+Clear}}
+\index{is\+Aisle\+Clear@{is\+Aisle\+Clear}!Obstacles\+In\+Aisle@{Obstacles\+In\+Aisle}}
+\subsubsection{\texorpdfstring{is\+Aisle\+Clear()}{isAisleClear()}}
+{\footnotesize\ttfamily bool Obstacles\+In\+Aisle\+::is\+Aisle\+Clear (\begin{DoxyParamCaption}\item[{int}]{aisle\+\_\+num }\end{DoxyParamCaption})}
+
+
+
+Checks if aisle is clear. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em aisle\+\_\+num} & Aisle number \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if Aisle clear else false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classObstaclesInAisle_afeb7df3fceeec86c72b67e43c55bae84}\label{classObstaclesInAisle_afeb7df3fceeec86c72b67e43c55bae84}} 
+\index{Obstacles\+In\+Aisle@{Obstacles\+In\+Aisle}!move\+Bot@{move\+Bot}}
+\index{move\+Bot@{move\+Bot}!Obstacles\+In\+Aisle@{Obstacles\+In\+Aisle}}
+\subsubsection{\texorpdfstring{move\+Bot()}{moveBot()}}
+{\footnotesize\ttfamily bool Obstacles\+In\+Aisle\+::move\+Bot (\begin{DoxyParamCaption}\item[{float}]{destX,  }\item[{int}]{gap\+Num,  }\item[{int}]{aisle\+\_\+num,  }\item[{float}]{currX,  }\item[{int}]{curr\+Gap }\end{DoxyParamCaption})}
+
+
+
+Move Robot. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em destX} & Destination X-\/\+Coordinate \\
+\hline
+{\em gap\+Num} & Gap number \\
+\hline
+{\em aisle\+\_\+num} & Aisle number \\
+\hline
+{\em currX} & Current X-\/\+Coordinate \\
+\hline
+{\em curr\+Gap} & Current gap \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if moved successfully else false 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\hyperlink{obstacles_8h}{obstacles.\+h}\item 
+src/\hyperlink{obstacles_8cpp}{obstacles.\+cpp}\end{DoxyCompactItemize}

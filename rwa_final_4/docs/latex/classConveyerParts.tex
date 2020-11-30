@@ -1,0 +1,195 @@
+\hypertarget{classConveyerParts}{}\section{Conveyer\+Parts Class Reference}
+\label{classConveyerParts}\index{Conveyer\+Parts@{Conveyer\+Parts}}
+
+
+Conveyor parts class.  
+
+
+
+
+{\ttfamily \#include $<$conveyer.\+h$>$}
+
+
+
+Collaboration diagram for Conveyer\+Parts\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=200pt]{classConveyerParts__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classConveyerParts_a4e63b43cf4de0e31ed58a89b1fc2654c}{conveyer\+Logical\+Camera\+Callback} (const nist\+\_\+gear\+::\+Logical\+Camera\+Image \&msg)
+\begin{DoxyCompactList}\small\item\em Conveyor logical camera callback. \end{DoxyCompactList}\item 
+\hyperlink{classConveyerParts_a0b511cdd3b2d0c0587901b1443f43d49}{Conveyer\+Parts} (ros\+::\+Node\+Handle \&node)
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+void \hyperlink{classConveyerParts_ab701aac222b631fdf7a1d2a3465eaa67}{Init} ()
+\begin{DoxyCompactList}\small\item\em Initialization. \end{DoxyCompactList}\item 
+bool \hyperlink{classConveyerParts_aaa9a8364efc6d4247d8d5585b6b21859}{check\+Part} (const std\+::string \&part\+\_\+name)
+\begin{DoxyCompactList}\small\item\em Checks for part. \end{DoxyCompactList}\item 
+bool \hyperlink{classConveyerParts_a57188292039617070e9042ad3133a5f8}{give\+Closest\+Part} (const std\+::string \&part\+\_\+name, geometry\+\_\+msgs\+::\+Pose \&pose\+On\+Conveyer)
+\begin{DoxyCompactList}\small\item\em Gets closest part. \end{DoxyCompactList}\item 
+bool \hyperlink{classConveyerParts_a8a536ff479f28fcb38cf454a41f8387e}{check\+For\+Pick} ()
+\begin{DoxyCompactList}\small\item\em Checks if part ready to pickup. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classConveyerParts_a8cd52489a957397b51b4e1be2bcd84d9}\label{classConveyerParts_a8cd52489a957397b51b4e1be2bcd84d9}} 
+ros\+::\+Subscriber \hyperlink{classConveyerParts_a8cd52489a957397b51b4e1be2bcd84d9}{conveyer\+\_\+subscriber}
+\begin{DoxyCompactList}\small\item\em Conveyer subscriber variable. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classConveyerParts_aa604a79b48159e651800911a4c26a13d}\label{classConveyerParts_aa604a79b48159e651800911a4c26a13d}} 
+\hyperlink{classDetection}{Detection} \hyperlink{classConveyerParts_aa604a79b48159e651800911a4c26a13d}{current\+\_\+detection}
+\begin{DoxyCompactList}\small\item\em Current detection variable. \end{DoxyCompactList}\item 
+std\+::vector$<$ \hyperlink{classDetection}{Detection} $>$ \hyperlink{classConveyerParts_ab75ade698ffee71ccf3792d22917eb95}{all\+Conveyer\+Parts}
+\begin{DoxyCompactList}\small\item\em All Conveyer Parts variable. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classConveyerParts_a4147928a7d87b11ad6dfa179cbfc3a5c}\label{classConveyerParts_a4147928a7d87b11ad6dfa179cbfc3a5c}} 
+double \hyperlink{classConveyerParts_a4147928a7d87b11ad6dfa179cbfc3a5c}{estimated\+\_\+time} =0
+\begin{DoxyCompactList}\small\item\em Estimated time. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Conveyor parts class. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classConveyerParts_a0b511cdd3b2d0c0587901b1443f43d49}\label{classConveyerParts_a0b511cdd3b2d0c0587901b1443f43d49}} 
+\index{Conveyer\+Parts@{Conveyer\+Parts}!Conveyer\+Parts@{Conveyer\+Parts}}
+\index{Conveyer\+Parts@{Conveyer\+Parts}!Conveyer\+Parts@{Conveyer\+Parts}}
+\subsubsection{\texorpdfstring{Conveyer\+Parts()}{ConveyerParts()}}
+{\footnotesize\ttfamily Conveyer\+Parts\+::\+Conveyer\+Parts (\begin{DoxyParamCaption}\item[{ros\+::\+Node\+Handle \&}]{node }\end{DoxyParamCaption})}
+
+
+
+Constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em node} & R\+OS nodehandle \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classConveyerParts_a8a536ff479f28fcb38cf454a41f8387e}\label{classConveyerParts_a8a536ff479f28fcb38cf454a41f8387e}} 
+\index{Conveyer\+Parts@{Conveyer\+Parts}!check\+For\+Pick@{check\+For\+Pick}}
+\index{check\+For\+Pick@{check\+For\+Pick}!Conveyer\+Parts@{Conveyer\+Parts}}
+\subsubsection{\texorpdfstring{check\+For\+Pick()}{checkForPick()}}
+{\footnotesize\ttfamily bool Conveyer\+Parts\+::check\+For\+Pick (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Checks if part ready to pickup. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em None} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if ready to be picked up else false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConveyerParts_aaa9a8364efc6d4247d8d5585b6b21859}\label{classConveyerParts_aaa9a8364efc6d4247d8d5585b6b21859}} 
+\index{Conveyer\+Parts@{Conveyer\+Parts}!check\+Part@{check\+Part}}
+\index{check\+Part@{check\+Part}!Conveyer\+Parts@{Conveyer\+Parts}}
+\subsubsection{\texorpdfstring{check\+Part()}{checkPart()}}
+{\footnotesize\ttfamily bool Conveyer\+Parts\+::check\+Part (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{part\+\_\+name }\end{DoxyParamCaption})}
+
+
+
+Checks for part. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em part\+\_\+name} & \hyperlink{structPart}{Part} name \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConveyerParts_a4e63b43cf4de0e31ed58a89b1fc2654c}\label{classConveyerParts_a4e63b43cf4de0e31ed58a89b1fc2654c}} 
+\index{Conveyer\+Parts@{Conveyer\+Parts}!conveyer\+Logical\+Camera\+Callback@{conveyer\+Logical\+Camera\+Callback}}
+\index{conveyer\+Logical\+Camera\+Callback@{conveyer\+Logical\+Camera\+Callback}!Conveyer\+Parts@{Conveyer\+Parts}}
+\subsubsection{\texorpdfstring{conveyer\+Logical\+Camera\+Callback()}{conveyerLogicalCameraCallback()}}
+{\footnotesize\ttfamily void Conveyer\+Parts\+::conveyer\+Logical\+Camera\+Callback (\begin{DoxyParamCaption}\item[{const nist\+\_\+gear\+::\+Logical\+Camera\+Image \&}]{msg }\end{DoxyParamCaption})}
+
+
+
+Conveyor logical camera callback. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & Logical camera image \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConveyerParts_a57188292039617070e9042ad3133a5f8}\label{classConveyerParts_a57188292039617070e9042ad3133a5f8}} 
+\index{Conveyer\+Parts@{Conveyer\+Parts}!give\+Closest\+Part@{give\+Closest\+Part}}
+\index{give\+Closest\+Part@{give\+Closest\+Part}!Conveyer\+Parts@{Conveyer\+Parts}}
+\subsubsection{\texorpdfstring{give\+Closest\+Part()}{giveClosestPart()}}
+{\footnotesize\ttfamily bool Conveyer\+Parts\+::give\+Closest\+Part (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{part\+\_\+name,  }\item[{geometry\+\_\+msgs\+::\+Pose \&}]{pose\+On\+Conveyer }\end{DoxyParamCaption})}
+
+
+
+Gets closest part. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em part\+\_\+name} & \hyperlink{structPart}{Part} name \\
+\hline
+{\em pose\+On\+Conveyer} & Current pose of part on conveyor \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True/\+False 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConveyerParts_ab701aac222b631fdf7a1d2a3465eaa67}\label{classConveyerParts_ab701aac222b631fdf7a1d2a3465eaa67}} 
+\index{Conveyer\+Parts@{Conveyer\+Parts}!Init@{Init}}
+\index{Init@{Init}!Conveyer\+Parts@{Conveyer\+Parts}}
+\subsubsection{\texorpdfstring{Init()}{Init()}}
+{\footnotesize\ttfamily void Conveyer\+Parts\+::\+Init (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Initialization. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em None} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classConveyerParts_ab75ade698ffee71ccf3792d22917eb95}\label{classConveyerParts_ab75ade698ffee71ccf3792d22917eb95}} 
+\index{Conveyer\+Parts@{Conveyer\+Parts}!all\+Conveyer\+Parts@{all\+Conveyer\+Parts}}
+\index{all\+Conveyer\+Parts@{all\+Conveyer\+Parts}!Conveyer\+Parts@{Conveyer\+Parts}}
+\subsubsection{\texorpdfstring{all\+Conveyer\+Parts}{allConveyerParts}}
+{\footnotesize\ttfamily std\+::vector$<$\hyperlink{classDetection}{Detection}$>$ Conveyer\+Parts\+::all\+Conveyer\+Parts}
+
+
+
+All Conveyer Parts variable. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em None} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/conveyer.\+h\item 
+src/conveyer.\+cpp\end{DoxyCompactItemize}
