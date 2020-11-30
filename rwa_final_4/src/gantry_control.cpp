@@ -745,7 +745,7 @@ bool GantryControl::placePart(Product &product,
     if(product.p.flip_part == true){
         ROS_INFO_STREAM("-----------------Correcting pose for flipped part");
         is_part_placed_correct = false;
-        product.p.flip_part == false;
+        product.p.flip_part = false;
     }
 
     if(is_part_placed_correct){
@@ -982,28 +982,23 @@ bool GantryControl::move2start ( float x, float y, std::vector<double> left_arm)
         else  if( y <= 3.6 && y > 2.45){
             move.gantry[0] = x;
             move.gantry[1] -= offset_y;
-            // move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
-
             ROS_INFO_STREAM("Position of str_11");
-
             goToPresetLocation(move);
 
             move.gantry[0] = 0;
-            // move.gantry[1] -= offset_y;
-            // move.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
-            goToPresetLocation(move);
             move.left_arm = start_.left_arm;
             move.right_arm = start_.right_arm;
             goToPresetLocation(move);
             return true;
         }
         else  if( y <= 2.45 && y > 0){
-            move.gantry[0] = 0;
-            move.gantry[1] -= offset_y;
+            move.gantry[0] = x;
+            move.gantry[1] -= offset_y+0.5;
 
             ROS_INFO_STREAM("Position of str_bins1");
 
             goToPresetLocation(move);
+            move.gantry[0] = 0;
             move.left_arm = start_.left_arm;
             move.right_arm = start_.right_arm;
             goToPresetLocation(move);
@@ -1027,12 +1022,13 @@ bool GantryControl::move2start ( float x, float y, std::vector<double> left_arm)
             return true;
         }
         else  if( y <= 0 && y > -2.45){
-            move.gantry[0] = 0;
-            move.gantry[1] += offset_y;
+            move.gantry[0] = x;
+            move.gantry[1] += offset_y-0.5;
 
             ROS_INFO_STREAM("Position of str_bins2");
 
             goToPresetLocation(move);
+            move.gantry[0] = 0;
             move.left_arm = start_.left_arm;
             move.right_arm = start_.right_arm;
             goToPresetLocation(move);
