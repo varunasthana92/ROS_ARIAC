@@ -157,8 +157,14 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj, int num_o
         st_order_shipment_num_top = st_order->ship_num;
         ROS_WARN_STREAM("getList() st_list left ");
     }
-    ROS_WARN_STREAM("getList() agv1 top order " << most_recent_order_agv1.back());
-    ROS_WARN_STREAM("getList() agv2 top order " << most_recent_order_agv2.back());
+    if(most_recent_order_agv1.size()){
+        ROS_WARN_STREAM("getList() agv1 top order " << most_recent_order_agv1.back());
+    }
+    
+    if(most_recent_order_agv2.size()){
+        ROS_WARN_STREAM("getList() agv2 top order " << most_recent_order_agv2.back());
+    }
+    
     struct all_Order* mv_temp = NULL;
     struct all_Order* st_temp = NULL;
 
