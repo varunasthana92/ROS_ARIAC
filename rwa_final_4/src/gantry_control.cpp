@@ -260,7 +260,7 @@ void GantryControl::init() {
     flipped_pulley_preset.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
     conveyor_up_.gantry = {0, 1.2, 1.57};
-    conveyor_up_.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    conveyor_up_.left_arm = {0.0, -0.98, 1.95, -0.98, PI/2, 0};
     conveyor_up_.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
 
@@ -553,7 +553,7 @@ bool GantryControl::pickPart(part part){
 }
 
 bool GantryControl::placePart(Product &product, std::string agv,
-                              std::string arm, struct all_Order *curr_prod){
+                              std::string arm, struct all_Order *curr_prod, ConveyerParts &conveyerPartsObj){
 
     Part part = product.p;
     auto target_pose_in_tray = getTargetWorldPose(product.pose, agv, arm);
@@ -687,11 +687,19 @@ bool GantryControl::placePart(Product &product, std::string agv,
         part_placed_pose = &part_placed_pose_agv1;
     }
 
-    ros::Duration(0.5).sleep();
+    ros::Duration(1).sleep();
     int temp_call_check = quality_call_count;
+    bool black = false;
     while(temp_call_check == quality_call_count){
-
+        conveyerPartsObj.updateCurrentPoses();
+        conveyerPartsObj.checkBoundaries();
+        conveyerPartsObj.checkCurrentPartSet();
         ROS_WARN_STREAM_THROTTLE(5, "-#########  BLACK OUT  ##########");
+//        black = true;
+    }
+    if(black){
+        conveyerPartsObj.allConveyerParts.clear();
+        conveyerPartsObj.emptyAfterblackout();
     }
 
     if (*is_part_faulty) {
@@ -777,7 +785,7 @@ bool GantryControl::placePart(Product &product, std::string agv,
         *is_part_faulty =  true;
         pickPart(part);
         *is_part_faulty =  false;
-        bool placed = placePart(product, agv, arm, curr_prod);
+        bool placed = placePart(product, agv, arm, curr_prod, conveyerPartsObj);
     }
     // product.p.flip_part = temp_flip_status;
     return true;
@@ -1059,7 +1067,7 @@ bool GantryControl::move2start ( float x, float y, std::vector<double> left_arm)
         }
         else  if( y <= 0 && y > -2.45){
             move.gantry[0] = x;
-            move.gantry[1] += offset_y-0.5;
+            move.gantry[1] += offset_y+0.5;
 
             ROS_INFO_STREAM("Position of str_bins2");
 
@@ -1411,7 +1419,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
    }
 }
 
-void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPartsObj){
+bool GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPartsObj){
     geometry_msgs::Pose estimated_conveyor_pose = product.estimated_conveyor_pose;
     conveyor_up_.gantry = {estimated_conveyor_pose.position.x + 0.1, -(estimated_conveyor_pose.position.y - 0.6) , PI/2};
     goToPresetLocation(conveyor_up_);
@@ -1444,8 +1452,11 @@ void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
     left_arm_group_.setPoseTarget(pickup_pose);
 
     bool missed = false;
-    while (!left_gripper_status.attached) {
-        ROS_WARN_STREAM_THROTTLE(1, "Waiting for part to be picked");
+    int starttime=ros::Time::now().toSec();
+    int conveyorCounter = 0;
+    while (!left_gripper_status.attached && conveyorCounter < 4) {
+        ROS_WARN_STREAM_THROTTLE(1, "Waiting for part to be picked : " << conveyorCounter );
+        activateGripper("left_arm");
         if(conveyerPartsObj.checkForPick()) {
             // ROS_DEBUG_STREAM("Trying to pick it up");
             ROS_WARN_STREAM("Lets pick !!!! ");
@@ -1455,15 +1466,27 @@ void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
             // break;
             left_gripper_status = getGripperState("left_arm");
             if(!left_gripper_status.attached) {
+                starttime=ros::Time::now().toSec();
                 missed = true;
             }
         }
+        if(ros::Time::now().toSec() - starttime > 12){
+            starttime=ros::Time::now().toSec();
+            missed = true;
+        }
 
         if(missed == true){
+            conveyorCounter++;
             // goToPresetLocation(start_);
             ROS_DEBUG_STREAM_THROTTLE(1, "----MISSED----");
             bool status = false;
+            left_arm_group_.setPoseTarget(pre_pickup_pose);
+            left_arm_group_.move();
+            int starttime1=ros::Time::now().toSec();
             do{
+                if(ros::Time::now().toSec() - starttime1 > 15){
+                    break;
+                }
                 ROS_DEBUG_STREAM_THROTTLE(0.5, "----Searching on  conveyor----");
                 status = conveyerPartsObj.giveClosestPart(product.type, product.estimated_conveyor_pose);
             }while(status != true);
@@ -1490,6 +1513,11 @@ void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
         
         left_gripper_status = getGripperState("left_arm");
     }
+    left_gripper_status = getGripperState("left_arm");
+    if(!left_gripper_status.attached){
+        return false;
+    }
+
 
 
     left_arm_group_.setPoseTarget(currentPose);
@@ -1507,79 +1535,10 @@ void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
     product.p.pose.orientation.y = q_res.y();
     product.p.pose.orientation.z = q_res.z();
     product.p.pose.orientation.w = q_res.w();
-    return;
+    return true;
 }
 
-/*
-void GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPartsObj) {
-    ROS_INFO_STREAM("Going to pick " << product.type << " from conveyor ...");
-    geometry_msgs::Pose estimated_conveyor_pose = product.estimated_conveyor_pose;
 
-    conveyor_up_.gantry = {estimated_conveyor_pose.position.x, -(estimated_conveyor_pose.position.y - 0.4) , 1.57};
-    goToPresetLocation(conveyor_up_);
-
-    // ROS_INFO_STREAM("Waiting to pick up ... ");
-    activateGripper("left_arm");
-    auto left_gripper_status = getGripperState("left_arm");
-    geometry_msgs::Pose pickup_pose, pre_pickup_pose;
-    
-    while(!left_gripper_status.enabled){
-    	activateGripper("left_arm");
-    	left_gripper_status = getGripperState("left_arm");
-    }
-
-    auto currentPose = left_arm_group_.getCurrentPose().pose;
-	pickup_pose.position.x = estimated_conveyor_pose.position.x;
-	pickup_pose.position.y = estimated_conveyor_pose.position.y;
-	pickup_pose.position.z = estimated_conveyor_pose.position.z + model_height[product.type] + GRIPPER_HEIGHT - EPSILON;
-	pickup_pose.orientation.x = currentPose.orientation.x;
-	pickup_pose.orientation.y = currentPose.orientation.y;
-	pickup_pose.orientation.z = currentPose.orientation.z;
-	pickup_pose.orientation.w = currentPose.orientation.w;
-
-    pre_pickup_pose = pickup_pose;
-    pre_pickup_pose.position.z += 0.02; 
-
-    left_arm_group_.setPoseTarget(pre_pickup_pose);
-    left_arm_group_.move();  // Move to the pre pick up location
-    left_arm_group_.setPoseTarget(pickup_pose);
-
-    left_gripper_status = getGripperState("left_arm");
-
-    while (!left_gripper_status.attached) {
-        ROS_DEBUG_STREAM_THROTTLE(10, "Waiting for part to be picked");
-        if(conveyerPartsObj.checkForPick()) {
-            // ROS_DEBUG_STREAM("Trying to pick it up");
-            left_arm_group_.move();
-            left_arm_group_.setPoseTarget(pre_pickup_pose);
-            left_arm_group_.move();
-            // break;
-        }
-        left_gripper_status = getGripperState("left_arm");
-    }
-
-	ROS_INFO_STREAM("[Gripper] = object attached");
-	//--Move arm to previous position
-	// left_arm_group_.setPoseTarget(pre_pickup_pose);
- //    left_arm_group_.move();
-    left_arm_group_.setPoseTarget(currentPose);
-    left_arm_group_.move();
-
-
-    tf2::Quaternion q_conveyor( 0, 0, -0.7068252, 0.7073883);
-    tf2::Quaternion q_init_part_temp(estimated_conveyor_pose.orientation.x,
-                                estimated_conveyor_pose.orientation.y,
-                                estimated_conveyor_pose.orientation.z,
-                                estimated_conveyor_pose.orientation.w);
-
-    tf2::Quaternion q_res = q_init_part_temp*q_conveyor;
-    product.p.pose.orientation.x = q_res.x();
-    product.p.pose.orientation.y = q_res.y();
-    product.p.pose.orientation.z = q_res.z();
-    product.p.pose.orientation.w = q_res.w();
-    return;
-}
-*/
 
 void GantryControl::goToPresetLocation(PresetLocation location) {
     //--gantry

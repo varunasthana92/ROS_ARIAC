@@ -188,7 +188,7 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj, int num_o
         bool status = false;
         while(!status ){
             ROS_WARN_STREAM("getList() mv_temp agv " << mv_temp->prod.agv_id << " " << mv_temp->prod.type << " ship: " << mv_temp->ship_num);
-            // ROS_WARN_STREAM("getList() mv_temp_max " << mv_temp_agv_max);
+             ROS_WARN_STREAM("getList() mv_temp_max " << mv_temp_agv_max);
             if(mv_temp->ship_num >= mv_temp_agv_max){
                 status = conveyerPartsObj.giveClosestPart(mv_temp->prod.type, mv_temp->prod.estimated_conveyor_pose);
                 if(status){

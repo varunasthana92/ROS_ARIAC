@@ -162,19 +162,24 @@ int main(int argc, char ** argv) {
         
         Product product = curr_prod->prod;
         ROS_INFO_STREAM("To pick " << product.type << " cam " << product.p.camFrame);
-
+        bool pickstatus = false;
         if (product.mv_prod) {
-            gantry.pickFromConveyor(product, conveyerPartsObj);
+            pickstatus = gantry.pickFromConveyor(product, conveyerPartsObj);
+            if(pickstatus == false){
+                buildObj.ship_build_count[curr_prod->ship_num]++;
+                continue;
+            }
             product.p.rpy_init = quaternionToEuler(product.estimated_conveyor_pose);
         } else {
             float gantryX = 0.4;
             float gantryY = 0;
             int currGap = -1;
             std::vector<double> left_arm = { 0, 0, 0, 0, 0, 0};
-            bool pickstatus = false;
+//            bool pickstatus = false;
             bool ready2pick = obstObj.isAisleClear(product.p.aisle_num);
             product.p.obstacle_free = ready2pick;
             ROS_WARN_STREAM("Main() Obstacle Free? : "<< ready2pick);
+            pickstatus = false;
             if(! ready2pick){
                 gantry.move2closestGap(product.p, buildObj.positionGap, buildObj.gapNum, 1, gantryX,
                                                         gantryY, obstObj, currGap);
@@ -195,10 +200,6 @@ int main(int argc, char ** argv) {
                 pickstatus = gantry.pickPart(product.p);
             }
             gantry.move2start(gantryX, -gantryY, left_arm);
-            // if(pickstatus == false){
-            //     buildObj.ship_build_count[curr_prod->ship_num]++;
-            //     continue;
-            // }          
         }
         
         if (product.pose.orientation.x == 1 || product.pose.orientation.x == -1) {
@@ -229,11 +230,12 @@ int main(int argc, char ** argv) {
 
         product.p.obstacle_free = true; //to try pick pick again and again if faulty
         bool status = true;
-        status = gantry.placePart(product, product.agv_id, arm, curr_prod);
+        status = gantry.placePart(product, product.agv_id, arm, curr_prod, conveyerPartsObj);
         if(!status){
             ROS_WARN_STREAM("Main() Part place FAIL ");
             buildObj.pushList(curr_prod);
         }else{
+            ros::Duration(0.5).sleep();
             buildObj.ship_build_count[curr_prod->ship_num]++;
             // ROS_WARN_STREAM("Main() Part place SUCCESS ");
             if(buildObj.ship_build_count[curr_prod->ship_num] == buildObj.num_prod_in_ship[curr_prod->ship_num -1 ]){
@@ -241,7 +243,6 @@ int main(int argc, char ** argv) {
                 if(curr_agv == "agv1"){
                     gantry.goToPresetLocation(gantry.agv1_drop);
                     comp.shipAgv(curr_agv, curr_shipment_type);
-                    ros::Duration(0.5).sleep();
                     buildObj.most_recent_order_agv1.pop_back();
                     buildObj.agv1_allocated = false;
                     gantry.agv1_allParts.prod_on_tray.clear();
@@ -253,7 +254,6 @@ int main(int argc, char ** argv) {
                 }else{
                     gantry.goToPresetLocation(gantry.agv2_drop);
                     comp.shipAgv(curr_agv, curr_shipment_type);
-                    ros::Duration(0.5).sleep();
                     buildObj.most_recent_order_agv2.pop_back();
                     buildObj.agv2_allocated = false;
                     gantry.agv2_allParts.prod_on_tray.clear();
