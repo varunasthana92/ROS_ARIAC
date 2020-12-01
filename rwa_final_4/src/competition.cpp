@@ -54,7 +54,7 @@ void Competition::order_callback(const nist_gear::Order::ConstPtr & msg) {
 void Competition::competition_clock_callback(const rosgraph_msgs::Clock::ConstPtr & msg) {
   competition_clock_ = msg->clock;
 
-  if(competition_clock_.toSec() > 495){
+  if(competition_clock_.toSec() > 498){
 
     for(auto itr : agv_ship_data){
       shipAgv(itr.second, itr.first);

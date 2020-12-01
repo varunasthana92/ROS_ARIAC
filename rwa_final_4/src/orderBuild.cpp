@@ -36,10 +36,10 @@ void allStaticParts::setPart(similarParts* data){
 }
 
 void BuildClass::setList(Product &product_received, int num_shipment, std::string shipment_type){
-    ROS_DEBUG_STREAM("Setting part  " << product_received.type);
+    // ROS_DEBUG_STREAM("Setting part  " << product_received.type);
     if(queryPart(product_received)){
+        ROS_DEBUG_STREAM("Setting in static list part  " << product_received.type);
         if(st_order){
-            ROS_INFO_STREAM("Setting in static list part  " << product_received.type);
             struct all_Order *temp = new(all_Order);
             temp->prod = st_order->prod;
             temp->ship_num = st_order->ship_num;
@@ -58,14 +58,9 @@ void BuildClass::setList(Product &product_received, int num_shipment, std::strin
             st_order->next = NULL;
             st_order_left = true;
         }
-        if(num_shipment > ship_top_prod_static.size()){
-            ship_top_prod_static.push_back(st_order);
-        }else{
-            ship_top_prod_static[num_shipment -1] = st_order;
-        }
         
     }else{
-        ROS_INFO_STREAM("Setting in moving list part  " << product_received.type);
+        ROS_DEBUG_STREAM("Setting in moving list part  " << product_received.type);
         product_received.mv_prod = true;
         if(mv_order){
             struct all_Order *temp = new(all_Order);
@@ -87,11 +82,6 @@ void BuildClass::setList(Product &product_received, int num_shipment, std::strin
             mv_order->shipment_type = shipment_type;
             mv_order->next = NULL;
             mv_order_left = true;
-        }
-        if(num_shipment > ship_top_prod_moving.size()){
-            ship_top_prod_moving.push_back(mv_order);
-        }else{
-            ship_top_prod_moving[num_shipment -1] = mv_order;
         }
     }
     return;    
@@ -157,6 +147,7 @@ void BuildClass::pushList(struct all_Order* prod){
 struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj, int num_obstacles){
     int st_order_shipment_num_top = -1;
     int mv_order_shipment_num_top = -1;
+
     if(mv_order){
         mv_order_shipment_num_top = mv_order->ship_num;
         ROS_WARN_STREAM("getList() mv_list left ");
@@ -166,66 +157,51 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj, int num_o
         st_order_shipment_num_top = st_order->ship_num;
         ROS_WARN_STREAM("getList() st_list left ");
     }
-
+    if(most_recent_order_agv1.size()){
+        ROS_WARN_STREAM("getList() agv1 top order " << most_recent_order_agv1.back());
+    }
+    
+    if(most_recent_order_agv2.size()){
+        ROS_WARN_STREAM("getList() agv2 top order " << most_recent_order_agv2.back());
+    }
+    
     struct all_Order* mv_temp = NULL;
     struct all_Order* st_temp = NULL;
 
-    // if(st_order_shipment_num_top != -1 && mv_order_shipment_num_top != -1){
-    //     st_temp = st_order;
-    //     mv_temp = mv_order;
-    //     if(mv_temp->ship_num >= st_temp->ship_num){
-    //         curr_build_shipment_num = mv_temp->ship_num;
-    //         struct all_Order* mv_dummy_head = new(all_Order);
-    //         mv_dummy_head->ship_num = -2;
-    //         mv_dummy_head->next = mv_order;
-    //         struct all_Order* mv_temp_prev = mv_dummy_head;
-    //         do{
-    //             bool status = conveyerPartsObj.giveClosestPart(mv_temp->prod.type, mv_temp->prod.estimated_conveyor_pose);
-    //             // bool status = false;
-    //             if(status){
-    //                 ROS_INFO_STREAM("Assigning MOVING Part " << mv_temp->prod.type);
-    //                 mv_temp_prev->next = mv_temp->next;
-    //                 mv_order = mv_dummy_head->next;
-    //                 delete(mv_dummy_head);
-    //                 // ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
-    //                 mv_temp->prod.p.type = mv_temp->prod.type;
-    //                 mv_temp->prod.p.camFrame = 1;
-    //                 return mv_temp;
-    //             }
-    //             mv_temp_prev = mv_temp;
-    //             mv_temp = mv_temp->next;
-    //         }while(mv_temp && mv_temp->ship_num == curr_build_shipment_num);
-    //         delete(mv_dummy_head);
-    //     }
-    //     curr_build_shipment_num = st_temp->ship_num;
-    //     st_order = st_order->next;
-    //     st_temp->next = NULL;
-    //     ROS_INFO_STREAM("Assigning STATIC Part " << st_temp->prod.type);
-    //     return st_temp;
-
     if(mv_order_shipment_num_top != -1){
         mv_temp = mv_order;
-        curr_build_shipment_num = mv_temp->ship_num;
+        std::string mv_temp_agv = mv_temp->prod.agv_id;
+        // curr_build_shipment_num = mv_temp->ship_num;
 
         struct all_Order* mv_dummy_head = new(all_Order);
         mv_dummy_head->ship_num = -2;
         mv_dummy_head->next = mv_order;
         struct all_Order* mv_temp_prev = mv_dummy_head;
+        int mv_temp_agv_max;
+
+        if(mv_temp_agv == "agv1"){
+            mv_temp_agv_max = most_recent_order_agv1.back();
+        }else{
+            mv_temp_agv_max = most_recent_order_agv2.back();
+        }
 
         bool status = false;
-        while(!status){
-            status = conveyerPartsObj.giveClosestPart(mv_temp->prod.type, mv_temp->prod.estimated_conveyor_pose);
-            if(status){
-                ROS_INFO_STREAM("Assigning MOVING Part " << mv_temp->prod.type);
-                mv_temp_prev->next = mv_temp->next;
-                mv_order = mv_dummy_head->next;
-                delete(mv_dummy_head);
-                // ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
-                mv_temp->prod.p.type = mv_temp->prod.type;
-                mv_temp->prod.p.camFrame = 1;
-                return mv_temp;
+        while(!status ){
+            ROS_WARN_STREAM("getList() mv_temp agv " << mv_temp->prod.agv_id << " " << mv_temp->prod.type << " ship: " << mv_temp->ship_num);
+             ROS_WARN_STREAM("getList() mv_temp_max " << mv_temp_agv_max);
+            if(mv_temp->ship_num >= mv_temp_agv_max){
+                status = conveyerPartsObj.giveClosestPart(mv_temp->prod.type, mv_temp->prod.estimated_conveyor_pose);
+                if(status){
+                    ROS_INFO_STREAM("Assigning MOVING Part " << mv_temp->prod.type);
+                    mv_temp_prev->next = mv_temp->next;
+                    mv_order = mv_dummy_head->next;
+                    delete(mv_dummy_head);
+                    // ROS_INFO_STREAM("MOVING Part " << mv_temp->prod.type);
+                    mv_temp->prod.p.type = mv_temp->prod.type;
+                    mv_temp->prod.p.camFrame = 1;
+                    return mv_temp;
+                }
             }
-            
             mv_temp_prev = mv_temp;
             mv_temp = mv_temp->next;
             if(mv_temp == NULL){
@@ -234,6 +210,13 @@ struct all_Order* BuildClass::getList(ConveyerParts &conveyerPartsObj, int num_o
                 }
                 mv_temp_prev = mv_dummy_head;
                 mv_temp = mv_temp_prev->next;
+            }
+
+            mv_temp_agv = mv_temp->prod.agv_id;
+            if(mv_temp_agv == "agv1"){
+                mv_temp_agv_max = most_recent_order_agv1.back();
+            }else{
+                mv_temp_agv_max = most_recent_order_agv2.back();
             }
         }
         delete(mv_dummy_head);
@@ -264,17 +247,38 @@ void BuildClass::orderCallback(const nist_gear::Order& ordermsg) {
         curr_build_shipment_num = num_shipment;
         shipment_recieved.shipment_type = ship.shipment_type;
         if(ship.agv_id == "agv1"){
+            most_recent_order_agv1.push_back(num_shipment);
+            if(agv1_allocated == true){
+                clear_agv1 = true;
+                clear_agv1_for_ship_type  = ship.shipment_type;
+            }
             agv1_allocated = true;
-        }else if(ship.agv_id == "agv2"){
+        }
+        else if(ship.agv_id == "agv2"){
+            most_recent_order_agv2.push_back(num_shipment);
+            if(agv2_allocated == true){
+                clear_agv2 = true;
+                clear_agv2_for_ship_type  = ship.shipment_type;
+            }
             agv2_allocated = true;
-        }else{
-            if(agv1_allocated){
+        }
+        else{
+            if(not agv1_allocated){
+                most_recent_order_agv1.push_back(num_shipment);
+                ship.agv_id = "agv1";
+                agv1_allocated = true;
+            }
+            else if(not agv2_allocated){
+                most_recent_order_agv2.push_back(num_shipment);
                 ship.agv_id = "agv2";
                 agv2_allocated = true;
             }
             else{
-                ship.agv_id = "agv1";
-                agv1_allocated = true;
+                most_recent_order_agv2.push_back(num_shipment);
+                ship.agv_id = "agv2";
+                agv2_allocated = true;
+                clear_agv2 = true;
+                clear_agv2_for_ship_type  = ship.shipment_type;
             }
         }
         shipment_recieved.agv_id = ship.agv_id;

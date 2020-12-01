@@ -37,6 +37,7 @@
 #include <trajectory_msgs/JointTrajectory.h>
 
 #include "utils.h"
+#include "orderBuild.h"
 #include "conveyer.h"
 #include "obstacles.h"
 #include <nist_gear/LogicalCameraImage.h>
@@ -52,7 +53,7 @@ class GantryControl {
     void qualityCallback1(const nist_gear::LogicalCameraImage& msg);
     void qualityCallback2(const nist_gear::LogicalCameraImage& msg);
     bool pickPart(part part);
-    bool placePart(product &product, std::string agv, std::string arm);
+    bool placePart(product &product, std::string agv, std::string arm, struct all_Order *curr_prod, ConveyerParts &conveyerPartsObj);
     
     /// Send command message to robot controller
     bool send_command(trajectory_msgs::JointTrajectory command_msg);
@@ -62,7 +63,7 @@ class GantryControl {
     void deactivateGripper(std::string gripper_id);
     void logicalCallback16(const nist_gear::LogicalCameraImage& msg);
     void logicalCallback17(const nist_gear::LogicalCameraImage& msg);
-    void pickFromConveyor(Product &product, ConveyerParts &conveyerPartsObj);
+    bool pickFromConveyor(Product &product, ConveyerParts &conveyerPartsObj);
     bool poseMatches(const geometry_msgs::Pose &pose1, const geometry_msgs::Pose &pose2);
     bool check_exist_on_agv(const std::string &name, const geometry_msgs::Pose &part_pose, agvInfo &agv);
     void flipPart();
@@ -76,6 +77,7 @@ class GantryControl {
     bool escape(int &aisle_num, std::vector< std::pair<float , float> > &shelfGaps, const std::vector<int> &gapNum,
                 bool actPart, float &gantryX, float &gantryY, ObstaclesInAisle &obstObj, int &newGap,
                 std::vector<double> &left_arm, bool pickStatus);
+    void clearAgv(std::string agv, BuildClass &buildObj);
 
     geometry_msgs::Pose getRobotPose(){
       return full_robot_group_.getCurrentPose().pose;

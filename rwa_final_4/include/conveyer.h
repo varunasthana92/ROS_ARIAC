@@ -42,11 +42,15 @@ class ConveyerParts {
     double estimated_time=0;
     bool giveClosestPart(const std::string &part_name, geometry_msgs::Pose &poseOnConveyer);  // Will give the current location of the part on conveyer 
     bool checkForPick();
+    void updateCurrentPoses();
+    void checkBoundaries();
+    void checkCurrentPartSet();
+
   private:
-    double part_read_limit=3.0;
-    double max_y_limit = -1.5;
-    double conveyer_end_y=-2;
+    double part_read_limit=2.5;
+    double conveyer_end_y=-4;
     double offset = 1.8;
+    double max_y_limit = conveyer_end_y+offset;
     geometry_msgs::Pose pick_pose;
     Detection pick_part;
     bool ready_for_pick=false;
@@ -59,9 +63,7 @@ class ConveyerParts {
     void addNewPartToMap(Detection detection); 
     geometry_msgs::TransformStamped C_to_W_transform;
     void calculateSpeed();
-    void updateCurrentPoses();
-    void checkBoundaries();
-    void checkCurrentPartSet();
+
 };
 
 #endif
