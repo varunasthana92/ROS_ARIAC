@@ -2,11 +2,11 @@
 To run the package rwa5_4, simply do the following steps
 1) Copy and paste the package rwa5_4 into the src directory of your ariac work space
 2) Run 
-	$ catkin build 
+	`$ catkin build` 
 3) Launch Gazebo along with moveit by using 
-	$ roslaunch rwa5_4 rwa5.launch load_moveit:=true
+	`$ roslaunch rwa5_4 rwa5.launch load_moveit:=true`
 4) To run the node, on another terminal do
-	$ rosrun rwa5_4 rwa5_node
+	`$ rosrun rwa5_4 rwa5_node`
 
 note:
 * We are reading the order in reverse i.e, for order zero we first pick up part2, part1 and finally part0. We are doing this for both the shipment.
