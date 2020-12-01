@@ -45,7 +45,6 @@ class ConveyerParts {
     void updateCurrentPoses();
     void checkBoundaries();
     void checkCurrentPartSet();
-    void emptyAfterblackout();
 
   private:
     double part_read_limit=2.5;

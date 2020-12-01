@@ -159,8 +159,8 @@ int main(int argc, char ** argv) {
         }
 
         arm = "left";
-        
         Product product = curr_prod->prod;
+        ROS_WARN_STREAM("Product pose1 : " << product.pose);
         ROS_INFO_STREAM("To pick " << product.type << " cam " << product.p.camFrame);
         bool pickstatus = false;
         if (product.mv_prod) {
@@ -201,8 +201,9 @@ int main(int argc, char ** argv) {
             }
             gantry.move2start(gantryX, -gantryY, left_arm);
         }
-        
-        if (product.pose.orientation.x == 1 || product.pose.orientation.x == -1) {
+        ROS_WARN_STREAM("Product pose2 : " << product.pose);
+
+        if (std::abs(product.pose.orientation.x) <= 1 && std::abs(product.pose.orientation.x) >= 0.98)  {
             gantry.flipPart();
             product.p.flip_part = true;
             arm = "right";

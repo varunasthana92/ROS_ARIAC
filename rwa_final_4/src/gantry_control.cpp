@@ -1306,7 +1306,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
             goToPresetLocation(move);
             
             move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] += offset_final_y;
+            move_trg.gantry[1] += offset_final_y-0.2;
             move_trg.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
             goToPresetLocation(move_trg);
             gantryX = move_trg.gantry[0];
@@ -1393,7 +1393,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
             goToPresetLocation(move);
 
             move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] -= offset_final_y - tune_odd_y;
+            move_trg.gantry[1] -= offset_final_y - tune_odd_y +0.2;
             move_trg.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
             goToPresetLocation(move_trg);
             gantryX = move_trg.gantry[0];
@@ -1470,7 +1470,7 @@ bool GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
                 missed = true;
             }
         }
-        if(ros::Time::now().toSec() - starttime > 12){
+        if(ros::Time::now().toSec() - starttime >= 15){
             starttime=ros::Time::now().toSec();
             missed = true;
         }
@@ -1761,8 +1761,13 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
         
         temp.gantry[0] = shelfGaps[nearestGap].first - offset_x;
         temp.gantry[1] = -shelfGaps[nearestGap].second;
+        if(nearestGap == 0){
+            temp.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
+        }
+        else{
+            temp.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
+        }
         goToPresetLocation(temp);
-
         gantryX = temp.gantry[0];
         gantryY = -temp.gantry[1];
         if(nearestGap == 0)

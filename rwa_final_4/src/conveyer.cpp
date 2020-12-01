@@ -97,9 +97,6 @@ void ConveyerParts::checkCurrentPartSet() {
 	}
 }
 
-void ConveyerParts::emptyAfterblackout(){
-    current_detection.emptyDetection();
-}
 
 bool ConveyerParts::checkPart(const std::string &part_name) {
 	for(const auto &detection: allConveyerParts) {
