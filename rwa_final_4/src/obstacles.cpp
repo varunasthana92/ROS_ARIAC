@@ -1,3 +1,22 @@
+/**
+ *  Copyright 2020 Varun Asthana, Saumil Shah, Nalin Das, Markose Jacob, Aditya Goswami
+ *  @file obstacles.cpp
+ * 
+ *  @author Varun Asthana
+ *  @author Saumil Shah
+ *  @author Nalin Das
+ *  @author Markose Jacob
+ *  @author Aditya Goswami
+ * 
+ *  @date 11/29/2020
+ * 
+ *  @brief ObstaclesInAisle class methods implementation
+ * 
+ *  @section DESCRIPTION
+ *
+ *  Source file for the ObstaclesInAisle class methods
+ *
+ */
 #include <algorithm>
 #include <vector>
 #include <string>

@@ -1,0 +1,5 @@
+<map id="Product" name="Product">
+<area shape="rect" id="node2" href="$structPart.html" title="Part typedef. " alt="" coords="5,95,52,121"/>
+<area shape="rect" id="node3" href="$structShipment.html" title="Shipment typedef. " alt="" coords="77,95,154,121"/>
+<area shape="rect" id="node4" href="$structOrder.html" title="Order typedef. " alt="" coords="88,5,143,32"/>
+</map>
