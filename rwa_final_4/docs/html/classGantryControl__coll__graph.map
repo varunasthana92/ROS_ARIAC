@@ -1,0 +1,4 @@
+<map id="GantryControl" name="GantryControl">
+<area shape="rect" id="node2" href="$structagvInfo.html" title="AGV Information struct. " alt="" coords="5,5,71,32"/>
+<area shape="rect" id="node3" href="$structPresetLocation.html" title="Preset Location typedef. " alt="" coords="98,5,207,32"/>
+</map>

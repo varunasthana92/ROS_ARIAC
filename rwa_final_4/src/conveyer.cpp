@@ -1,3 +1,22 @@
+/**
+ *  Copyright 2020 Nalin Das
+ *  @file conveyor.cpp
+ * 
+ *  @author Varun Asthana
+ *  @author Saumil Shah
+ *  @author Nalin Das
+ *  @author Markose Jacob
+ *  @author Aditya Goswami
+ * 
+ *  @date 11/28/2020
+ * 
+ *  @brief Starts the ARIAC competition
+ * 
+ *  @section DESCRIPTION
+ *
+ *  Source file for ARIAC competition class
+ *
+ */
 #include <algorithm>
 #include <vector>
 #include <string>

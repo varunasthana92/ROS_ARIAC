@@ -1,3 +1,22 @@
+/**
+ *  Copyright 2020 Varun Asthana, Saumil Shah, Nalin Das, Markose Jacob, Aditya Goswami
+ *  @file utils.cpp
+ * 
+ *  @author Varun Asthana
+ *  @author Saumil Shah
+ *  @author Nalin Das
+ *  @author Markose Jacob
+ *  @author Aditya Goswami
+ * 
+ *  @date 11/29/2020
+ * 
+ *  @brief Utility functions implementation
+ * 
+ *  @section DESCRIPTION
+ *
+ *  Source file for Utility functions implementation.
+ *
+ */
 #include "utils.h"
 #include <geometry_msgs/Pose.h>
 

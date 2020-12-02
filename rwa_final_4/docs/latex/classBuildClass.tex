@@ -1,0 +1,256 @@
+\hypertarget{classBuildClass}{}\section{Build\+Class Class Reference}
+\label{classBuildClass}\index{Build\+Class@{Build\+Class}}
+
+
+Build class.  
+
+
+
+
+{\ttfamily \#include $<$order\+Build.\+h$>$}
+
+
+
+Collaboration diagram for Build\+Class\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=221pt]{classBuildClass__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classBuildClass_a03e935abdeb4b19d3e233dc6aa70f885}{Build\+Class} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+void \hyperlink{classBuildClass_af3db7cdeb81f80f1b88f0cedb95d24e9}{order\+Callback} (const nist\+\_\+gear\+::\+Order \&ordermsg)
+\begin{DoxyCompactList}\small\item\em \hyperlink{structOrder}{Order} Callback. \end{DoxyCompactList}\item 
+void \hyperlink{classBuildClass_a7fa2d4355ca5ad8e2c26d82d5566d45e}{set\+List} (\hyperlink{structProduct}{Product} \&product\+\_\+received, int num\+\_\+shipment, std\+::string shipment\+\_\+type)
+\begin{DoxyCompactList}\small\item\em Set List. \end{DoxyCompactList}\item 
+struct \hyperlink{structall__Order}{all\+\_\+\+Order} $\ast$ \hyperlink{classBuildClass_afd4c97bb10d023ce4f6a6b15b88171a6}{get\+List} (\hyperlink{classConveyerParts}{Conveyer\+Parts} \&conveyer\+Parts\+Obj, int num\+\_\+obstacles)
+\begin{DoxyCompactList}\small\item\em Get List function. \end{DoxyCompactList}\item 
+void \hyperlink{classBuildClass_a64bc4cbe90399402e468f977e374f99e}{push\+List} (struct \hyperlink{structall__Order}{all\+\_\+\+Order} $\ast$prod)
+\begin{DoxyCompactList}\small\item\em Push List. \end{DoxyCompactList}\item 
+int \hyperlink{classBuildClass_acf20cc6dfbc979b0456b22a310627b42}{query\+Part} (\hyperlink{structProduct}{Product} \&prod)
+\begin{DoxyCompactList}\small\item\em Query \hyperlink{structPart}{Part}. \end{DoxyCompactList}\item 
+void \hyperlink{classBuildClass_a4d13438a582e88a6813385460d3c1a7f}{logical\+\_\+camera\+\_\+callback} (const nist\+\_\+gear\+::\+Logical\+Camera\+Image\+::\+Const\+Ptr \&msg, int cam\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Logical camera callback. \end{DoxyCompactList}\item 
+void \hyperlink{classBuildClass_a5bcdfe5bfb567e511d397f02fd98e902}{shelf\+\_\+distance} ()
+\begin{DoxyCompactList}\small\item\em Shelf Distance. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classBuildClass_a4e780c195a7ef83b8a6d1b3561c30df9}\label{classBuildClass_a4e780c195a7ef83b8a6d1b3561c30df9}} 
+bool \hyperlink{classBuildClass_a4e780c195a7ef83b8a6d1b3561c30df9}{agv1\+\_\+allocated} = false
+\begin{DoxyCompactList}\small\item\em A\+G\+V1 Allocated. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classBuildClass_a2b9d524dd2f0409a722b60c039cda87f}\label{classBuildClass_a2b9d524dd2f0409a722b60c039cda87f}} 
+bool \hyperlink{classBuildClass_a2b9d524dd2f0409a722b60c039cda87f}{agv2\+\_\+allocated} = false
+\begin{DoxyCompactList}\small\item\em A\+G\+V2 Allocated. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classBuildClass_a5972aaddc18c4eeb901d6712abced0ad}\label{classBuildClass_a5972aaddc18c4eeb901d6712abced0ad}} 
+bool \hyperlink{classBuildClass_a5972aaddc18c4eeb901d6712abced0ad}{order\+\_\+read} = false
+\begin{DoxyCompactList}\small\item\em \hyperlink{structOrder}{Order} read. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classBuildClass_a54649e5a5dd731a0c11660d7f243033a}\label{classBuildClass_a54649e5a5dd731a0c11660d7f243033a}} 
+std\+::vector$<$ \hyperlink{structOrder}{Order} $>$ \hyperlink{classBuildClass_a54649e5a5dd731a0c11660d7f243033a}{all\+Orders}
+\begin{DoxyCompactList}\small\item\em All Orders array. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classBuildClass_ae03a5f1252946a467364d6424f604b75}\label{classBuildClass_ae03a5f1252946a467364d6424f604b75}} 
+std\+::vector$<$ int $>$ \hyperlink{classBuildClass_ae03a5f1252946a467364d6424f604b75}{num\+\_\+prod\+\_\+in\+\_\+ship}
+\begin{DoxyCompactList}\small\item\em Number of products in shipment. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classBuildClass_a46932efd4c8b2b97d0624a6117b40ee0}\label{classBuildClass_a46932efd4c8b2b97d0624a6117b40ee0}} 
+std\+::unordered\+\_\+map$<$ int, int $>$ \hyperlink{classBuildClass_a46932efd4c8b2b97d0624a6117b40ee0}{ship\+\_\+build\+\_\+count}
+\begin{DoxyCompactList}\small\item\em \hyperlink{structShipment}{Shipment} build count. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classBuildClass_afee9ec162b045de467138097c913ab3a}\label{classBuildClass_afee9ec162b045de467138097c913ab3a}} 
+struct \hyperlink{structall__Order}{all\+\_\+\+Order} $\ast$ \hyperlink{classBuildClass_afee9ec162b045de467138097c913ab3a}{st\+\_\+order} = N\+U\+LL
+\begin{DoxyCompactList}\small\item\em St order. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classBuildClass_a97f473aacf55fc9e2f036df24f14a5ad}\label{classBuildClass_a97f473aacf55fc9e2f036df24f14a5ad}} 
+struct \hyperlink{structall__Order}{all\+\_\+\+Order} $\ast$ \hyperlink{classBuildClass_a97f473aacf55fc9e2f036df24f14a5ad}{mv\+\_\+order} = N\+U\+LL
+\begin{DoxyCompactList}\small\item\em Mv order. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classBuildClass_a7a270922ce988fa65df7fd153eb32574}\label{classBuildClass_a7a270922ce988fa65df7fd153eb32574}} 
+bool \hyperlink{classBuildClass_a7a270922ce988fa65df7fd153eb32574}{clear\+\_\+agv1} = false
+\begin{DoxyCompactList}\small\item\em Clear A\+G\+V1. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classBuildClass_a152890ffd474645a17cd05a48e25d969}\label{classBuildClass_a152890ffd474645a17cd05a48e25d969}} 
+bool \hyperlink{classBuildClass_a152890ffd474645a17cd05a48e25d969}{clear\+\_\+agv2} = false
+\begin{DoxyCompactList}\small\item\em Clear A\+G\+V2. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classBuildClass_a347a5c88bc6562ea1c3be62cd9bb7ae1}\label{classBuildClass_a347a5c88bc6562ea1c3be62cd9bb7ae1}} 
+std\+::string \hyperlink{classBuildClass_a347a5c88bc6562ea1c3be62cd9bb7ae1}{clear\+\_\+agv1\+\_\+for\+\_\+ship\+\_\+type} = \char`\"{}\char`\"{}
+\begin{DoxyCompactList}\small\item\em Clear A\+G\+V1 for shipment type. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classBuildClass_a4f1d9c135fd347f4e88722a389017c25}\label{classBuildClass_a4f1d9c135fd347f4e88722a389017c25}} 
+std\+::string \hyperlink{classBuildClass_a4f1d9c135fd347f4e88722a389017c25}{clear\+\_\+agv2\+\_\+for\+\_\+ship\+\_\+type} = \char`\"{}\char`\"{}
+\begin{DoxyCompactList}\small\item\em Clear A\+G\+V2 for shipment type. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classBuildClass_ad9f54938ad08ac1e9b1902d8acde2448}\label{classBuildClass_ad9f54938ad08ac1e9b1902d8acde2448}} 
+std\+::vector$<$ int $>$ \hyperlink{classBuildClass_ad9f54938ad08ac1e9b1902d8acde2448}{most\+\_\+recent\+\_\+order\+\_\+agv1}
+\begin{DoxyCompactList}\small\item\em Most recent order agv1. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classBuildClass_a23919ef11440ca0d514f5b677b729cb7}\label{classBuildClass_a23919ef11440ca0d514f5b677b729cb7}} 
+std\+::vector$<$ int $>$ \hyperlink{classBuildClass_a23919ef11440ca0d514f5b677b729cb7}{most\+\_\+recent\+\_\+order\+\_\+agv2}
+\begin{DoxyCompactList}\small\item\em Most recent order agv2. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classBuildClass_ad2928c00304dde02561cdfd214f5ada2}\label{classBuildClass_ad2928c00304dde02561cdfd214f5ada2}} 
+std\+::vector$<$ std\+::pair$<$ float, float $>$ $>$ \hyperlink{classBuildClass_ad2928c00304dde02561cdfd214f5ada2}{position\+Gap}
+\begin{DoxyCompactList}\small\item\em \hyperlink{structPosition}{Position} Gap vector. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classBuildClass_a85c6af17d47644b2353b81dfc3399200}\label{classBuildClass_a85c6af17d47644b2353b81dfc3399200}} 
+std\+::vector$<$ int $>$ \hyperlink{classBuildClass_a85c6af17d47644b2353b81dfc3399200}{gap\+Num}
+\begin{DoxyCompactList}\small\item\em Gap Number. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Build class. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classBuildClass_a03e935abdeb4b19d3e233dc6aa70f885}\label{classBuildClass_a03e935abdeb4b19d3e233dc6aa70f885}} 
+\index{Build\+Class@{Build\+Class}!Build\+Class@{Build\+Class}}
+\index{Build\+Class@{Build\+Class}!Build\+Class@{Build\+Class}}
+\subsubsection{\texorpdfstring{Build\+Class()}{BuildClass()}}
+{\footnotesize\ttfamily Build\+Class\+::\+Build\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em None} & None \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classBuildClass_afd4c97bb10d023ce4f6a6b15b88171a6}\label{classBuildClass_afd4c97bb10d023ce4f6a6b15b88171a6}} 
+\index{Build\+Class@{Build\+Class}!get\+List@{get\+List}}
+\index{get\+List@{get\+List}!Build\+Class@{Build\+Class}}
+\subsubsection{\texorpdfstring{get\+List()}{getList()}}
+{\footnotesize\ttfamily struct \hyperlink{structall__Order}{all\+\_\+\+Order} $\ast$ Build\+Class\+::get\+List (\begin{DoxyParamCaption}\item[{\hyperlink{classConveyerParts}{Conveyer\+Parts} \&}]{conveyer\+Parts\+Obj,  }\item[{int}]{num\+\_\+obstacles }\end{DoxyParamCaption})}
+
+
+
+Get List function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conveyer\+Parts\+Obj} & Conveyor Parts Object \\
+\hline
+{\em num\+\_\+obstacles} & Number of obstacles \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+All orders 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classBuildClass_a4d13438a582e88a6813385460d3c1a7f}\label{classBuildClass_a4d13438a582e88a6813385460d3c1a7f}} 
+\index{Build\+Class@{Build\+Class}!logical\+\_\+camera\+\_\+callback@{logical\+\_\+camera\+\_\+callback}}
+\index{logical\+\_\+camera\+\_\+callback@{logical\+\_\+camera\+\_\+callback}!Build\+Class@{Build\+Class}}
+\subsubsection{\texorpdfstring{logical\+\_\+camera\+\_\+callback()}{logical\_camera\_callback()}}
+{\footnotesize\ttfamily void Build\+Class\+::logical\+\_\+camera\+\_\+callback (\begin{DoxyParamCaption}\item[{const nist\+\_\+gear\+::\+Logical\+Camera\+Image\+::\+Const\+Ptr \&}]{msg,  }\item[{int}]{cam\+\_\+id }\end{DoxyParamCaption})}
+
+
+
+Logical camera callback. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & Logical Camera Image \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classBuildClass_af3db7cdeb81f80f1b88f0cedb95d24e9}\label{classBuildClass_af3db7cdeb81f80f1b88f0cedb95d24e9}} 
+\index{Build\+Class@{Build\+Class}!order\+Callback@{order\+Callback}}
+\index{order\+Callback@{order\+Callback}!Build\+Class@{Build\+Class}}
+\subsubsection{\texorpdfstring{order\+Callback()}{orderCallback()}}
+{\footnotesize\ttfamily void Build\+Class\+::order\+Callback (\begin{DoxyParamCaption}\item[{const nist\+\_\+gear\+::\+Order \&}]{ordermsg }\end{DoxyParamCaption})}
+
+
+
+\hyperlink{structOrder}{Order} Callback. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ordermsg} & \hyperlink{structOrder}{Order} message \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classBuildClass_a64bc4cbe90399402e468f977e374f99e}\label{classBuildClass_a64bc4cbe90399402e468f977e374f99e}} 
+\index{Build\+Class@{Build\+Class}!push\+List@{push\+List}}
+\index{push\+List@{push\+List}!Build\+Class@{Build\+Class}}
+\subsubsection{\texorpdfstring{push\+List()}{pushList()}}
+{\footnotesize\ttfamily void Build\+Class\+::push\+List (\begin{DoxyParamCaption}\item[{struct \hyperlink{structall__Order}{all\+\_\+\+Order} $\ast$}]{prod }\end{DoxyParamCaption})}
+
+
+
+Push List. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em prod} & \hyperlink{structProduct}{Product} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classBuildClass_acf20cc6dfbc979b0456b22a310627b42}\label{classBuildClass_acf20cc6dfbc979b0456b22a310627b42}} 
+\index{Build\+Class@{Build\+Class}!query\+Part@{query\+Part}}
+\index{query\+Part@{query\+Part}!Build\+Class@{Build\+Class}}
+\subsubsection{\texorpdfstring{query\+Part()}{queryPart()}}
+{\footnotesize\ttfamily int Build\+Class\+::query\+Part (\begin{DoxyParamCaption}\item[{\hyperlink{structProduct}{Product} \&}]{prod }\end{DoxyParamCaption})}
+
+
+
+Query \hyperlink{structPart}{Part}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em prod} & \hyperlink{structProduct}{Product} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\hyperlink{structPart}{Part} number 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classBuildClass_a7fa2d4355ca5ad8e2c26d82d5566d45e}\label{classBuildClass_a7fa2d4355ca5ad8e2c26d82d5566d45e}} 
+\index{Build\+Class@{Build\+Class}!set\+List@{set\+List}}
+\index{set\+List@{set\+List}!Build\+Class@{Build\+Class}}
+\subsubsection{\texorpdfstring{set\+List()}{setList()}}
+{\footnotesize\ttfamily void Build\+Class\+::set\+List (\begin{DoxyParamCaption}\item[{\hyperlink{structProduct}{Product} \&}]{product\+\_\+received,  }\item[{int}]{num\+\_\+shipment,  }\item[{std\+::string}]{shipment\+\_\+type }\end{DoxyParamCaption})}
+
+
+
+Set List. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em product\+\_\+received} & \hyperlink{structProduct}{Product} recieved \\
+\hline
+{\em num\+\_\+shipment} & \hyperlink{structShipment}{Shipment} number \\
+\hline
+{\em shipment\+\_\+type} & \hyperlink{structShipment}{Shipment} type \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classBuildClass_a5bcdfe5bfb567e511d397f02fd98e902}\label{classBuildClass_a5bcdfe5bfb567e511d397f02fd98e902}} 
+\index{Build\+Class@{Build\+Class}!shelf\+\_\+distance@{shelf\+\_\+distance}}
+\index{shelf\+\_\+distance@{shelf\+\_\+distance}!Build\+Class@{Build\+Class}}
+\subsubsection{\texorpdfstring{shelf\+\_\+distance()}{shelf\_distance()}}
+{\footnotesize\ttfamily void Build\+Class\+::shelf\+\_\+distance (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Shelf Distance. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em None} & None \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\hyperlink{orderBuild_8h}{order\+Build.\+h}\item 
+src/\hyperlink{orderBuild_8cpp}{order\+Build.\+cpp}\end{DoxyCompactItemize}

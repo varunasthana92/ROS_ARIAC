@@ -1,0 +1,301 @@
+\hypertarget{classCompetition}{}\section{Competition Class Reference}
+\label{classCompetition}\index{Competition@{Competition}}
+
+
+\hyperlink{classCompetition}{Competition} class.  
+
+
+
+
+{\ttfamily \#include $<$competition.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classCompetition_a3d8b50d07d2424bd18743148237da31c}{Competition} (ros\+::\+Node\+Handle \&node)
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+void \hyperlink{classCompetition_af5400538e024248fc99f83cf26ca2f23}{init} ()
+\begin{DoxyCompactList}\small\item\em Initialization function. \end{DoxyCompactList}\item 
+void \hyperlink{classCompetition_a2505fb69a74ff70530c033c144f7f024}{start\+Competition} ()
+\begin{DoxyCompactList}\small\item\em Starts the competition. \end{DoxyCompactList}\item 
+void \hyperlink{classCompetition_a894a450b89f8d61d83f02f221fb1b0eb}{end\+Competition} ()
+\begin{DoxyCompactList}\small\item\em Ends the competition. \end{DoxyCompactList}\item 
+void \hyperlink{classCompetition_a0f5358904edd5675f14fc378b217f3f9}{ship\+Agv} (std\+::string agv, std\+::string ship\+\_\+type)
+\begin{DoxyCompactList}\small\item\em Sends A\+GV to complete order. \end{DoxyCompactList}\item 
+void \hyperlink{classCompetition_a1b9545e863fc4574b29b1e43e80ebda3}{competition\+\_\+state\+\_\+callback} (const std\+\_\+msgs\+::\+String\+::\+Const\+Ptr \&msg)
+\begin{DoxyCompactList}\small\item\em \hyperlink{classCompetition}{Competition} state callback. \end{DoxyCompactList}\item 
+void \hyperlink{classCompetition_ae4695e5697587f7af4aa40ebae953534}{competition\+\_\+clock\+\_\+callback} (const rosgraph\+\_\+msgs\+::\+Clock\+::\+Const\+Ptr \&msg)
+\begin{DoxyCompactList}\small\item\em \hyperlink{classCompetition}{Competition} clock callback. \end{DoxyCompactList}\item 
+void \hyperlink{classCompetition_a6f51ab2e5a0da50fc53035f3ff6c9c31}{order\+\_\+callback} (const nist\+\_\+gear\+::\+Order\+::\+Const\+Ptr \&msg)
+\begin{DoxyCompactList}\small\item\em \hyperlink{structOrder}{Order} callback. \end{DoxyCompactList}\item 
+double \hyperlink{classCompetition_a4ea6b45be32e5b0e1f8e72fc053c4550}{get\+Clock} ()
+\begin{DoxyCompactList}\small\item\em Gets the competition time elapsed. \end{DoxyCompactList}\item 
+double \hyperlink{classCompetition_a9c8b79a8c4a7bcc5eaa77a327df3f98a}{get\+Start\+Time} ()
+\begin{DoxyCompactList}\small\item\em Gets the start time. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classCompetition_a3c553faa38b1bc1fa6efa049c8e23735}{get\+Competition\+State} ()
+\begin{DoxyCompactList}\small\item\em Gets the competition state. \end{DoxyCompactList}\item 
+\hyperlink{utils_8h_abd807f196b951c0cdd24d50164d54763}{stats} \hyperlink{classCompetition_acb4ec20a6365fbb922bd20fc3509ddf8}{get\+Stats} (std\+::string function)
+\begin{DoxyCompactList}\small\item\em Gets the competition stats. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::unordered\+\_\+map$<$ std\+::string, std\+::string $>$ \hyperlink{classCompetition_a29e55fbb84b665c374f53113cf3fa2ca}{agv\+\_\+ship\+\_\+data}
+\begin{DoxyCompactList}\small\item\em Gets the A\+GV shipment data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\hyperlink{classCompetition}{Competition} class. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classCompetition_a3d8b50d07d2424bd18743148237da31c}\label{classCompetition_a3d8b50d07d2424bd18743148237da31c}} 
+\index{Competition@{Competition}!Competition@{Competition}}
+\index{Competition@{Competition}!Competition@{Competition}}
+\subsubsection{\texorpdfstring{Competition()}{Competition()}}
+{\footnotesize\ttfamily Competition\+::\+Competition (\begin{DoxyParamCaption}\item[{ros\+::\+Node\+Handle \&}]{node }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+
+Constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em node} & R\+OS nodehandle \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classCompetition_ae4695e5697587f7af4aa40ebae953534}\label{classCompetition_ae4695e5697587f7af4aa40ebae953534}} 
+\index{Competition@{Competition}!competition\+\_\+clock\+\_\+callback@{competition\+\_\+clock\+\_\+callback}}
+\index{competition\+\_\+clock\+\_\+callback@{competition\+\_\+clock\+\_\+callback}!Competition@{Competition}}
+\subsubsection{\texorpdfstring{competition\+\_\+clock\+\_\+callback()}{competition\_clock\_callback()}}
+{\footnotesize\ttfamily void Competition\+::competition\+\_\+clock\+\_\+callback (\begin{DoxyParamCaption}\item[{const rosgraph\+\_\+msgs\+::\+Clock\+::\+Const\+Ptr \&}]{msg }\end{DoxyParamCaption})}
+
+
+
+\hyperlink{classCompetition}{Competition} clock callback. 
+
+Called when a new message is received.
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & Contain simulation time elapsed \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classCompetition_a1b9545e863fc4574b29b1e43e80ebda3}\label{classCompetition_a1b9545e863fc4574b29b1e43e80ebda3}} 
+\index{Competition@{Competition}!competition\+\_\+state\+\_\+callback@{competition\+\_\+state\+\_\+callback}}
+\index{competition\+\_\+state\+\_\+callback@{competition\+\_\+state\+\_\+callback}!Competition@{Competition}}
+\subsubsection{\texorpdfstring{competition\+\_\+state\+\_\+callback()}{competition\_state\_callback()}}
+{\footnotesize\ttfamily void Competition\+::competition\+\_\+state\+\_\+callback (\begin{DoxyParamCaption}\item[{const std\+\_\+msgs\+::\+String\+::\+Const\+Ptr \&}]{msg }\end{DoxyParamCaption})}
+
+
+
+\hyperlink{classCompetition}{Competition} state callback. 
+
+Called when a new message is received.
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & Contains competition state \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classCompetition_a894a450b89f8d61d83f02f221fb1b0eb}\label{classCompetition_a894a450b89f8d61d83f02f221fb1b0eb}} 
+\index{Competition@{Competition}!end\+Competition@{end\+Competition}}
+\index{end\+Competition@{end\+Competition}!Competition@{Competition}}
+\subsubsection{\texorpdfstring{end\+Competition()}{endCompetition()}}
+{\footnotesize\ttfamily void Competition\+::end\+Competition (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Ends the competition. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em None} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classCompetition_a4ea6b45be32e5b0e1f8e72fc053c4550}\label{classCompetition_a4ea6b45be32e5b0e1f8e72fc053c4550}} 
+\index{Competition@{Competition}!get\+Clock@{get\+Clock}}
+\index{get\+Clock@{get\+Clock}!Competition@{Competition}}
+\subsubsection{\texorpdfstring{get\+Clock()}{getClock()}}
+{\footnotesize\ttfamily double Competition\+::get\+Clock (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the competition time elapsed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em None} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Time elapsed 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classCompetition_a3c553faa38b1bc1fa6efa049c8e23735}\label{classCompetition_a3c553faa38b1bc1fa6efa049c8e23735}} 
+\index{Competition@{Competition}!get\+Competition\+State@{get\+Competition\+State}}
+\index{get\+Competition\+State@{get\+Competition\+State}!Competition@{Competition}}
+\subsubsection{\texorpdfstring{get\+Competition\+State()}{getCompetitionState()}}
+{\footnotesize\ttfamily std\+::string Competition\+::get\+Competition\+State (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the competition state. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em None} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\hyperlink{classCompetition}{Competition} state 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classCompetition_a9c8b79a8c4a7bcc5eaa77a327df3f98a}\label{classCompetition_a9c8b79a8c4a7bcc5eaa77a327df3f98a}} 
+\index{Competition@{Competition}!get\+Start\+Time@{get\+Start\+Time}}
+\index{get\+Start\+Time@{get\+Start\+Time}!Competition@{Competition}}
+\subsubsection{\texorpdfstring{get\+Start\+Time()}{getStartTime()}}
+{\footnotesize\ttfamily double Competition\+::get\+Start\+Time (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the start time. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em None} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\hyperlink{classCompetition}{Competition} start time 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classCompetition_acb4ec20a6365fbb922bd20fc3509ddf8}\label{classCompetition_acb4ec20a6365fbb922bd20fc3509ddf8}} 
+\index{Competition@{Competition}!get\+Stats@{get\+Stats}}
+\index{get\+Stats@{get\+Stats}!Competition@{Competition}}
+\subsubsection{\texorpdfstring{get\+Stats()}{getStats()}}
+{\footnotesize\ttfamily \hyperlink{utils_8h_abd807f196b951c0cdd24d50164d54763}{stats} Competition\+::get\+Stats (\begin{DoxyParamCaption}\item[{std\+::string}]{function }\end{DoxyParamCaption})}
+
+
+
+Gets the competition stats. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em function} & Function \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\hyperlink{classCompetition}{Competition} stats 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classCompetition_af5400538e024248fc99f83cf26ca2f23}\label{classCompetition_af5400538e024248fc99f83cf26ca2f23}} 
+\index{Competition@{Competition}!init@{init}}
+\index{init@{init}!Competition@{Competition}}
+\subsubsection{\texorpdfstring{init()}{init()}}
+{\footnotesize\ttfamily void Competition\+::init (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Initialization function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em None} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classCompetition_a6f51ab2e5a0da50fc53035f3ff6c9c31}\label{classCompetition_a6f51ab2e5a0da50fc53035f3ff6c9c31}} 
+\index{Competition@{Competition}!order\+\_\+callback@{order\+\_\+callback}}
+\index{order\+\_\+callback@{order\+\_\+callback}!Competition@{Competition}}
+\subsubsection{\texorpdfstring{order\+\_\+callback()}{order\_callback()}}
+{\footnotesize\ttfamily void Competition\+::order\+\_\+callback (\begin{DoxyParamCaption}\item[{const nist\+\_\+gear\+::\+Order\+::\+Const\+Ptr \&}]{msg }\end{DoxyParamCaption})}
+
+
+
+\hyperlink{structOrder}{Order} callback. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & Contains order number \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classCompetition_a0f5358904edd5675f14fc378b217f3f9}\label{classCompetition_a0f5358904edd5675f14fc378b217f3f9}} 
+\index{Competition@{Competition}!ship\+Agv@{ship\+Agv}}
+\index{ship\+Agv@{ship\+Agv}!Competition@{Competition}}
+\subsubsection{\texorpdfstring{ship\+Agv()}{shipAgv()}}
+{\footnotesize\ttfamily void Competition\+::ship\+Agv (\begin{DoxyParamCaption}\item[{std\+::string}]{agv,  }\item[{std\+::string}]{ship\+\_\+type }\end{DoxyParamCaption})}
+
+
+
+Sends A\+GV to complete order. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em agv} & A\+GV Number \\
+\hline
+{\em ship\+\_\+type} & \hyperlink{structShipment}{Shipment} type \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classCompetition_a2505fb69a74ff70530c033c144f7f024}\label{classCompetition_a2505fb69a74ff70530c033c144f7f024}} 
+\index{Competition@{Competition}!start\+Competition@{start\+Competition}}
+\index{start\+Competition@{start\+Competition}!Competition@{Competition}}
+\subsubsection{\texorpdfstring{start\+Competition()}{startCompetition()}}
+{\footnotesize\ttfamily void Competition\+::start\+Competition (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Starts the competition. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em None} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classCompetition_a29e55fbb84b665c374f53113cf3fa2ca}\label{classCompetition_a29e55fbb84b665c374f53113cf3fa2ca}} 
+\index{Competition@{Competition}!agv\+\_\+ship\+\_\+data@{agv\+\_\+ship\+\_\+data}}
+\index{agv\+\_\+ship\+\_\+data@{agv\+\_\+ship\+\_\+data}!Competition@{Competition}}
+\subsubsection{\texorpdfstring{agv\+\_\+ship\+\_\+data}{agv\_ship\_data}}
+{\footnotesize\ttfamily std\+::unordered\+\_\+map$<$ std\+::string, std\+::string$>$ Competition\+::agv\+\_\+ship\+\_\+data}
+
+
+
+Gets the A\+GV shipment data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em None} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A\+GV \hyperlink{structShipment}{Shipment} Data 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\hyperlink{competition_8h}{competition.\+h}\item 
+src/\hyperlink{competition_8cpp}{competition.\+cpp}\end{DoxyCompactItemize}
