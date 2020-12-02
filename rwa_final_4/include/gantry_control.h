@@ -108,6 +108,8 @@ class GantryControl {
      * @param product Product
      * @param agv AGV Number
      * @param arm Left/Right arm
+     * @param cusmomised product data from order
+     * @param class object of type ConveyerParts
      * @return True if placed successfully else false
      */
     bool placePart(product &product, std::string agv, std::string arm, struct all_Order *curr_prod, ConveyerParts &conveyerPartsObj);
@@ -157,7 +159,7 @@ class GantryControl {
      * @brief Pick from conveyor 
      * @param product Product
      * @param conveyerPartsObj Conveyor parts object
-     * @return None
+     * @return Bool
      */
     bool pickFromConveyor(Product &product, ConveyerParts &conveyerPartsObj);
     /**

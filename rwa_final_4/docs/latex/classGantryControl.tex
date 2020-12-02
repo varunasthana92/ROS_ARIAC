@@ -34,7 +34,7 @@ void \hyperlink{classGantryControl_a355b299969bfa74073062ba1c6c1ec04}{quality\+C
 \begin{DoxyCompactList}\small\item\em Quality camera 2 callback. \end{DoxyCompactList}\item 
 bool \hyperlink{classGantryControl_af9280bbee71d1ceca8aef3d616d48254}{pick\+Part} (\hyperlink{utils_8h_a67ee3a5b9091664130eca8efc8b97ab9}{part} \hyperlink{utils_8h_a67ee3a5b9091664130eca8efc8b97ab9}{part})
 \begin{DoxyCompactList}\small\item\em Makes robot pick the part. \end{DoxyCompactList}\item 
-bool \hyperlink{classGantryControl_a0d0eb41f65891a98cae6f2a4a42d281a}{place\+Part} (\hyperlink{utils_8h_a48a7207852c0455cce7e65703b12ec7e}{product} \&\hyperlink{utils_8h_a48a7207852c0455cce7e65703b12ec7e}{product}, std\+::string agv, std\+::string arm)
+bool \hyperlink{classGantryControl_a17e2fb32a16a33c989903c4c1495c878}{place\+Part} (\hyperlink{utils_8h_a48a7207852c0455cce7e65703b12ec7e}{product} \&\hyperlink{utils_8h_a48a7207852c0455cce7e65703b12ec7e}{product}, std\+::string agv, std\+::string arm, struct \hyperlink{structall__Order}{all\+\_\+\+Order} $\ast$curr\+\_\+prod, \hyperlink{classConveyerParts}{Conveyer\+Parts} \&conveyer\+Parts\+Obj)
 \begin{DoxyCompactList}\small\item\em Makes robot place the part. \end{DoxyCompactList}\item 
 bool \hyperlink{classGantryControl_ab271ce06b0d336eddb26e1ba5a2ce594}{send\+\_\+command} (trajectory\+\_\+msgs\+::\+Joint\+Trajectory command\+\_\+msg)
 \begin{DoxyCompactList}\small\item\em Send command message to robot controller. \end{DoxyCompactList}\item 
@@ -50,7 +50,7 @@ void \hyperlink{classGantryControl_a9206feae49953cf691e0dec2331cc3ae}{logical\+C
 \begin{DoxyCompactList}\small\item\em Logical camera 16 callback. \end{DoxyCompactList}\item 
 void \hyperlink{classGantryControl_a9d745504ec1dbcc8549f5a604f34bbcc}{logical\+Callback17} (const nist\+\_\+gear\+::\+Logical\+Camera\+Image \&msg)
 \begin{DoxyCompactList}\small\item\em Logical camera 17 callback. \end{DoxyCompactList}\item 
-void \hyperlink{classGantryControl_aa12af59b0fda9a1437db989a13036934}{pick\+From\+Conveyor} (\hyperlink{structProduct}{Product} \&\hyperlink{utils_8h_a48a7207852c0455cce7e65703b12ec7e}{product}, \hyperlink{classConveyerParts}{Conveyer\+Parts} \&conveyer\+Parts\+Obj)
+bool \hyperlink{classGantryControl_aa12af59b0fda9a1437db989a13036934}{pick\+From\+Conveyor} (\hyperlink{structProduct}{Product} \&\hyperlink{utils_8h_a48a7207852c0455cce7e65703b12ec7e}{product}, \hyperlink{classConveyerParts}{Conveyer\+Parts} \&conveyer\+Parts\+Obj)
 \begin{DoxyCompactList}\small\item\em Pick from conveyor. \end{DoxyCompactList}\item 
 bool \hyperlink{classGantryControl_a9c655daed586e64921ffc53cb90b2873}{pose\+Matches} (const geometry\+\_\+msgs\+::\+Pose \&pose1, const geometry\+\_\+msgs\+::\+Pose \&pose2)
 \begin{DoxyCompactList}\small\item\em Pose Matches. \end{DoxyCompactList}\item 
@@ -589,11 +589,11 @@ Makes robot pick the part.
 \begin{DoxyReturn}{Returns}
 True if picked successfully else false 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classGantryControl_a0d0eb41f65891a98cae6f2a4a42d281a}\label{classGantryControl_a0d0eb41f65891a98cae6f2a4a42d281a}} 
+\mbox{\Hypertarget{classGantryControl_a17e2fb32a16a33c989903c4c1495c878}\label{classGantryControl_a17e2fb32a16a33c989903c4c1495c878}} 
 \index{Gantry\+Control@{Gantry\+Control}!place\+Part@{place\+Part}}
 \index{place\+Part@{place\+Part}!Gantry\+Control@{Gantry\+Control}}
 \subsubsection{\texorpdfstring{place\+Part()}{placePart()}}
-{\footnotesize\ttfamily bool Gantry\+Control\+::place\+Part (\begin{DoxyParamCaption}\item[{\hyperlink{utils_8h_a48a7207852c0455cce7e65703b12ec7e}{product} \&}]{product,  }\item[{std\+::string}]{agv,  }\item[{std\+::string}]{arm }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily bool Gantry\+Control\+::place\+Part (\begin{DoxyParamCaption}\item[{\hyperlink{utils_8h_a48a7207852c0455cce7e65703b12ec7e}{product} \&}]{product,  }\item[{std\+::string}]{agv,  }\item[{std\+::string}]{arm,  }\item[{struct \hyperlink{structall__Order}{all\+\_\+\+Order} $\ast$}]{curr\+\_\+prod,  }\item[{\hyperlink{classConveyerParts}{Conveyer\+Parts} \&}]{conveyer\+Parts\+Obj }\end{DoxyParamCaption})}
 
 
 

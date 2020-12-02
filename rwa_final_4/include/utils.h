@@ -79,7 +79,7 @@ const double GRIPPER_HEIGHT = 0.01;
 /**
  * @brief Epsilon for the gripper to firmly touch
  */
-const double EPSILON = 0.015; 
+const double EPSILON = 0.01;
 /**
  * @brief Bin Height
  */
