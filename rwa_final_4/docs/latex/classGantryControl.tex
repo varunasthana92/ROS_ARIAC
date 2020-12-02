@@ -11,8 +11,7 @@ Gantry Control class.
 
 
 
-Collaboration diagram for Gantry\+Control\+:
-\nopagebreak
+Collaboration diagram for Gantry\+Control\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -62,7 +61,7 @@ bool \hyperlink{classGantryControl_adfbb542c0c4b836ec50bc7cf70557220}{move2start
 \begin{DoxyCompactList}\small\item\em Moves robot to start position. \end{DoxyCompactList}\item 
 std\+::vector$<$ double $>$ \hyperlink{classGantryControl_aa3b48219dcba01f5608c6a4d9ff447e9}{move2trg} (float x, float y, float \&gantryX, float \&gantryY, int curr\+Gap, std\+::vector$<$ double $>$ left\+\_\+arm)
 \begin{DoxyCompactList}\small\item\em Move to target. \end{DoxyCompactList}\item 
-bool \hyperlink{classGantryControl_aa6ba7baf102ac7e39d68b2ae2492f9a5}{move2closest\+Gap} (struct \hyperlink{structPart}{Part} \&\hyperlink{utils_8h_a67ee3a5b9091664130eca8efc8b97ab9}{part}, std\+::vector$<$ std\+::pair$<$ float, float $>$ $>$ \&shelf\+Gaps, const std\+::vector$<$ int $>$ \&gap\+Num, bool act\+Part, float \&gantryX, float \&gantryY, \hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} \&obj, int \&new\+Gap)
+bool \hyperlink{classGantryControl_a7254dcd957785ee836d611581d3eda46}{move2closest\+Gap} (struct \hyperlink{structPart}{Part} \&\hyperlink{utils_8h_a67ee3a5b9091664130eca8efc8b97ab9}{part}, std\+::vector$<$ std\+::pair$<$ float, float $>$ $>$ \&shelf\+Gaps, const std\+::vector$<$ int $>$ \&gap\+Num, bool act\+Part, float \&gantryX, float \&gantryY, \hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} \&obj, int \&new\+Gap, std\+::vector$<$ double $>$ \&left\+\_\+arm)
 \begin{DoxyCompactList}\small\item\em Move to closest gap. \end{DoxyCompactList}\item 
 int \hyperlink{classGantryControl_ab475e912ab1ea0d13efc10078695102e}{get\+Nearest\+Gap} (float destX, int aisle\+\_\+num, bool act\+Part, \hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} \&obst\+Obj, const std\+::vector$<$ std\+::pair$<$ float, float $>$ $>$ \&shelf\+Gaps)
 \begin{DoxyCompactList}\small\item\em Gets the nearest gap from shelf. \end{DoxyCompactList}\item 
@@ -469,11 +468,11 @@ Logical camera 17 callback.
 \begin{DoxyReturn}{Returns}
 None 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classGantryControl_aa6ba7baf102ac7e39d68b2ae2492f9a5}\label{classGantryControl_aa6ba7baf102ac7e39d68b2ae2492f9a5}} 
+\mbox{\Hypertarget{classGantryControl_a7254dcd957785ee836d611581d3eda46}\label{classGantryControl_a7254dcd957785ee836d611581d3eda46}} 
 \index{Gantry\+Control@{Gantry\+Control}!move2closest\+Gap@{move2closest\+Gap}}
 \index{move2closest\+Gap@{move2closest\+Gap}!Gantry\+Control@{Gantry\+Control}}
 \subsubsection{\texorpdfstring{move2closest\+Gap()}{move2closestGap()}}
-{\footnotesize\ttfamily bool Gantry\+Control\+::move2closest\+Gap (\begin{DoxyParamCaption}\item[{struct \hyperlink{structPart}{Part} \&}]{part,  }\item[{std\+::vector$<$ std\+::pair$<$ float, float $>$ $>$ \&}]{shelf\+Gaps,  }\item[{const std\+::vector$<$ int $>$ \&}]{gap\+Num,  }\item[{bool}]{act\+Part,  }\item[{float \&}]{gantryX,  }\item[{float \&}]{gantryY,  }\item[{\hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} \&}]{obj,  }\item[{int \&}]{new\+Gap }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily bool Gantry\+Control\+::move2closest\+Gap (\begin{DoxyParamCaption}\item[{struct \hyperlink{structPart}{Part} \&}]{part,  }\item[{std\+::vector$<$ std\+::pair$<$ float, float $>$ $>$ \&}]{shelf\+Gaps,  }\item[{const std\+::vector$<$ int $>$ \&}]{gap\+Num,  }\item[{bool}]{act\+Part,  }\item[{float \&}]{gantryX,  }\item[{float \&}]{gantryY,  }\item[{\hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} \&}]{obj,  }\item[{int \&}]{new\+Gap,  }\item[{std\+::vector$<$ double $>$ \&}]{left\+\_\+arm }\end{DoxyParamCaption})}
 
 
 
@@ -496,6 +495,8 @@ Move to closest gap.
 {\em obj} & \hyperlink{classObstaclesInAisle}{Obstacles\+In\+Aisle} object \\
 \hline
 {\em new\+Gap} & New gap \\
+\hline
+{\em arm} & position for left arm \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
@@ -569,7 +570,7 @@ Pick from conveyor.
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-None 
+Bool 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classGantryControl_af9280bbee71d1ceca8aef3d616d48254}\label{classGantryControl_af9280bbee71d1ceca8aef3d616d48254}} 
 \index{Gantry\+Control@{Gantry\+Control}!pick\+Part@{pick\+Part}}
@@ -606,6 +607,10 @@ Makes robot place the part.
 {\em agv} & A\+GV Number \\
 \hline
 {\em arm} & Left/\+Right arm \\
+\hline
+{\em customized} & product data from order \\
+\hline
+{\em class} & object of type \hyperlink{classConveyerParts}{Conveyer\+Parts} \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}

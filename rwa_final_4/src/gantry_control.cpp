@@ -1138,14 +1138,16 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
 
     PresetLocation move, move_trg;
     move.gantry = {x,y,0};
-    move.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+    // move.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+
+    move.left_arm = left_arm;
     move.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
     move_trg = move;
-    if(currGap != -1){
-        move.left_arm = left_arm;
-        move.right_arm = { PI, 0, 0, 0, 0, 0};
-    }
+    // if(currGap != -1){
+    //     move.left_arm = left_arm;
+    //     move.right_arm = { PI, 0, 0, 0, 0, 0};
+    // }
 
     if(x < 0){
         if( y > 6.3){
@@ -1739,7 +1741,7 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
 
 bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<float , float> > &shelfGaps,
                                     const std::vector<int> &gapNum, bool actPart, float &gantryX, float &gantryY,
-                                    ObstaclesInAisle &obstObj, int &newGap){
+                                    ObstaclesInAisle &obstObj, int &newGap, std::vector<double> &left_arm){
     int aisle_num = part.aisle_num;
     shelfGaps[0].first = part.pose.position.x;
     shelfGaps[4].first = part.pose.position.x;
@@ -1787,6 +1789,7 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
             part.aisle_num = nearestGap + 1;
         else
             part.aisle_num = nearestGap;
+        left_arm = temp.left_arm;
         return true;
     }
 
@@ -1813,6 +1816,8 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
 
         part.aisle_num = nearestGap + 1;
         newGap = gapNum[nearestGap];
+
+        left_arm = temp.left_arm;
         return true;
     }
 
@@ -1838,6 +1843,7 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
         gantryY = -temp.gantry[1];
         part.aisle_num = nearestGap;
         newGap = gapNum[nearestGap];
+        left_arm = temp.left_arm;
         return true;
     }
 
@@ -1847,7 +1853,7 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
     fakePart.aisle_num = nearestGap;
     int newGap_ = -1;
 
-    move2closestGap(fakePart, shelfGaps, gapNum, 0, gantryX, gantryY, obstObj, newGap_);
+    move2closestGap(fakePart, shelfGaps, gapNum, 0, gantryX, gantryY, obstObj, newGap_, left_arm);
 
     bool move = false;
     // ROS_WARN_STREAM("Sensor checked in aisle: " << fakePart.aisle_num);
@@ -1872,7 +1878,7 @@ bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<fl
     gantryX = temp.gantry[0];
     gantryY = -temp.gantry[1];
     newGap = gapNum[nearestGap];
-
+    left_arm = temp.left_arm;
     return true;
 }
 

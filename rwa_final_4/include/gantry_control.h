@@ -108,7 +108,7 @@ class GantryControl {
      * @param product Product
      * @param agv AGV Number
      * @param arm Left/Right arm
-     * @param cusmomised product data from order
+     * @param customized product data from order
      * @param class object of type ConveyerParts
      * @return True if placed successfully else false
      */
@@ -212,11 +212,12 @@ class GantryControl {
      * @param gantryY Gantry Y-Coordinate
      * @param obj ObstaclesInAisle object
      * @param newGap New gap
+     * @param arm position for left arm
      * @return True if moved successfuly else false
      */
     bool move2closestGap(struct Part &part, std::vector< std::pair<float , float> > &shelfGaps,
                         const std::vector<int> &gapNum, bool actPart, float &gantryX, float &gantryY,
-                        ObstaclesInAisle &obj, int &newGap);
+                        ObstaclesInAisle &obj, int &newGap, std::vector<double> &left_arm);
     /**
      * @brief Gets the nearest gap from shelf
      * @param destX Destination X-Coordinate

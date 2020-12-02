@@ -164,7 +164,6 @@ int main(int argc, char ** argv) {
 
         arm = "left";
         Product product = curr_prod->prod;
-        ROS_WARN_STREAM("Product pose1 : " << product.pose);
         ROS_INFO_STREAM("To pick " << product.type << " cam " << product.p.camFrame);
         bool pickstatus = false;
         if (product.mv_prod) {
@@ -186,7 +185,7 @@ int main(int argc, char ** argv) {
             pickstatus = false;
             if(! ready2pick){
                 gantry.move2closestGap(product.p, buildObj.positionGap, buildObj.gapNum, 1, gantryX,
-                                                        gantryY, obstObj, currGap);
+                                                        gantryY, obstObj, currGap, left_arm);
                 ROS_DEBUG_STREAM("Main() Aisle of Interest: "<< product.p.aisle_num);
                 while(!pickstatus){
                     // for aisles with obstacles: trigger to pick part
@@ -200,12 +199,12 @@ int main(int argc, char ** argv) {
                                   obstObj, currGap, left_arm, pickstatus);
                 }
             }else{
+                left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
                 left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap, left_arm);
                 pickstatus = gantry.pickPart(product.p);
             }
             gantry.move2start(gantryX, -gantryY, left_arm);
         }
-        ROS_WARN_STREAM("Product pose2 : " << product.pose);
 
         if (std::abs(product.pose.orientation.x) <= 1 && std::abs(product.pose.orientation.x) >= 0.98)  {
             gantry.flipPart();

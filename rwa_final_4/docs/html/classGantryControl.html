@@ -146,9 +146,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa3b48219dcba01f5608c6a4d9ff447e9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGantryControl.html#aa3b48219dcba01f5608c6a4d9ff447e9">move2trg</a> (float x, float y, float &amp;gantryX, float &amp;gantryY, int currGap, std::vector&lt; double &gt; left_arm)</td></tr>
 <tr class="memdesc:aa3b48219dcba01f5608c6a4d9ff447e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move to target.  <a href="#aa3b48219dcba01f5608c6a4d9ff447e9">More...</a><br /></td></tr>
 <tr class="separator:aa3b48219dcba01f5608c6a4d9ff447e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6ba7baf102ac7e39d68b2ae2492f9a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGantryControl.html#aa6ba7baf102ac7e39d68b2ae2492f9a5">move2closestGap</a> (struct <a class="el" href="structPart.html">Part</a> &amp;<a class="el" href="utils_8h.html#a67ee3a5b9091664130eca8efc8b97ab9">part</a>, std::vector&lt; std::pair&lt; float, float &gt; &gt; &amp;shelfGaps, const std::vector&lt; int &gt; &amp;gapNum, bool actPart, float &amp;gantryX, float &amp;gantryY, <a class="el" href="classObstaclesInAisle.html">ObstaclesInAisle</a> &amp;obj, int &amp;newGap)</td></tr>
-<tr class="memdesc:aa6ba7baf102ac7e39d68b2ae2492f9a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move to closest gap.  <a href="#aa6ba7baf102ac7e39d68b2ae2492f9a5">More...</a><br /></td></tr>
-<tr class="separator:aa6ba7baf102ac7e39d68b2ae2492f9a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7254dcd957785ee836d611581d3eda46"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGantryControl.html#a7254dcd957785ee836d611581d3eda46">move2closestGap</a> (struct <a class="el" href="structPart.html">Part</a> &amp;<a class="el" href="utils_8h.html#a67ee3a5b9091664130eca8efc8b97ab9">part</a>, std::vector&lt; std::pair&lt; float, float &gt; &gt; &amp;shelfGaps, const std::vector&lt; int &gt; &amp;gapNum, bool actPart, float &amp;gantryX, float &amp;gantryY, <a class="el" href="classObstaclesInAisle.html">ObstaclesInAisle</a> &amp;obj, int &amp;newGap, std::vector&lt; double &gt; &amp;left_arm)</td></tr>
+<tr class="memdesc:a7254dcd957785ee836d611581d3eda46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move to closest gap.  <a href="#a7254dcd957785ee836d611581d3eda46">More...</a><br /></td></tr>
+<tr class="separator:a7254dcd957785ee836d611581d3eda46"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab475e912ab1ea0d13efc10078695102e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGantryControl.html#ab475e912ab1ea0d13efc10078695102e">getNearestGap</a> (float destX, int aisle_num, bool actPart, <a class="el" href="classObstaclesInAisle.html">ObstaclesInAisle</a> &amp;obstObj, const std::vector&lt; std::pair&lt; float, float &gt; &gt; &amp;shelfGaps)</td></tr>
 <tr class="memdesc:ab475e912ab1ea0d13efc10078695102e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the nearest gap from shelf.  <a href="#ab475e912ab1ea0d13efc10078695102e">More...</a><br /></td></tr>
 <tr class="separator:ab475e912ab1ea0d13efc10078695102e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -823,8 +823,8 @@ static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 
 </div>
 </div>
-<a id="aa6ba7baf102ac7e39d68b2ae2492f9a5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa6ba7baf102ac7e39d68b2ae2492f9a5">&#9670;&nbsp;</a></span>move2closestGap()</h2>
+<a id="a7254dcd957785ee836d611581d3eda46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7254dcd957785ee836d611581d3eda46">&#9670;&nbsp;</a></span>move2closestGap()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -875,7 +875,13 @@ static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int &amp;&#160;</td>
-          <td class="paramname"><em>newGap</em>&#160;</td>
+          <td class="paramname"><em>newGap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>left_arm</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -896,6 +902,7 @@ static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el
     <tr><td class="paramname">gantryY</td><td>Gantry Y-Coordinate </td></tr>
     <tr><td class="paramname">obj</td><td><a class="el" href="classObstaclesInAisle.html" title="ObstaclesInAisle class. ">ObstaclesInAisle</a> object </td></tr>
     <tr><td class="paramname">newGap</td><td>New gap </td></tr>
+    <tr><td class="paramname">arm</td><td>position for left arm </td></tr>
   </table>
   </dd>
 </dl>
@@ -1048,7 +1055,7 @@ static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>None </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Bool </dd></dl>
 
 </div>
 </div>
@@ -1129,6 +1136,8 @@ static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el
     <tr><td class="paramname">product</td><td><a class="el" href="structProduct.html" title="Product typedef. ">Product</a> </td></tr>
     <tr><td class="paramname">agv</td><td>AGV Number </td></tr>
     <tr><td class="paramname">arm</td><td>Left/Right arm </td></tr>
+    <tr><td class="paramname">customized</td><td>product data from order </td></tr>
+    <tr><td class="paramname">class</td><td>object of type <a class="el" href="classConveyerParts.html">ConveyerParts</a> </td></tr>
   </table>
   </dd>
 </dl>
