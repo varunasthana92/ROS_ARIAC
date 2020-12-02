@@ -363,6 +363,7 @@ void BuildClass::shelf_distance(){
     }
     float corner1 = -2.093;
     float corner2 = -16.7;
+    float offset_x = 0.2;
     std::vector<float> y_val = {3.0, 0,-3.0 };
     float gap_width_x = 2.176/2, gap_width_y = 1.2282/2 ;
     std::vector< std::pair<float , float> > gaps(5, {0,0});
@@ -373,7 +374,7 @@ void BuildClass::shelf_distance(){
             disCorner = shelfDisCorner(shelf[i*3], corner1);
         }while(disCorner == 2000);
         if(disCorner > 0.2 && disCorner <= 2 * gap_width_x + 0.2){
-            gaps[i+1] = {corner1 - gap_width_x, y_val[i]};
+            gaps[i+1] = {corner1 - gap_width_x - offset_x, y_val[i]};
             gapNum_[i+1] = 1;
             continue;
         }
@@ -384,7 +385,7 @@ void BuildClass::shelf_distance(){
         }while(disCorner == 2000);
 
         if(disCorner >= 4.5 && disCorner <= 4.12 + 2 * gap_width_x + 0.2){
-            gaps[i+1] = {corner2 + gap_width_x, y_val[i]};
+            gaps[i+1] = {corner2 + gap_width_x - offset_x, y_val[i]};
             gapNum_[i+1] = 4;
             continue;
         }
@@ -398,7 +399,7 @@ void BuildClass::shelf_distance(){
             }while(dis == 2000);
 
             if(dis > 4.2){
-                gaps[i+1] = {leg_x + gap_width_x, y_val[i]};
+                gaps[i+1] = {leg_x + gap_width_x - offset_x, y_val[i]};
                 gapNum_[i+1] = (std::abs(leg_x) / 4.2) + 1;
                 break;
             }

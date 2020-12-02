@@ -192,8 +192,8 @@ int main(int argc, char ** argv) {
                     do{
                         ready2pick = obstObj.moveBot(product.p.pose.position.x, -3, product.p.aisle_num, gantryX, currGap);
                     }while(! ready2pick);
-
-                    left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap, left_arm);
+                    std::vector<double> right_arm = { PI, 0, 0, 0, 0, 0};
+                    left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap, left_arm, right_arm);
                     pickstatus = gantry.pickPart(product.p);
                     gantry.escape(product.p.aisle_num, buildObj.positionGap, buildObj.gapNum, 1, gantryX, gantryY,
                                   obstObj, currGap, left_arm, pickstatus);

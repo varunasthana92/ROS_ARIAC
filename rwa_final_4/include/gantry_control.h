@@ -70,7 +70,6 @@ class GantryControl {
     /**
      * @brief Constructor
      * @param node ROS nodehandle
-     * @return None
      */
     GantryControl(ros::NodeHandle & node);
     /**
@@ -87,99 +86,99 @@ class GantryControl {
     stats getStats(std::string function);
     /**
      * @brief Quality camera 1 callback 
-     * @param msg Logical Camera Image
+     * @param msg ROS message
      * @return None
      */
     void qualityCallback1(const nist_gear::LogicalCameraImage& msg);
     /**
      * @brief Quality camera 2 callback  
-     * @param msg Logical Camera Image
+     * @param msg ROS message
      * @return None
      */
     void qualityCallback2(const nist_gear::LogicalCameraImage& msg);
     /**
      * @brief Makes robot pick the part 
-     * @param part Part
+     * @param part structure of type Part
      * @return True if picked successfully else false
      */
-    bool pickPart(part part);
+    bool pickPart(Part part);
     /**
      * @brief Makes robot place the part  
-     * @param product Product
-     * @param agv AGV Number
-     * @param arm Left/Right arm
-     * @param customized product data from order
-     * @param class object of type ConveyerParts
+     * @param product reference to structure of type Product
+     * @param agv agv name
+     * @param arm name of which arm is used for placement of the part
+     * @param curr_prod pointer to product data from order
+     * @param conveyerPartsObj class object of type ConveyerParts
      * @return True if placed successfully else false
      */
-    bool placePart(product &product, std::string agv, std::string arm, struct all_Order *curr_prod, ConveyerParts &conveyerPartsObj);
+    bool placePart(Product &product, std::string agv, std::string arm, struct all_Order *curr_prod, ConveyerParts &conveyerPartsObj);
     /**
      * @brief Send command message to robot controller 
-     * @param command_msg Joint trajectory command message
+     * @param command_msg ROS message
      * @return True if command published successfully else false
      */
     bool send_command(trajectory_msgs::JointTrajectory command_msg);
     /**
      * @brief Makes robot move to preset location 
-     * @param location Preset location
+     * @param location structure of type PresetLocation
      * @return None
      */
     void goToPresetLocation(PresetLocation location);
     /**
      * @brief Rotate gantry 
-     * @param angle Angle
+     * @param angle angle in radians
      * @return None
      */
     void rotate_gantry(double angle);
     /**
      * @brief Activate gripper 
-     * @param gripper_id Gripper ID
+     * @param gripper_id id of the gripper in use
      * @return None
      */
     void activateGripper(std::string gripper_id);
     /**
      * @brief deactivateGripper 
-     * @param gripper_id Gripper ID
+     * @param gripper_id id of the gripper in use
      * @return None
      */
     void deactivateGripper(std::string gripper_id);
     /**
      * @brief Logical camera 16 callback 
-     * @param msg LogicalCameraImage
+     * @param msg ROS message
      * @return None
      */
     void logicalCallback16(const nist_gear::LogicalCameraImage& msg);
     /**
      * @brief Logical camera 17 callback 
-     * @param msg LogicalCameraImage
+     * @param msg ROS message
      * @return None
      */
     void logicalCallback17(const nist_gear::LogicalCameraImage& msg);
     /**
      * @brief Pick from conveyor 
-     * @param product Product
-     * @param conveyerPartsObj Conveyor parts object
-     * @return Bool
+     * @param product reference to structure of type Product
+     * @param conveyerPartsObj reference to class object
+     * @return True if success else False
      */
     bool pickFromConveyor(Product &product, ConveyerParts &conveyerPartsObj);
     /**
      * @brief Pose Matches 
-     * @param pose1 Pose 1
-     * @param pose2 Pose 2
+     * @param pose1 reference to ROS message
+     * @param pose2 reference to ROS message
      * @return True if pose matches else false
      */
     bool poseMatches(const geometry_msgs::Pose &pose1, const geometry_msgs::Pose &pose2);
     /**
      * @brief Check if a part exists on AGV 
-     * @param name Name
-     * @param part_pose Part pose
-     * @param agv AGV Info
+     * @param name part name
+     * @param part_pose part pose in world frame
+     * @param agv reference to structure of type agvInfo for which it is to be checked if part already exist or not
      * @return True if part exists on AGV else false
      */
     bool check_exist_on_agv(const std::string &name, const geometry_msgs::Pose &part_pose, agvInfo &agv);
     /**
      * @brief Flip part 
-     * @param None None
+     * @param None
      * @return None
      */
     void flipPart();
@@ -198,43 +197,45 @@ class GantryControl {
      * @param gantryX Gantry position X coordinate
      * @param gantryY Gantry position Y coordinate
      * @param currGap Current gap
-     * @param left_arm Left arm 
+     * @param left_arm Left arm joint values 
+     * @param right_arm right arm joint values 
      * @return Joint angles of arm
      */
-    std::vector<double> move2trg (float x, float y, float &gantryX, float &gantryY, int currGap, std::vector<double> left_arm);
+    std::vector<double> move2trg (float x, float y, float &gantryX, float &gantryY,
+                             int currGap, std::vector<double> left_arm, std::vector<double> right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0});
     /**
      * @brief Move to closest gap 
      * @param part Part
-     * @param shelfGaps Shelf gaps
+     * @param shelfGaps (x,y) value for gaps in each row of shelf
      * @param gapNum Gap number
-     * @param actPart Act part
+     * @param actPart "1" is querrieb for the part position, "0" if for intermidiate gap (waypoint). Do not pass any other value
      * @param gantryX Gantry X-Coordinate
      * @param gantryY Gantry Y-Coordinate
      * @param obj ObstaclesInAisle object
      * @param newGap New gap
-     * @param arm position for left arm
+     * @param left_arm Left arm joint values 
      * @return True if moved successfuly else false
      */
     bool move2closestGap(struct Part &part, std::vector< std::pair<float , float> > &shelfGaps,
-                        const std::vector<int> &gapNum, bool actPart, float &gantryX, float &gantryY,
+                        const std::vector<int> &gapNum, int actPart, float &gantryX, float &gantryY,
                         ObstaclesInAisle &obj, int &newGap, std::vector<double> &left_arm);
     /**
      * @brief Gets the nearest gap from shelf
      * @param destX Destination X-Coordinate
-     * @param aisle_num Aisle number
-     * @param actPart Act part
-     * @param obstObj ObstaclesInAisle object
-     * @param shelfGaps Gap from shelf
-     * @return Nearest gap from shelf
+     * @param aisle_num current Aisle number of the robot
+     * @param actPart "1" is querrieb for the part position, "0" if for intermidiate gap (waypoint). Do not pass any other value
+     * @param obstObj class object
+     * @param shelfGaps (x,y) value for gaps in each row of shelf
+     * @return Nearest gap from destination position
      */
-    int getNearestGap(float destX, int aisle_num, bool actPart, ObstaclesInAisle &obstObj,
+    int getNearestGap(float destX, int aisle_num, int actPart, ObstaclesInAisle &obstObj,
                                 const std::vector< std::pair<float , float> > &shelfGaps);
     /**
      * @brief Makes robot escape from Aisle 
-     * @param aisle_num Aisle number
-     * @param shelfGaps Gap from shelves
+     * @param aisle_num current Aisle number of the robot
+     * @param shelfGaps (x,y) value for gaps in each row of shelf
      * @param gapNum Gap number
-     * @param actPart Act part
+     * @param actPart "1" is querrieb for the part position, "0" if for intermidiate gap (waypoint). Do not pass any other value
      * @param gantryX Gantry X-Coordinate
      * @param gantryY Gantry Y-Coordinate
      * @param obstObj ObstaclesInAisle object

@@ -519,9 +519,9 @@ bool GantryControl::pickPart(part part){
             if (part.obstacle_free == false){
                 part.pose.position.y = currentPose.position.y;
             }
-            part.pose.position.z += 0.2;
+            part.pose.position.z += 0.3;
             left_arm_group_.setPoseTarget(part.pose);
-            left_arm_group_.move();
+            left_arm_group_.move(); 
             return true;
         }
         else {
@@ -1125,7 +1125,7 @@ bool GantryControl::move2start ( float x, float y, std::vector<double> left_arm)
     }
 }
 
-std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX, float &gantryY , int currGap, std::vector<double> left_arm) {
+std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX, float &gantryY , int currGap, std::vector<double> left_arm, std::vector<double> right_arm) {
 
     float offset_final_y = 1.1;
     float offset_y = offset_final_y + 0.2;
@@ -1141,7 +1141,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
     // move.left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
 
     move.left_arm = left_arm;
-    move.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    move.right_arm = right_arm;
 
     move_trg = move;
     // if(currGap != -1){
@@ -1585,7 +1585,7 @@ void GantryControl::goToPresetLocation(PresetLocation location) {
 }
 
 
-int GantryControl::getNearestGap(float destX, int aisle_num, bool actPart, ObstaclesInAisle &obstObj,
+int GantryControl::getNearestGap(float destX, int aisle_num, int actPart, ObstaclesInAisle &obstObj,
                                 const std::vector< std::pair<float , float> > &shelfGaps){
     int shelf_rwo_left, shelf_row_right;
     switch(aisle_num){
@@ -1640,12 +1640,13 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
     ROS_WARN_STREAM("escape() Shelf row: " << nearestGap);
     PresetLocation temp = start_;
     temp.left_arm = left_arm;
-    if(temp.left_arm[2] > 0){
-        temp.left_arm[1] = -PI - PI/4;
-    }else{
-        temp.left_arm[1] = PI/4;
-    }
-    left_arm = temp.left_arm;
+    // if(temp.left_arm[2] > 0){
+    //     temp.left_arm[1] = -PI - PI/4;
+    // }else{
+    //     temp.left_arm[1] = PI/4;
+    // }
+    // left_arm = temp.left_arm;
+    temp.right_arm = { PI, 0, 0, 0, 0, 0};
     if(actPart == 1){
         temp.gantry[0] = shelfGaps[nearestGap].first;
          if(nearestGap != 0 && nearestGap != 4){
@@ -1654,7 +1655,7 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
             }else{
                 temp.gantry[1] = -(shelfGaps[nearestGap - 1].second + shelfGaps[nearestGap].second)/2;
             }
-            temp.right_arm = { PI, 0, 0, 0, 0, 0};
+            // temp.right_arm = { PI, 0, 0, 0, 0, 0};
             goToPresetLocation(temp);
         }
 
@@ -1691,7 +1692,7 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
 
         temp.gantry[1] = -(shelfGaps[new_aisle - 1].second + shelfGaps[new_aisle].second)/2;
         temp.gantry[0] = gantryX;
-        temp.right_arm = { PI, 0, 0, 0, 0, 0};
+        // temp.right_arm = { PI, 0, 0, 0, 0, 0};
         goToPresetLocation(temp);
         temp.gantry[0] = shelfGaps[nearestGap].first;
         goToPresetLocation(temp);
@@ -1715,7 +1716,7 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
     if(obstObj.isAisleClear(aisle_num)){
         temp.gantry[0] = gantryX;
         temp.gantry[1] = -(shelfGaps[aisle_num-1].second + shelfGaps[aisle_num].second)/2;
-        temp.right_arm = { PI, 0, 0, 0, 0, 0};
+        // temp.right_arm = { PI, 0, 0, 0, 0, 0};
         goToPresetLocation(temp);
 
         gantryX = temp.gantry[0];
@@ -1726,7 +1727,7 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
     if(obstObj.isAisleClear(aisle_num + 1)){
         temp.gantry[0] = gantryX;
         temp.gantry[1] = -(shelfGaps[aisle_num].second + shelfGaps[aisle_num + 1].second)/2;
-        temp.right_arm = { PI, 0, 0, 0, 0, 0};
+        // temp.right_arm = { PI, 0, 0, 0, 0, 0};
         goToPresetLocation(temp);
         gantryX = temp.gantry[0];
         gantryY = -temp.gantry[1];
@@ -1734,13 +1735,13 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
         return true;
     }
 
-    left_arm = left_arm_org;
+    // left_arm = left_arm_org;
     escape(aisle_num, shelfGaps, gapNum, 0, gantryX, gantryY, obstObj, currGap, left_arm, pickStatus);
     return true;
 }
 
 bool GantryControl::move2closestGap(struct Part &part, std::vector< std::pair<float , float> > &shelfGaps,
-                                    const std::vector<int> &gapNum, bool actPart, float &gantryX, float &gantryY,
+                                    const std::vector<int> &gapNum, int actPart, float &gantryX, float &gantryY,
                                     ObstaclesInAisle &obstObj, int &newGap, std::vector<double> &left_arm){
     int aisle_num = part.aisle_num;
     shelfGaps[0].first = part.pose.position.x;
