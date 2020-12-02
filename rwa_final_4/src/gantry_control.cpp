@@ -270,11 +270,11 @@ void GantryControl::init() {
 
     //  [right_shoulder_pan_joint, right_shoulder_lift_joint, right_elbow_joint, 
     //  right_wrist_1_joint,       right_wrist_2_joint,       right_wrist_3_joint]
-    flipped_pulley_.gantry = {0, 0, 0};
+    flipped_pulley_.gantry = {0.4, 0, 0};
     flipped_pulley_.left_arm = {-1.63, -0.25, 1.61, 6.28, 1.54, 0};
     flipped_pulley_.right_arm = {1.61, -3.20, -1.26, -3.59, -1.57, 0};
 
-    flipped_pulley_preset.gantry = {0, 0, 0};
+    flipped_pulley_preset.gantry = {0.4, 0, 0};
     flipped_pulley_preset.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, 0, 0, 0};
     flipped_pulley_preset.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
 
@@ -860,14 +860,14 @@ void GantryControl::clearAgv(std::string agv, BuildClass &buildObj){
     return;
 }
 
-bool GantryControl::move2start ( float x, float y, std::vector<double> left_arm) {
+bool GantryControl::move2start ( float x, float y, std::vector<double> left_arm, std::vector<double> right_arm) {
     float offset_y = 0.2;
     float offset_x = 0.2;
 
     PresetLocation move;
     move.gantry = {x,y,0};
     move.left_arm = left_arm;
-    move.right_arm = {PI, -PI/4, PI/2, -PI/4, PI/2, 0};
+    move.right_arm = right_arm;
 
     if(x == 0 && y == 0 ){
         return true;
@@ -1179,7 +1179,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
             goToPresetLocation(move);
 
             move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] += offset_final_y  - tune_even_y - 0.2;
+            move_trg.gantry[1] += offset_final_y  - tune_even_y;
             move_trg.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
             goToPresetLocation(move_trg);
             gantryX = move_trg.gantry[0];
@@ -1321,7 +1321,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
             goToPresetLocation(move);
             
             move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] += offset_final_y-0.2;
+            move_trg.gantry[1] += offset_final_y -tune_odd_y-0.2;
             move_trg.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
             goToPresetLocation(move_trg);
             gantryX = move_trg.gantry[0];
@@ -1338,7 +1338,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
             goToPresetLocation(move);
 
             move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] -= offset_final_y - tune_odd_y;
+            move_trg.gantry[1] -= offset_final_y - tune_odd_y -0.2;
             move_trg.left_arm = {-PI / 2, -PI / 2, PI / 2 + PI / 4, -PI / 4, 0, 0};
             goToPresetLocation(move_trg);
             gantryX = move_trg.gantry[0];
@@ -1390,7 +1390,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
             goToPresetLocation(move);
 
             move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] += offset_final_y;
+            move_trg.gantry[1] += offset_final_y - 0.2;
             move_trg.left_arm = {-PI/2 , -PI/2, -PI/2 - PI/4 , -PI/2 - PI/4, 0, 0};
             goToPresetLocation(move_trg);
             gantryX = move_trg.gantry[0];
@@ -1408,7 +1408,7 @@ std::vector<double> GantryControl::move2trg  ( float x, float y, float &gantryX,
             goToPresetLocation(move);
 
             move_trg.gantry[0] -= offset_final_x;
-            move_trg.gantry[1] -= offset_final_y - tune_odd_y +0.2;
+            move_trg.gantry[1] -= offset_final_y - tune_odd_y -0.2;
             move_trg.left_arm = {-PI/2, -PI/2, PI/2 + PI/4, -PI/4, 0, 0};
             goToPresetLocation(move_trg);
             gantryX = move_trg.gantry[0];
@@ -1640,12 +1640,6 @@ bool GantryControl::escape(int &aisle_num, std::vector< std::pair<float , float>
     ROS_WARN_STREAM("escape() Shelf row: " << nearestGap);
     PresetLocation temp = start_;
     temp.left_arm = left_arm;
-    // if(temp.left_arm[2] > 0){
-    //     temp.left_arm[1] = -PI - PI/4;
-    // }else{
-    //     temp.left_arm[1] = PI/4;
-    // }
-    // left_arm = temp.left_arm;
     temp.right_arm = { PI, 0, 0, 0, 0, 0};
     if(actPart == 1){
         temp.gantry[0] = shelfGaps[nearestGap].first;

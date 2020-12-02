@@ -178,7 +178,7 @@ int main(int argc, char ** argv) {
             float gantryY = 0;
             int currGap = -1;
             std::vector<double> left_arm = { 0, 0, 0, 0, 0, 0};
-//            bool pickstatus = false;
+            std::vector<double> right_arm = gantry.start_.right_arm;
             bool ready2pick = obstObj.isAisleClear(product.p.aisle_num);
             product.p.obstacle_free = ready2pick;
             ROS_WARN_STREAM("Main() Obstacle Free? : "<< ready2pick);
@@ -192,18 +192,19 @@ int main(int argc, char ** argv) {
                     do{
                         ready2pick = obstObj.moveBot(product.p.pose.position.x, -3, product.p.aisle_num, gantryX, currGap);
                     }while(! ready2pick);
-                    std::vector<double> right_arm = { PI, 0, 0, 0, 0, 0};
+                    right_arm = { PI, 0, 0, 0, 0, 0};
                     left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap, left_arm, right_arm);
                     pickstatus = gantry.pickPart(product.p);
                     gantry.escape(product.p.aisle_num, buildObj.positionGap, buildObj.gapNum, 1, gantryX, gantryY,
                                   obstObj, currGap, left_arm, pickstatus);
                 }
             }else{
-                left_arm = {0.0, -PI/4, PI/2, -PI/4, PI/2, 0};
+                left_arm = gantry.start_.left_arm;
+                right_arm = gantry.start_.right_arm;
                 left_arm = gantry.move2trg(product.p.pose.position.x, -product.p.pose.position.y, gantryX, gantryY, currGap, left_arm);
                 pickstatus = gantry.pickPart(product.p);
             }
-            gantry.move2start(gantryX, -gantryY, left_arm);
+            gantry.move2start(gantryX, -gantryY, left_arm, right_arm);
         }
 
         if (std::abs(product.pose.orientation.x) <= 1 && std::abs(product.pose.orientation.x) >= 0.98)  {

@@ -186,10 +186,11 @@ class GantryControl {
      * @brief Moves robot to start position 
      * @param x X-Coordinate
      * @param y Y-Coordinate
-     * @param left_arm Left arm 
+     * @param left_arm Left arm joint values
+     * @param right_arm right arm joint values      
      * @return None
      */
-    bool move2start ( float x, float y, std::vector<double> left_arm);
+    bool move2start ( float x, float y, std::vector<double> left_arm, std::vector<double> right_arm);
     /**
      * @brief Move to target 
      * @param x X-Coordinate
