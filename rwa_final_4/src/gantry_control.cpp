@@ -708,17 +708,11 @@ bool GantryControl::placePart(Product &product, std::string agv,
 
     ros::Duration(1).sleep();
     int temp_call_check = quality_call_count;
-    bool black = false;
     while(temp_call_check == quality_call_count){
         conveyerPartsObj.updateCurrentPoses();
         conveyerPartsObj.checkBoundaries();
         conveyerPartsObj.checkCurrentPartSet();
         ROS_WARN_STREAM_THROTTLE(5, "-#########  BLACK OUT  ##########");
-//        black = true;
-    }
-    if(black){
-        conveyerPartsObj.allConveyerParts.clear();
-        conveyerPartsObj.emptyAfterblackout();
     }
 
     if (*is_part_faulty) {

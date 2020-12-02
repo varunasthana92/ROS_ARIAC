@@ -110,7 +110,7 @@ class GantryControl {
      * @param arm Left/Right arm
      * @return True if placed successfully else false
      */
-    bool placePart(product &product, std::string agv, std::string arm);
+    bool placePart(product &product, std::string agv, std::string arm, struct all_Order *curr_prod, ConveyerParts &conveyerPartsObj);
     /**
      * @brief Send command message to robot controller 
      * @param command_msg Joint trajectory command message
@@ -159,7 +159,7 @@ class GantryControl {
      * @param conveyerPartsObj Conveyor parts object
      * @return None
      */
-    void pickFromConveyor(Product &product, ConveyerParts &conveyerPartsObj);
+    bool pickFromConveyor(Product &product, ConveyerParts &conveyerPartsObj);
     /**
      * @brief Pose Matches 
      * @param pose1 Pose 1
