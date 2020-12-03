@@ -45,11 +45,11 @@ orders:
     shipment_count: 2
     destinations: [any,any]
     products:
-      part_0:
-        type: pulley_part_blue
-        pose:
-          xyz: [0.0, 0.0, 0]
-          rpy: ['pi', 0, 0]
+      # part_0:
+      #   type: pulley_part_blue
+      #   pose:
+      #     xyz: [0.0, 0.0, 0]
+      #     rpy: ['pi', 0, 0]
       part_1:
         type: gear_part_green
         pose:
@@ -60,16 +60,16 @@ orders:
         pose:
           xyz: [0.15, -0.2, 0]
           rpy: [0, 0, '-pi/4']
-      part_3:
-        type: piston_rod_part_red
-        pose:
-          xyz: [-0.15, -0.2, 0]
-          rpy: [0, 0, '-pi/4']
+      # part_3:
+      #   type: piston_rod_part_red
+      #   pose:
+      #     xyz: [-0.15, -0.2, 0]
+      #     rpy: [0, 0, '-pi/4']
 
 
 #2 arms advantageous
 models_over_shelves:
-  shelf5:
+  shelf11:
     models:
       piston_rod_part_red:
         xyz_start: [1, -0.4, 0.0]
@@ -77,19 +77,19 @@ models_over_shelves:
         rpy: [0, 0, 'pi/4']
         num_models_x: 6
         num_models_y: 1
-  shelf8:
+  shelf1:
     models:
       disk_part_red:
-        xyz_start: [1, -0.5, 0.0]
-        xyz_end: [0., -0.4, 0.0]
+        xyz_start: [1, 0.5, 0.0]
+        xyz_end: [0., 0.4, 0.0]
         rpy: [0, 0, 0]
         num_models_x: 5
         num_models_y: 2
-  shelf11:
+  shelf2:
     models:
       gear_part_green:
-        xyz_start: [1, 0.5, 0.0]
-        xyz_end: [0., 0.4, 0.0]
+        xyz_start: [1, -0.5, 0.0]
+        xyz_end: [0., -0.4, 0.0]
         rpy: [0, 0, 0]
         num_models_x: 6
         num_models_y: 1
@@ -103,7 +103,7 @@ belt_models:
 
 
 #Faulty products
-faulty_products:
-  - gear_part_green_3
-  - disk_part_red_2
-  - piston_rod_part_red_4
+# faulty_products:
+  # - gear_part_green_3
+  # - disk_part_red_2
+  # - piston_rod_part_red_4

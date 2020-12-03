@@ -9,6 +9,8 @@ To run the package rwa_final_4, simply do the following steps:
 	$ rosrun rwa_final_4 rwa_final_node
 
 note:
+* At times we observe some random behaviour in Gazebo which are not inline with the code logic. In such situation please rerun the entire code.
+
 * We have given preference for conveyor part so as soon as parts start to spawn on the conveyor we pick up the parts on the conveyor that is need to complete the order before we pick up static parts.
 
 

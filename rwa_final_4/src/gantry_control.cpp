@@ -1485,7 +1485,7 @@ bool GantryControl::pickFromConveyor(Product &product, ConveyerParts &conveyerPa
                 missed = true;
             }
         }
-        if(ros::Time::now().toSec() - starttime >= 15){
+        if(ros::Time::now().toSec() - starttime >= 20){
             starttime=ros::Time::now().toSec();
             missed = true;
         }
