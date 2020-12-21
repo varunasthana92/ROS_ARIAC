@@ -1,4 +1,12 @@
-# ENPM809B-Grp4
+# ARIAC (Agile Robotics for Industrial Automation Competition) 2020
+
+This was developed as a course project for ENPM809B - Building a Manufacturing Robot Software Systems. For more details about the competition, please visit official competition page (here)[https://www.nist.gov/el/intelligent-systems-division-73500/agile-robotics-industrial-automation-competition]. Group members are,
+* (Saumil Shah)[https://github.com/SaumilShah66]
+* (Varun Asthana)[https://github.com/varunasthana92]
+* (Markose Jacob)[https://github.com/markosej11]
+* (Nalin Das)[https://github.com/nalindas9]
+* Aditya Goswami
+
 To run the package rwa5_4, simply do the following steps
 1) Copy and paste the package rwa5_4 into the src directory of your ariac work space
 2) Run 
