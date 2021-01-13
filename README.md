@@ -15,6 +15,12 @@ Part Pick and Place Operation from the Conveyor Belt
 </p>
 
 <p align="center">
+<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/obstacle.gif">
+<br>
+Dynamic Obstacle Avoidance
+</p>
+
+<p align="center">
 <img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/rotation.gif" width = "356">
 <img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/agv.gif" width = "350">
 <br>
@@ -40,7 +46,7 @@ __Note:__ The section Testing GEAR (Links to an external site.) will not work fo
 To run the package rwa_final_4, do the following steps after creating an ROS ariac work spcae:
 1) Clone the ROS package into the src directory of your ariac work space
 2) Run
-	`$ catkin build` 
+	`$ catkin build` and then `$ source devel/setup.bash` 
 3) Launch Gazebo along with moveit by using 
 	`$ roslaunch rwa_final_4 rwa_final.launch load_moveit:=true`
 4) Wait till you get the below message
