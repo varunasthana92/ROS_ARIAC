@@ -25,7 +25,7 @@
           $(arg gui_args)
           $(arg load_moveit_args)
           $(arg fill_demo_shipment_args)
-          -f $(find rwa_final_4)/test/hpo_2.yaml
+          -f $(find rwa_final_4)/test/hpo_1.yaml
           $(find rwa_final_4)/config/rwa_final_sensor.yaml
           " required="true" output="screen" />
 
