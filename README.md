@@ -9,17 +9,27 @@ Group members-
 * Aditya Goswami
 
 <p align="center">
-<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/conveyor.gif"  width = "356">
-<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/obstacle.gif" width = "356">
+<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/conveyor.gif"  width = "506">
 <br>
-Pick and Place Operation from the Conveyor Belt (left) & Dynamic Obstacle Avoidance (right)
+Pick and Place Operation from the Conveyor Belt
 </p>
 
 <p align="center">
-<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/rotation.gif" width = "356">
-<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/agv.gif" width = "350">
+<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/obstacle.gif" width = "506">
 <br>
-Part Flipping (left) & AGV Delivery on Order Completion (right)
+Dynamic Obstacle Avoidance
+</p>
+
+<p align="center">
+<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/rotation.gif" width = "506">
+<br>
+Part Flipping
+</p>
+
+<p align="center">
+<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/agv.gif" width = "500">
+<br>
+AGV Delivery on Order Completion
 </p>
 
 Sequential development of the project was achieved in a total of 5 mile stones, with the last __rwa_final_4__ being the integration of all previous developments.
