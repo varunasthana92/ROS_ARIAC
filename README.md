@@ -43,13 +43,18 @@ To run the package rwa_final_4, do the following steps after creating an ROS ari
 2) Run
 	`$ catkin build` and then `$ source devel/setup.bash` 
 3) Launch Gazebo along with moveit by using 
-	`$ roslaunch rwa_final_4 rwa_final.launch load_moveit:=true`
-4) Wait till you get the below message
+```
+$ roslaunch rwa_final_4 rwa_final.launch load_moveit:=true
+```
+4) Wait till you get the below output
 <p align="center">
 <img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/launch_ok.png"  width = "450">
 </p>
-5) To run the node, on another terminal execute
-	`$ rosrun rwa_final_4 rwa_final_node`
+
+5) To run the node, in a new terminal execute (after sourcing your work space)
+```
+$ rosrun rwa_final_4 rwa_final_node
+```
 
 ## Test cases
 Various test cses for different combination of order item and agility challenges has been provided in the directory as yaml files
@@ -72,11 +77,12 @@ __Note__<br>
 
 Documentation can be found in `/rwa_final_4/docs/html/index.html`
 If you want to generate another doxygen documentation then do the following:
+
+* Delete 'docs' directory from the package
+* In terminal Change directory to the directory that contains the doxygen config file 'Doxyfile'.
+* Generate documentation with-
 ```
-    Delete 'docs' directory from the package
-    In terminal Change directory to the directory that contains the doxygen config file 'Doxyfile'.
-    Generate documentation with-
-    $ doxygen Doxyfile
+$ doxygen Doxyfile
 ```
 The above commands will create a directory named 'docs' with newly generated documentations.
 
