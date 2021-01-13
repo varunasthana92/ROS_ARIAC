@@ -68,6 +68,18 @@ __Note__<br>
 
 * You may have to run the code 4 - 5 times to be able to successfully pick up the red pistion part as the thickness of the part is very less and the arm of the robot gets attached to the conveyor and the robot messes up.
 
+## Doxygen Documentaion:
+
+Documentation can be found in `/rwa_final_4/docs/html/index.html`
+If you want to generate another doxygen documentation then do the following:
+```
+    Delete 'docs' directory from the package
+    In terminal Change directory to the directory that contains the doxygen config file 'Doxyfile'.
+    Generate documentation with-
+    $ doxygen Doxyfile
+```
+The above commands will create a directory named 'docs' with newly generated documentations.
+
 ## Known issues
 * At times MoveIt does not load correctly. If below error received, kill and relaunch.
 <p align="center">
