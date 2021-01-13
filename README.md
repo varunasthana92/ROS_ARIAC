@@ -1,23 +1,47 @@
 # ARIAC (Agile Robotics for Industrial Automation Competition) 2020
 
-This was developed as a course project for ENPM809B - Building a Manufacturing Robot Software Systems. For more details about the competition, please visit official competition page [here](https://www.nist.gov/el/intelligent-systems-division-73500/agile-robotics-industrial-automation-competition). Group members are,
+This project was developed as a course project for ENPM809B - Building a Manufacturing Robot Software Systems at the University of Maryland, College Park. For more details about the competition, please visit official competition page [here](https://www.nist.gov/el/intelligent-systems-division-73500/agile-robotics-industrial-automation-competition).<br>
+Group members-
 * [Saumil Shah](https://github.com/SaumilShah66)
 * [Varun Asthana](https://github.com/varunasthana92)
 * [Markose Jacob](https://github.com/markosej11)
 * [Nalin Das](https://github.com/nalindas9)
 * Aditya Goswami
 
-To run the package rwa5_4, simply do the following steps
-1) Copy and paste the package rwa5_4 into the src directory of your ariac work space
-2) Run 
+Sequential development of the project was achieved in a total of 5 mile stones, with the last being the integration of all.
+
+<p align="center">
+<img src="https://github.com/varunasthana92/face_swap_classical_deep_learning/blob/master/Results/rambo_girl.gif">
+</p>
+
+## Dependencies
+* Ubuntu 18.04
+* ROS Melodic
+* Gazebo >= 9.14
+* GEAR Software (ARIAC 2020)
+* MoveIt
+* C++ 11/14
+
+## How to build and run
+To run the package rwa_final_4, do the following steps after creating an ROS ariac work spcae:
+1) Clone the ROS package into the src directory of your ariac work space
+2) Run
 	`$ catkin build` 
 3) Launch Gazebo along with moveit by using 
-	`$ roslaunch rwa5_4 rwa5.launch load_moveit:=true`
-4) To run the node, on another terminal do
-	`$ rosrun rwa5_4 rwa5_node`
+	`$ roslaunch rwa_final_4 rwa_final.launch load_moveit:=true`
+4) To run the node, on another terminal execute
+	`$ rosrun rwa_final_4 rwa_final_node`
 
-note:
-* We are reading the order in reverse i.e, for order zero we first pick up part2, part1 and finally part0. We are doing this for both the shipment.
+## Test cases
+Various test cses for different combination of order item and agility challenges has been provided in the directory as yaml files
+`rwa_final_4)/test/`
+<br>
+To change the test file, in the launch directory edit the 
+`rwa_final.launch` file at line 28 
+'-f $(find rwa_final_4)/test/hpo_2.yaml'
+
+__Note__<br>
+* We are reading the order in reverse i.e, for order zero we first pick up part2, part1 and finally part0.
 
 * Highest priority is always given for high priority order. 
 
@@ -25,9 +49,5 @@ note:
 
 * You may have to run the code 4 - 5 times to be able to successfully pick up the red pistion part as the thickness of the part is very less and the arm of the robot gets attached to the conveyor and the robot messes up.
 
-* We have not made any changes to the .yaml file
-
-* We were not able to pick the piston part from agv tray. Robot arm was not able to reach to that height and hence bypassing quality and pose check for piston parts.
-
-
-
+## Known issues
+* At times we observe some random behaviour in Gazebo which are not inline with the code logic. In such situation please rerun the entire code.
