@@ -10,14 +10,16 @@ Group members-
 
 <p align="center">
 <img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/conveyor.gif">
+Part Pick and Place Operation from the Conveyor Belt
 </p>
 
 <p align="center">
-<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/rotation.gif" width = "350">
+<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/rotation.gif" width = "355">
 <img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/agv.gif" width = "350">
+Part Flipping (left) & AGV Delivery on Order Completion (right)
 </p>
 
-Sequential development of the project was achieved in a total of 5 mile stones, with the last being the integration of all.
+Sequential development of the project was achieved in a total of 5 mile stones, with the last __rwa_final_4__ being the integration of all previous developments.
 
 ## Dependencies
 * Ubuntu 18.04
