@@ -13,11 +13,8 @@ Group members-
 </p>
 
 <p align="center">
-<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/rotation.gif">
-</p>
-
-<p align="center">
-<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/agv.gif">
+<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/rotation.gif" width = "350">
+<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/agv.gif" width = "350">
 </p>
 
 Sequential development of the project was achieved in a total of 5 mile stones, with the last being the integration of all.
@@ -44,7 +41,7 @@ To run the package rwa_final_4, do the following steps after creating an ROS ari
 	`$ roslaunch rwa_final_4 rwa_final.launch load_moveit:=true`
 4) Wait till you get the below message
 <p align="center">
-<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/launch_ok.png" width="372">
+<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/launch_ok.png">
 </p>
 5) To run the node, on another terminal execute
 	`$ rosrun rwa_final_4 rwa_final_node`
@@ -69,6 +66,6 @@ __Note__<br>
 ## Known issues
 * At times MoveIt does not load correctly. If below error received, kill and relaunch.
 <p align="center">
-<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/launch_error.png" width="372">
+<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/launch_error.png">
 </p>
 * At times we observe some random behaviour in Gazebo which are not inline with the code logic. In such situation please rerun the entire code.
