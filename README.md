@@ -18,9 +18,14 @@ Sequential development of the project was achieved in a total of 5 mile stones, 
 * Ubuntu 18.04
 * ROS Melodic
 * Gazebo >= 9.14
-* GEAR Software (ARIAC 2020)
 * MoveIt
 * C++ 11/14
+* ARIAC 2020
+
+### ARIAC 2020
+[Software and documentation](https://github.com/usnistgov/ARIAC) (Links to an external site.)
+[Installation](https://github.com/usnistgov/ARIAC/blob/master/wiki/tutorials/installation.md) (Links to an external site.)
+__Note:__ The section Testing GEAR (Links to an external site.) will not work for now.
 
 ## How to build and run
 To run the package rwa_final_4, do the following steps after creating an ROS ariac work spcae:
