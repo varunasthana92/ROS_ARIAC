@@ -10,12 +10,14 @@ Group members-
 
 <p align="center">
 <img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/conveyor.gif">
+<br>
 Part Pick and Place Operation from the Conveyor Belt
 </p>
 
 <p align="center">
-<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/rotation.gif" width = "355">
+<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/rotation.gif" width = "356">
 <img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/agv.gif" width = "350">
+<br>
 Part Flipping (left) & AGV Delivery on Order Completion (right)
 </p>
 
@@ -30,8 +32,8 @@ Sequential development of the project was achieved in a total of 5 mile stones, 
 * ARIAC 2020
 
 ### ARIAC 2020
-[Software and documentation](https://github.com/usnistgov/ARIAC) (Links to an external site.)
-[Installation](https://github.com/usnistgov/ARIAC/blob/master/wiki/tutorials/installation.md) (Links to an external site.)
+[Software and documentation](https://github.com/usnistgov/ARIAC) (Links to an external site.)<br>
+[Installation](https://github.com/usnistgov/ARIAC/blob/master/wiki/tutorials/installation.md) (Links to an external site.)<br>
 __Note:__ The section Testing GEAR (Links to an external site.) will not work for now.
 
 ## How to build and run
