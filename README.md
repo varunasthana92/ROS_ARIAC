@@ -8,6 +8,18 @@ Group members-
 * [Nalin Das](https://github.com/nalindas9)
 * Aditya Goswami
 
+<p align="center">
+<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/conveyor.gif">
+</p>
+
+<p align="center">
+<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/rotation.gif">
+</p>
+
+<p align="center">
+<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/agv.gif">
+</p>
+
 Sequential development of the project was achieved in a total of 5 mile stones, with the last being the integration of all.
 
 ## Dependencies
@@ -30,7 +42,11 @@ To run the package rwa_final_4, do the following steps after creating an ROS ari
 	`$ catkin build` 
 3) Launch Gazebo along with moveit by using 
 	`$ roslaunch rwa_final_4 rwa_final.launch load_moveit:=true`
-4) To run the node, on another terminal execute
+4) Wait till you get the below message
+<p align="center">
+<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/launch_ok.png" width="372">
+</p>
+5) To run the node, on another terminal execute
 	`$ rosrun rwa_final_4 rwa_final_node`
 
 ## Test cases
@@ -51,4 +67,8 @@ __Note__<br>
 * You may have to run the code 4 - 5 times to be able to successfully pick up the red pistion part as the thickness of the part is very less and the arm of the robot gets attached to the conveyor and the robot messes up.
 
 ## Known issues
+* At times MoveIt does not load correctly. If below error received, kill and relaunch.
+<p align="center">
+<img src="https://github.com/varunasthana92/ROS_ARIAC/blob/master/sample_output/launch_error.png" width="372">
+</p>
 * At times we observe some random behaviour in Gazebo which are not inline with the code logic. In such situation please rerun the entire code.
