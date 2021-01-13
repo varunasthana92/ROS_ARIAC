@@ -10,10 +10,6 @@ Group members-
 
 Sequential development of the project was achieved in a total of 5 mile stones, with the last being the integration of all.
 
-<p align="center">
-<img src="https://github.com/varunasthana92/face_swap_classical_deep_learning/blob/master/Results/rambo_girl.gif">
-</p>
-
 ## Dependencies
 * Ubuntu 18.04
 * ROS Melodic
